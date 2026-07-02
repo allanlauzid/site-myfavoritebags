@@ -347,6 +347,12 @@ nav.s .nav-links a:hover { color:var(--text); }
   font-size:7.5px; letter-spacing:.24em; text-transform:uppercase;
   background:var(--rose-deep); color:#fff; padding:5px 11px;
 }
+.promo-b {
+  position:absolute; top:14px; right:14px;
+  font-size:11px; font-weight:700; letter-spacing:.04em;
+  font-family:'Jost',sans-serif;
+  background:#B5544A; color:#fff; padding:5px 10px; border-radius:3px;
+}
 
 /* Info */
 .pname {
@@ -554,7 +560,7 @@ footer {
 .admin-ov.visible { opacity:1; }
 .admin-panel {
   background:var(--bg); width:900px;
-  max-width:96vw; max-height:92vh;
+  max-width:96vw; height:82vh; max-height:760px;
   display:flex; flex-direction:column;
   overflow:hidden;
   transform:translateY(18px) scale(.97);
@@ -576,17 +582,28 @@ footer {
   font-size:20px; cursor:pointer; transition:color .3s;
 }
 .admin-x:hover { color:#fff; }
-.admin-bd { padding:28px 38px 40px; overflow-y:auto; flex:1; }
+.admin-bd {
+  padding:28px 38px 40px; overflow-y:auto; flex:1;
+  scrollbar-width:thin; scrollbar-color:var(--rose-dark) transparent;
+}
+.admin-bd::-webkit-scrollbar { width:6px; }
+.admin-bd::-webkit-scrollbar-track { background:transparent; }
+.admin-bd::-webkit-scrollbar-thumb { background:var(--rose-dark); border-radius:10px; }
+.admin-bd::-webkit-scrollbar-thumb:hover { background:var(--rose-deep); }
 
 .admin-tabs {
   display:flex; border-bottom:1px solid var(--line);
   background:var(--bg); overflow-x:auto; flex-shrink:0;
+  -ms-overflow-style:none; scrollbar-width:none;
 }
+.admin-tabs::-webkit-scrollbar { display:none; }
 .atab {
+  flex:1; text-align:center;
   font-size:9px; letter-spacing:.2em; text-transform:uppercase;
-  padding:12px 24px; background:none; border:none;
+  padding:12px 16px; background:none; border:none;
   color:var(--text-muted); cursor:pointer; font-family:'Jost',sans-serif;
   border-bottom:2px solid transparent; margin-bottom:-1px; transition:all .3s;
+  white-space:nowrap;
 }
 .atab.on { color:var(--text); border-bottom-color:var(--rose-dark); }
 
@@ -790,7 +807,7 @@ footer {
   
   .frow { grid-template-columns:1fr; }
   .admin-bd { padding:20px 16px; }
-  .admin-panel { max-height:96vh; }
+  .admin-panel { height:92vh; max-height:92vh; }
 }
 
 /* Mobile small */
@@ -852,19 +869,19 @@ nav.s .nav-logo-img { filter: none; }
   <div id="slides">
     <div class="hero-slide active" style="background:#2A1F18;">
       <div class="hs-tex"></div>
-      <div style="position:absolute;inset:0;background-image:url('webp/bolsa-02.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
+      <div id="heroSlideImg-0" style="position:absolute;inset:0;background-image:url('webp/bolsa-02.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
     <div class="hero-slide" style="background:#2A1F18;">
       <div class="hs-tex"></div>
-      <div style="position:absolute;inset:0;background-image:url('webp/bolsa-03.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
+      <div id="heroSlideImg-1" style="position:absolute;inset:0;background-image:url('webp/bolsa-03.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
     <div class="hero-slide" style="background:#2A1F18;">
       <div class="hs-tex"></div>
-      <div style="position:absolute;inset:0;background-image:url('webp/bolsa-04.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
+      <div id="heroSlideImg-2" style="position:absolute;inset:0;background-image:url('webp/bolsa-04.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
     <div class="hero-slide" style="background:#2A1F18;">
       <div class="hs-tex"></div>
-      <div style="position:absolute;inset:0;background-image:url('webp/bolsa-05.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
+      <div id="heroSlideImg-3" style="position:absolute;inset:0;background-image:url('webp/bolsa-05.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
   </div>
   <div class="hero-veil"></div>
@@ -1088,6 +1105,7 @@ const ROSE_DEEP = '#653C2B';
 const BG        = '#F3EFE9';
 const BG2       = '#E7E2D9';
 const LINE      = 'rgba(182,139,115,.18)';
+const HERO_SLIDES = ['webp/bolsa-02.webp','webp/bolsa-03.webp','webp/bolsa-04.webp','webp/bolsa-05.webp'];
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
 let products = [
@@ -1197,6 +1215,7 @@ function renderProducts(filter = 'all') {
         <div class="pcard-visual" style="padding:0;cursor:${p.avail ? 'pointer' : 'default'};" onclick="${p.avail ? `openBagModal(${p.id})` : ''}">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;transition:transform .75s var(--ease);" class="bag-photo">` : bagSVG(p.cat, ic)}</div>
         ${!p.avail ? `<div class="sold-ov"><div class="sold-badge">Esgotado</div></div>` : ''}
         ${p.isNew && p.avail ? `<div class="new-b">Novo</div>` : ''}
+        ${p.avail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
         ${p.avail ? `
         <div class="pcard-action">
           <button onclick="openBagModal(${p.id})" class="slide-btn" style="border:none;cursor:pointer;">Ver Detalhes</button>
@@ -1208,7 +1227,7 @@ function renderProducts(filter = 'all') {
         <span class="pprice">
           ${p.avail
             ? (p.promo
-                ? `<span style="text-decoration:line-through;color:#C0B4AB;font-size:14px;margin-right:6px;">${p.promo.old}</span><span style="color:var(--rose-dark);">${p.promo.new}</span>`
+                ? `<span style="text-decoration:line-through;color:#B5544A;font-size:14px;margin-right:6px;">${p.promo.old}</span><span style="color:var(--rose-dark);">${p.promo.new}</span>`
                 : p.price)
             : '—'}
         </span>
@@ -1363,14 +1382,19 @@ function renderPanel() {
 
   <div class="apane" id="tab-banner">
     <p style="font-size:12.5px;color:var(--text-body);line-height:1.75;margin-bottom:24px;">
-      Gerencie as imagens do carrossel do banner. No site final com backend, faça upload das fotos aqui diretamente.
+      Imagens atualmente publicadas no carrossel do banner. No site final com backend, faça upload das fotos aqui diretamente.
     </p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-      ${[1,2,3,4].map(n => `
-      <div style="background:${BG2};padding:20px;text-align:center;border:1px solid ${LINE};">
-        <p style="font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Slide ${n}</p>
-        <p style="font-size:11px;color:var(--text-muted);">Slot ${n} · Ativo</p>
-        <button class="fb" style="margin-top:12px;font-size:8px;padding:8px 16px;">Trocar Imagem</button>
+      ${HERO_SLIDES.map((img,idx) => `
+      <div style="position:relative;aspect-ratio:3/4;overflow:hidden;border-radius:6px;border:1px solid ${LINE};background:#2A1F18;">
+        <img id="bannerImg-${idx}" src="${img}" alt="Slide ${idx+1}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(20,12,7,.88) 0%, rgba(20,12,7,.35) 45%, rgba(20,12,7,.15) 100%);"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:16px;text-align:center;">
+          <p style="font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:4px;">Slide ${idx+1}</p>
+          <p style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:10px;">Publicado no banner</p>
+          <button class="fb" style="font-size:8px;padding:8px 16px;margin-top:0;" onclick="triggerBannerUpload(${idx})">Trocar Imagem</button>
+          <input type="file" id="bannerFile-${idx}" accept="image/*" style="display:none;" onchange="handleBannerUpload(${idx},this)">
+        </div>
       </div>`).join('')}
     </div>
   </div>
@@ -1514,22 +1538,89 @@ function renderOverviewTab() {
       </div>
     </div>
 
-    <div style="margin-top:20px;padding:18px 20px;border:1px solid var(--line);border-radius:10px;background:#faf7f4;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-        <input type="checkbox" id="bijusToggle" onchange="toggleBijus(this.checked)"
-          style="appearance:none;-webkit-appearance:none;width:18px;height:18px;flex-shrink:0;
-                 border:1.5px solid #8B4A3C;border-radius:3px;background:#F3EFE9;
-                 cursor:pointer;transition:background .2s,border-color .2s;">
-        <span style="font-size:13px;font-weight:700;color:#8B4A3C;">✨ <strong>Habilitar My Favorite Looks</strong></span>
-      </label>
-      <span id="bijusStatus" style="font-size:11px;color:#A08070;flex-shrink:0;">Inativo</span>
+    <div id="centralPanel" style="margin-top:20px;padding:18px 20px;border:1px solid var(--line);border-radius:10px;background:#faf7f4;">
+      <p style="font-size:13px;font-weight:700;color:#8B4A3C;margin-bottom:4px;">🔗 Painel Central · Looks &amp; Match</p>
+      <p style="font-size:11px;color:#A08070;margin-bottom:14px;">Controle o acesso às outras frentes da marca.</p>
+      <div id="centralPanelRows"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap;">
+        <span style="font-size:12px;font-weight:600;color:#653C2B;min-width:150px;">Filtro padrão do Match</span>
+        <select class="fi" id="matchDefaultFilter" onchange="localStorage.setItem('mfb_match_default_filter', this.value)" style="width:auto;padding:8px 10px;font-size:11px;">
+          <option value="all">Todos</option>
+          <option value="bags">Só Bags</option>
+          <option value="looks">Só Looks</option>
+        </select>
+      </div>
     </div>`;
   renderAnalyticsBody();
+  renderCentralPanel();
+}
 
-  // Sincronizar visual do checkbox do toggle
-  const chk = document.getElementById('bijusToggle');
-  if (chk) {
-    chk.style.background = chk.checked ? '#8B4A3C' : '#F3EFE9';
+// ─── PAINEL CENTRAL: BLOQUEIO / VISIBILIDADE (Looks & Match) ──────────────────
+const SITE_STATE_KEY = { looks: 'mfb_looks_state', match: 'mfb_match_state' };
+const SITE_LABEL      = { looks: 'My Favorite Looks', match: 'My Favorite Match' };
+
+function getSiteState(site) {
+  return localStorage.getItem(SITE_STATE_KEY[site]) || 'locked';
+}
+function setSiteState(site, state) {
+  localStorage.setItem(SITE_STATE_KEY[site], state);
+  renderCentralPanel();
+  applyLooksButtonVisibility();
+}
+
+const SITE_PAGE = { looks: 'looks.html', match: 'match.html' };
+
+function renderCentralPanel() {
+  const el = document.getElementById('centralPanelRows');
+  if (!el) return;
+  const opts = [
+    { v:'locked',  l:'Bloqueado' },
+    { v:'hidden',  l:'Oculto' },
+    { v:'visible', l:'Visível' },
+  ];
+  el.innerHTML = ['looks','match'].map(site => {
+    const cur = getSiteState(site);
+    return `
+    <div style="padding:12px 0;border-top:1px solid var(--line);">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:600;color:#653C2B;">${SITE_LABEL[site]}</span>
+        <a href="${SITE_PAGE[site]}?preview=1" target="_blank"
+          style="font-size:8.5px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;
+                 font-family:'Jost',sans-serif;font-weight:600;text-decoration:none;text-transform:uppercase;
+                 border:1px solid var(--line); background:var(--bg); color:#A08070;">Editar (sem publicar)</a>
+      </div>
+      <div style="display:flex;gap:4px;">
+        ${opts.map(o => `
+        <button onclick="setSiteState('${site}','${o.v}')"
+          style="font-size:9px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;
+                 font-family:'Jost',sans-serif;font-weight:600;
+                 border:1px solid ${cur===o.v ? '#8B4A3C' : 'var(--line)'};
+                 background:${cur===o.v ? 'rgba(139,74,60,.12)' : 'transparent'};
+                 color:${cur===o.v ? '#8B4A3C' : '#A08070'};">${o.l}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  const sel = document.getElementById('matchDefaultFilter');
+  if (sel) sel.value = localStorage.getItem('mfb_match_default_filter') || 'all';
+}
+
+function applyLooksButtonVisibility() {
+  let btn = document.getElementById('bijusHeroBtn');
+  const visible = getSiteState('looks') === 'visible';
+  if (visible) {
+    if (!btn) {
+      btn = document.createElement('a');
+      btn.id = 'bijusHeroBtn';
+      btn.href = 'looks.html';
+      btn.style.cssText = 'display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:10px 22px;border:1px solid rgba(255,215,0,.55);color:#FFD700;font-family:"Jost",sans-serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;background:rgba(255,215,0,.08);transition:background .3s;';
+      btn.innerHTML = '✨ Confira a coleção — My Favorite Looks';
+      btn.onmouseover = () => btn.style.background = 'rgba(255,215,0,.18)';
+      btn.onmouseout  = () => btn.style.background = 'rgba(255,215,0,.08)';
+      const heroContent = document.querySelector('.hero-content');
+      if (heroContent) heroContent.appendChild(btn);
+    }
+  } else {
+    if (btn) btn.remove();
   }
 }
 
@@ -1554,17 +1645,17 @@ function renderAdminList() {
 
   const header = `
     <div style="display:flex;align-items:stretch;border-bottom:2px solid var(--rose);background:var(--bg);">
-      <div class="alist-name" style="width:180px;min-width:180px;flex-shrink:0;box-sizing:border-box;"></div>
+      <div class="alist-name" style="width:340px;min-width:340px;flex-shrink:0;box-sizing:border-box;"></div>
       <div class="alist-btns alist-btns-hdr" style="overflow-x:auto;flex:1;min-width:0;-ms-overflow-style:none;scrollbar-width:none;display:flex;align-items:center;">
-        <div style="display:flex;align-items:center;gap:6px;padding:6px 10px 6px 6px;width:max-content;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 14px 6px 6px;width:100%;min-width:max-content;">
           <div style="width:94px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <input type="checkbox" id="chkAllAvail" ${allAvail?'checked':''} title="Selecionar todos como disponível"
               onchange="bulkToggle('avail',this.checked)"
               style="${chkStyle}background:${allAvail?'#8B4A3C':'#F3EFE9'};border-color:${allAvail?'#8B4A3C':'#653C2B'};">
           </div>
           <div style="width:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <input type="checkbox" id="chkAllPromo" title="Remover todas as promoções"
-              onclick="bulkRemovePromo(this);return false;"
+            <input type="checkbox" id="chkAllPromo" title="Gerenciar promoções em massa"
+              onclick="openBulkPromoModal(this);return false;"
               style="${chkStyle}background:#B34545;border-color:#B34545;">
           </div>
           <div style="width:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -1591,15 +1682,15 @@ function renderAdminList() {
     return `
     <div style="display:flex;align-items:stretch;background:${bg};border-bottom:1px solid var(--line);">
       <div class="alist-name" id="aname-${p.id}"
-        style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--text);
-               line-height:1.35;overflow:hidden;white-space:nowrap;
+        style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--text);
+               line-height:1.25;overflow:hidden;white-space:nowrap;
                text-overflow:ellipsis;flex-shrink:0;
-               width:180px;min-width:180px;
+               width:340px;min-width:340px;
                padding:10px 8px 10px 12px;box-sizing:border-box;align-self:center;"
         title="${p.name}">${p.name}</div>
       <div class="alist-btns" style="overflow-x:auto;flex:1;min-width:0;
            -ms-overflow-style:none;scrollbar-width:none;display:flex;align-items:center;">
-        <div style="display:flex;align-items:center;gap:6px;padding:10px 10px 10px 6px;width:max-content;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 14px 10px 6px;width:100%;min-width:max-content;">
           <button onclick="togAvail(${p.id})"
             style="height:29px;width:94px;padding:0;flex-shrink:0;cursor:pointer;transition:all .3s;
                    font-size:9.6px;letter-spacing:.18em;font-family:'Jost',sans-serif;font-weight:600;
@@ -1636,7 +1727,7 @@ function renderAdminList() {
   // Scroll: sincroniza todas as linhas (incluindo header) + reduz/restaura nome
   const allBtnsEls = alist.querySelectorAll('.alist-btns');
   const allNamesEls = alist.querySelectorAll('.alist-name');
-  const FULL = 180, HALF = 90;
+  const FULL = 340, HALF = 170;
 
   function applyNameWidth(sl) {
     const collapsed = sl > 4;
@@ -1668,9 +1759,77 @@ function showToast(msg) {
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
 }
 
-function bulkRemovePromo(chk) {
-  // checkbox nunca muda — só dispara ação com confirmação dupla
+function openBulkPromoModal(chk) {
   chk.checked = false;
+  const hasPromo = products.some(p => p.promo);
+  const wrap = document.createElement('div');
+  wrap.id = 'bulkPromoModal';
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:9450;background:rgba(42,31,24,.7);display:flex;align-items:center;justify-content:center;';
+  wrap.innerHTML = `
+    <div style="background:var(--bg);border-radius:12px;padding:28px 28px;max-width:340px;width:90%;font-family:'Jost',sans-serif;">
+      <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Promoções em Massa</p>
+      <p style="font-size:11px;color:#A08070;margin-bottom:20px;">Escolha uma ação para aplicar a todos os itens.</p>
+
+      <div style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:14px;">
+        <p style="font-size:11px;font-weight:600;color:#8B4A3C;letter-spacing:.08em;margin-bottom:10px;">APLICAR DESCONTO EM TODOS</p>
+        <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PERCENTUAL DE DESCONTO</label>
+        <div style="display:flex;align-items:stretch;margin-bottom:10px;">
+          <input id="bulkPct" class="fi" placeholder="ex: 20" inputmode="decimal" style="border-radius:4px 0 0 4px;border-right:none;">
+          <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px;">
+          <input type="checkbox" id="bulkShowPct" checked style="accent-color:#8B4A3C;">
+          <span style="font-size:11px;color:#A08070;">Mostrar percentual de desconto na bolsa</span>
+        </label>
+        <button onclick="applyBulkPromoPct()" style="width:100%;padding:10px;border:none;border-radius:6px;background:var(--rose-dark);color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Aplicar a Todos</button>
+      </div>
+
+      <div style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:18px;">
+        <p style="font-size:11px;font-weight:600;color:#b83232;letter-spacing:.08em;margin-bottom:10px;">REMOVER TODAS AS PROMOÇÕES</p>
+        <p style="font-size:11px;color:#A08070;margin-bottom:12px;">${hasPromo ? `${products.filter(p=>p.promo).length} item(s) com promoção ativa.` : 'Nenhum item tem promoção ativa.'}</p>
+        <button onclick="removeAllPromos()" ${hasPromo ? '' : 'disabled'} style="width:100%;padding:10px;border:none;border-radius:6px;background:${hasPromo?'#b83232':'#D9CFC6'};color:#fff;cursor:${hasPromo?'pointer':'not-allowed'};font-size:12px;font-weight:700;">Remover Todas</button>
+      </div>
+
+      <p id="bulkPromoErr" style="font-size:11px;color:#b83232;margin-bottom:10px;display:none;"></p>
+
+      <div style="display:flex;justify-content:flex-end;">
+        <button onclick="document.getElementById('bulkPromoModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;">Fechar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+}
+
+function applyBulkPromoPct() {
+  const errEl = document.getElementById('bulkPromoErr');
+  const pctStr = document.getElementById('bulkPct').value.trim();
+  const pct = parseFloat(pctStr.replace(',', '.'));
+  if (!pctStr || isNaN(pct) || pct <= 0 || pct >= 100) {
+    errEl.textContent = 'Informe um percentual válido entre 1 e 99.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const showPct = document.getElementById('bulkShowPct').checked;
+  showConfirmDouble(
+    `Aplicar ${pct}% de desconto a todos?`,
+    `${products.length} item(s) terão o preço atual usado como base para o desconto.`,
+    'Tem certeza? Promoções existentes serão substituídas.',
+    () => {
+      products.forEach(p => {
+        const base = p.promo ? parsePrice(p.promo.old) : parsePrice(p.price);
+        const baseNum = p.promo ? priceNum(p.promo.old) : priceNum(p.price);
+        const newVal = (base * (1 - pct / 100));
+        const newNum = (Math.round(newVal * 100) / 100).toFixed(0);
+        p.promo = { old: toPriceStr(baseNum), new: toPriceStr(newNum), pct: Math.round(pct), showPct };
+        p.price = toPriceStr(newNum);
+      });
+      markDirty(); renderProducts('all'); renderAdminList(); renderOverviewTab();
+      const m = document.getElementById('bulkPromoModal'); if (m) m.remove();
+      showToast(`Desconto de ${pct}% aplicado a todos os itens.`);
+    }
+  );
+}
+
+function removeAllPromos() {
   const hasPromo = products.some(p => p.promo);
   if (!hasPromo) { showToast('Nenhum item tem promoção ativa.'); return; }
   showConfirmDouble(
@@ -1680,6 +1839,7 @@ function bulkRemovePromo(chk) {
     () => {
       products.forEach(p => { if (p.promo) { p.price = p.promo.new; p.promo = null; } });
       markDirty(); renderProducts('all'); renderAdminList(); renderOverviewTab();
+      const m = document.getElementById('bulkPromoModal'); if (m) m.remove();
       showToast('Promoções removidas.');
     }
   );
@@ -1786,6 +1946,28 @@ function bulkToggle(field, value) {
   syncAllChk();
 }
 
+// ─── BANNER: TROCAR IMAGEM ─────────────────────────────────────────────────────
+function triggerBannerUpload(idx) {
+  const input = document.getElementById('bannerFile-' + idx);
+  if (input) input.click();
+}
+function handleBannerUpload(idx, input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    HERO_SLIDES[idx] = dataUrl;
+    const thumb = document.getElementById('bannerImg-' + idx);
+    if (thumb) thumb.src = dataUrl;
+    const slideBg = document.getElementById('heroSlideImg-' + idx);
+    if (slideBg) slideBg.style.backgroundImage = `url('${dataUrl}')`;
+    markDirty();
+    showToast(`Imagem do Slide ${idx + 1} atualizada.`);
+  };
+  reader.readAsDataURL(file);
+}
+
 function addProd() {
   const name  = document.getElementById('nn').value.trim();
   const price = document.getElementById('np').value.trim();
@@ -1823,21 +2005,44 @@ function openPriceModal(id) {
       <p style="font-size:11px;color:#A08070;margin-bottom:20px;">${p.name}</p>
 
       <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:6px;">PREÇO ATUAL</label>
-      <input id="pmPrice" class="fi" value="${p.price}" placeholder="R$ 000" style="width:100%;margin-bottom:18px;">
+      <div style="display:flex;align-items:stretch;margin-bottom:18px;">
+        <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
+        <input id="pmPrice" class="fi" value="${priceNum(p.price)}" placeholder="0" inputmode="decimal" style="border-radius:0 4px 4px 0;border-left:none;">
+      </div>
 
       <div id="pmPromoWrap" style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:18px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:11px;font-weight:600;color:#8B4A3C;letter-spacing:.1em;">PROMOÇÃO</span>
+        <div style="display:flex;align-items:center;margin-bottom:10px;">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
             <input type="checkbox" id="pmPromoOn" ${p.promo ? 'checked' : ''} onchange="togglePromoFields()" style="accent-color:#8B4A3C;">
-            <span style="font-size:11px;color:#A08070;">${p.promo ? 'Ativa' : 'Inativa'}</span>
+            <span style="font-size:11px;font-weight:600;color:#8B4A3C;letter-spacing:.1em;">ATIVAR PROMOÇÃO</span>
           </label>
         </div>
         <div id="pmPromoFields" style="display:${p.promo ? 'block' : 'none'};">
           <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO ORIGINAL (riscado)</label>
-          <input id="pmOldPrice" class="fi" value="${p.promo ? p.promo.old : ''}" placeholder="R$ 000" style="width:100%;margin-bottom:10px;">
-          <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO PROMOCIONAL</label>
-          <input id="pmNewPrice" class="fi" value="${p.promo ? p.promo.new : ''}" placeholder="R$ 000" style="width:100%;">
+          <div style="display:flex;align-items:stretch;margin-bottom:10px;">
+            <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:#A08070;font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
+            <input id="pmOldPrice" class="fi" value="${priceNum(p.promo ? p.promo.old : p.price)}" placeholder="0" readonly style="border-radius:0 4px 4px 0;border-left:none;background:#F2ECE6;color:#A08070;cursor:not-allowed;">
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:10px;">
+            <div style="flex:1;">
+              <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO PROMOCIONAL</label>
+              <div style="display:flex;align-items:stretch;">
+                <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
+                <input id="pmNewPrice" class="fi" value="${p.promo ? priceNum(p.promo.new) : ''}" placeholder="0" inputmode="decimal" oninput="syncFromPrice()" style="border-radius:0 4px 4px 0;border-left:none;">
+              </div>
+            </div>
+            <div style="flex:1;">
+              <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">DESCONTO</label>
+              <div style="display:flex;align-items:stretch;">
+                <input id="pmPct" class="fi" value="${p.promo && p.promo.pct ? p.promo.pct : ''}" placeholder="0" inputmode="decimal" oninput="syncFromPct()" style="border-radius:4px 0 0 4px;border-right:none;">
+                <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
+              </div>
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="pmShowPct" ${(!p.promo || p.promo.showPct !== false) ? 'checked' : ''} style="accent-color:#8B4A3C;">
+            <span style="font-size:11px;color:#A08070;">Mostrar percentual de desconto na bolsa</span>
+          </label>
         </div>
       </div>
 
@@ -1851,66 +2056,78 @@ function openPriceModal(id) {
   document.body.appendChild(wrap);
 }
 
+function priceNum(str) {
+  return (str || '').replace(/^R\$\s*/i, '').trim();
+}
+
+function toPriceStr(num) {
+  return `R$ ${num}`;
+}
+
 function togglePromoFields() {
   const on = document.getElementById('pmPromoOn').checked;
   document.getElementById('pmPromoFields').style.display = on ? 'block' : 'none';
-  document.querySelector('#pmPromoWrap span:last-child').textContent = on ? 'Ativa' : 'Inativa';
+  if (on) {
+    const oldEl = document.getElementById('pmOldPrice');
+    if (!oldEl.value) oldEl.value = document.getElementById('pmPrice').value.trim();
+  }
+}
+
+function syncFromPrice() {
+  const oldNum = parsePrice(document.getElementById('pmOldPrice').value);
+  const newNum = parsePrice(document.getElementById('pmNewPrice').value);
+  const pctEl = document.getElementById('pmPct');
+  if (oldNum > 0 && document.getElementById('pmNewPrice').value.trim() !== '') {
+    const pct = (1 - newNum / oldNum) * 100;
+    pctEl.value = Math.round(pct * 10) / 10;
+  } else {
+    pctEl.value = '';
+  }
+}
+
+function syncFromPct() {
+  const oldNum = parsePrice(document.getElementById('pmOldPrice').value);
+  const pctVal = parseFloat(document.getElementById('pmPct').value.replace(',', '.'));
+  const newEl = document.getElementById('pmNewPrice');
+  if (oldNum > 0 && !isNaN(pctVal)) {
+    const newVal = oldNum * (1 - pctVal / 100);
+    newEl.value = (Math.round(newVal * 100) / 100).toFixed(newVal % 1 === 0 ? 0 : 2);
+  } else {
+    newEl.value = '';
+  }
 }
 
 function parsePrice(str) {
-  return parseFloat(str.replace(/[^\d,\.]/g,'').replace(',','.')) || 0;
+  return parseFloat(String(str).replace(/[^\d,\.]/g,'').replace(',','.')) || 0;
 }
 
 function savePrice(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   const errEl = document.getElementById('pmErr');
-  const newPrice = document.getElementById('pmPrice').value.trim();
+  const newPriceNum = document.getElementById('pmPrice').value.trim();
   const promoOn  = document.getElementById('pmPromoOn').checked;
 
   if (promoOn) {
-    const oldStr = document.getElementById('pmOldPrice').value.trim();
-    const newStr = document.getElementById('pmNewPrice').value.trim();
-    if (!oldStr || !newStr) { errEl.textContent='Preencha os dois preços da promoção.'; errEl.style.display='block'; return; }
-    if (parsePrice(newStr) >= parsePrice(oldStr)) {
+    const oldNum = document.getElementById('pmOldPrice').value.trim();
+    const newNum = document.getElementById('pmNewPrice').value.trim();
+    if (!oldNum || !newNum) { errEl.textContent='Preencha os dois preços da promoção.'; errEl.style.display='block'; return; }
+    if (parsePrice(newNum) >= parsePrice(oldNum)) {
       errEl.textContent='O preço promocional deve ser menor que o preço original.';
       errEl.style.display='block'; return;
     }
-    p.promo = { old: oldStr, new: newStr };
-    p.price = newStr;
+    const pct = Math.round((1 - parsePrice(newNum) / parsePrice(oldNum)) * 100);
+    const showPct = document.getElementById('pmShowPct').checked;
+    p.promo = { old: toPriceStr(oldNum), new: toPriceStr(newNum), pct, showPct };
+    p.price = toPriceStr(newNum);
   } else {
     p.promo = null;
-    if (newPrice) p.price = newPrice;
+    if (newPriceNum) p.price = toPriceStr(newPriceNum);
   }
   markDirty();
   renderProducts('all');
   renderOverviewTab();
   document.getElementById('priceModal').remove();
-}
-
-function toggleBijus(on) {
-  const status = document.getElementById('bijusStatus');
-  if (status) status.textContent = on ? 'Ativo' : 'Inativo';
-  const chk = document.getElementById('bijusToggle');
-  if (chk) { chk.checked = on; chk.style.background = on ? '#8B4A3C' : '#F3EFE9'; }
-  let btn = document.getElementById('bijusHeroBtn');
-  if (on) {
-    if (!btn) {
-      btn = document.createElement('a');
-      btn.id = 'bijusHeroBtn';
-      btn.href = '/acessorios';
-      btn.target = '_blank';
-      btn.style.cssText = 'display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:10px 22px;border:1px solid rgba(255,215,0,.55);color:#FFD700;font-family:"Jost",sans-serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;background:rgba(255,215,0,.08);transition:background .3s;';
-      btn.innerHTML = '✨ Confira a coleção — My Favorite Looks';
-      btn.onmouseover = () => btn.style.background = 'rgba(255,215,0,.18)';
-      btn.onmouseout  = () => btn.style.background = 'rgba(255,215,0,.08)';
-      const heroContent = document.querySelector('.hero-content');
-      if (heroContent) heroContent.appendChild(btn);
-    }
-  } else {
-    if (btn) btn.remove();
-  }
-  markDirty();
 }
 
 function togAvail(id) {
@@ -2095,7 +2312,9 @@ function openBagModal(id, source) {
   document.getElementById('modalPhoto').style.display = p.img ? 'block' : 'none';
   document.getElementById('modalName').textContent  = p.name;
   document.getElementById('modalCat').textContent   = CATS[p.cat] || '';
-  document.getElementById('modalPrice').textContent = p.price;
+  document.getElementById('modalPrice').innerHTML = (p.promo)
+    ? `<span style="text-decoration:line-through;color:#B5544A;font-size:15px;margin-right:8px;font-weight:600;">${p.promo.old}</span><span style="color:var(--rose-dark);">${p.promo.new}</span>${(p.promo.showPct && p.promo.pct) ? `<span style="display:inline-block;margin-left:10px;vertical-align:middle;background:#B5544A;color:#fff;font-size:11px;font-weight:700;font-family:'Jost',sans-serif;letter-spacing:.04em;padding:3px 8px;border-radius:3px;">-${p.promo.pct}%</span>` : ''}`
+    : p.price;
   document.getElementById('modalWa').href = waMsg(p.name);
   document.getElementById('modalWa').onclick = () => trackWa(id);
   const m = document.getElementById('bagModal');
@@ -2192,6 +2411,7 @@ closeA = function() {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderProducts('all');
 renderFavCarousel();
+applyLooksButtonVisibility();
 </script>
 
 <!-- ═══ BAG DETAIL MODAL ════════════════════════════════════════════════════ -->
