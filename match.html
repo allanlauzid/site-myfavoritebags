@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>My Favorite Match — Recife</title>
+<meta name="description" content="Deslize e descubra as peças que combinam com você. My Favorite Bags & My Favorite Looks — Recife.">
+<script>
+  // Bloqueio/visibilidade controlado pelo painel central do My Favorite Bags (localStorage compartilhado)
+  // ?preview=1 permite que o admin edite/visualize a página mesmo bloqueada, sem publicar.
+  const _isPreview = new URLSearchParams(location.search).get('preview') === '1';
+  if (!_isPreview && (localStorage.getItem('mfb_match_state') || 'locked') === 'locked') {
+    location.replace('index.html');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rose:        #B68B73;
+  --rose-dark:   #915E48;
+  --rose-deep:   #653C2B;
+  --bg:          #F3EFE9;
+  --bg2:         #E7E2D9;
+  --text:        #653C2B;
+  --text-muted:  #AE9888;
+  --line:        rgba(182,139,115,.22);
+  --ease:        cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  font-family:'Jost',sans-serif;
+  background:#1C120B; /* área neutra escura, paleta do site */
+  color:#fff;
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* ─── FRAME 9:16 fixo, mesmo em desktop ─────────────────────────────── */
+.frame {
+  position:relative;
+  width:100vw; height:100vh;
+  max-width:calc(100vh * 9 / 16);
+  max-height:calc(100vw * 16 / 9);
+  margin:0 auto;
+  background:linear-gradient(160deg,#2A1B10 0%,#1C120B 100%);
+  overflow:hidden;
+  display:flex; flex-direction:column;
+  box-shadow:0 0 60px rgba(0,0,0,.5);
+}
+@media(min-width:600px){
+  .frame{ border-radius:22px; box-shadow:0 20px 80px rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.06); }
+}
+
+/* ─── TOP BAR ────────────────────────────────────────────────────────── */
+.m-top {
+  padding:18px 18px 12px; flex-shrink:0;
+  display:flex; flex-direction:column; gap:10px;
+}
+.m-brand {
+  display:flex; align-items:center; justify-content:space-between;
+}
+.m-brand-t {
+  font-family:'Cormorant Garamond',serif; font-size:19px; letter-spacing:.06em; color:#fff;
+}
+.m-brand-t em{ color:var(--rose); font-style:italic; }
+.m-close {
+  color:rgba(255,255,255,.5); text-decoration:none; font-size:13px;
+  letter-spacing:.14em; text-transform:uppercase;
+}
+.m-filters { display:flex; gap:6px; }
+.mf-pill {
+  font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  padding:7px 14px; border-radius:20px; cursor:pointer;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.55); font-family:'Jost',sans-serif; transition:all .3s;
+}
+.mf-pill.on { background:var(--rose-dark); border-color:var(--rose-dark); color:#fff; }
+
+/* ─── CARD STACK ─────────────────────────────────────────────────────── */
+.m-stage {
+  position:relative; flex:1; margin:0 14px 14px; border-radius:18px; overflow:hidden;
+  background:var(--bg2);
+}
+.m-card {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  transition:transform .35s var(--ease), opacity .35s var(--ease);
+  will-change:transform;
+}
+.m-card-visual {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:var(--bg2);
+}
+.m-card-visual img { width:100%; height:100%; object-fit:cover; }
+.m-card-info {
+  position:relative; z-index:2; padding:22px 20px 26px;
+  background:linear-gradient(to top, rgba(20,12,7,.88), rgba(20,12,7,.15) 70%, transparent);
+}
+.m-card-brand {
+  display:inline-block; font-size:8px; letter-spacing:.22em; text-transform:uppercase;
+  padding:4px 10px; border-radius:20px; margin-bottom:8px;
+  background:rgba(255,255,255,.14); color:#fff;
+}
+.m-card-name { font-family:'Cormorant Garamond',serif; font-size:24px; color:#fff; margin-bottom:2px; }
+.m-card-cat { font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.55); margin-bottom:8px; }
+.m-card-price { font-family:'Cormorant Garamond',serif; font-size:19px; color:#F0C9A8; }
+
+.m-card.leaving-left  { transform:translateX(-140%) rotate(-12deg); opacity:0; }
+.m-card.leaving-right { transform:translateX(140%) rotate(12deg); opacity:0; }
+
+.m-empty {
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; text-align:center; padding:0 30px; color:rgba(255,255,255,.6);
+}
+.m-empty-t { font-family:'Cormorant Garamond',serif; font-size:22px; color:#fff; }
+
+/* ─── ACTION BUTTONS ─────────────────────────────────────────────────── */
+.m-actions {
+  flex-shrink:0; display:flex; align-items:center; justify-content:center; gap:26px;
+  padding:6px 0 26px;
+}
+.m-abtn {
+  width:58px; height:58px; border-radius:50%; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; transition:transform .2s var(--ease);
+}
+.m-abtn:active{ transform:scale(.88); }
+.m-pass { background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.18); }
+.m-like { background:var(--rose-dark); color:#fff; box-shadow:0 6px 22px rgba(145,94,72,.5); }
+
+/* ─── MATCH OVERLAY ──────────────────────────────────────────────────── */
+.m-ov {
+  position:absolute; inset:0; z-index:10; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(15,9,5,.92); backdrop-filter:blur(4px);
+  padding:30px;
+}
+.m-ov.open{ display:flex; }
+.m-ov-card { text-align:center; }
+.m-ov-emoji{ font-size:44px; margin-bottom:10px; }
+.m-ov-t { font-family:'Cormorant Garamond',serif; font-size:26px; color:#fff; margin-bottom:6px; }
+.m-ov-s { font-size:12px; color:rgba(255,255,255,.55); margin-bottom:22px; line-height:1.6; }
+.m-ov-list { max-height:160px; overflow-y:auto; margin-bottom:22px; text-align:left; }
+.m-ov-item { font-size:12px; color:rgba(255,255,255,.8); padding:5px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+.m-ov-btn {
+  display:block; width:100%; padding:13px; border-radius:10px; margin-bottom:10px;
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
+  font-family:'Jost',sans-serif; font-weight:600; text-decoration:none; border:none;
+}
+.m-ov-wa { background:#25D366; color:#0b3d20; }
+.m-ov-continue { background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.2); }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="m-top">
+    <div class="m-brand">
+      <span class="m-brand-t">My Favorite <em>Match</em></span>
+      <a href="index.html" class="m-close">Sair</a>
+    </div>
+    <div class="m-filters" id="mFilters">
+      <button class="mf-pill" data-f="all" onclick="setFilter('all')">Todos</button>
+      <button class="mf-pill" data-f="bags" onclick="setFilter('bags')">Só Bags</button>
+      <button class="mf-pill" data-f="looks" onclick="setFilter('looks')">Só Looks</button>
+    </div>
+  </div>
+
+  <div class="m-stage" id="mStage"></div>
+
+  <div class="m-actions">
+    <button class="m-abtn m-pass" onclick="decide('pass')" aria-label="Passar">✕</button>
+    <button class="m-abtn m-like" onclick="decide('like')" aria-label="Curtir">♥</button>
+  </div>
+
+  <div class="m-ov" id="mOv">
+    <div class="m-ov-card">
+      <div class="m-ov-emoji">💛</div>
+      <div class="m-ov-t" id="mOvTitle">Deu match!</div>
+      <p class="m-ov-s" id="mOvSub">Você já curtiu <b id="mOvCount">1</b> peça(s).</p>
+      <div class="m-ov-list" id="mOvList"></div>
+      <a class="m-ov-btn m-ov-wa" id="mOvWa" href="#" target="_blank">Falar no WhatsApp</a>
+      <button class="m-ov-btn m-ov-continue" onclick="closeMatchOverlay()">Continuar vendo catálogo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DADOS (cópia local — sem backend real ainda) ─────────────────────────────
+const BAGS_ITEMS = [
+  { name:'Tote Caramelo', cat:'Tote Bag', price:'R$ 389', brand:'bags', img:'webp/bolsa-09.webp' },
+  { name:'Hobo Esmeralda', cat:'Shoulder', price:'R$ 299', brand:'bags', img:'webp/bolsa-12.webp' },
+  { name:'Flap Matelassê', cat:'Clutch', price:'R$ 429', brand:'bags', img:'webp/bolsa-13.webp' },
+  { name:'Chain Crossbody Ruby', cat:'Shoulder', price:'R$ 379', brand:'bags', img:'webp/bolsa-14.webp' },
+  { name:'Valeria Top Handle', cat:'Mini Bag', price:'R$ 459', brand:'bags', img:'webp/bolsa-15.webp' },
+  { name:'Python Duffel', cat:'Tote Bag', price:'R$ 489', brand:'bags', img:'webp/bolsa-17.webp' },
+  { name:'Aura Paris Tote', cat:'Tote Bag', price:'R$ 339', brand:'bags', img:'webp/bolsa-19.webp' },
+  { name:'Orba Hollo Bag', cat:'Shoulder', price:'R$ 289', brand:'bags', img:'webp/bolsa-21.webp' },
+];
+const LOOKS_ITEMS = [
+  { name:'Colar Aurora', cat:'Colar', price:'R$ 149', brand:'looks' },
+  { name:'Colar Camadas Dourado', cat:'Colar', price:'R$ 169', brand:'looks' },
+  { name:'Brinco Argola Fina', cat:'Brinco', price:'R$ 79', brand:'looks' },
+  { name:'Brinco Gota Cristal', cat:'Brinco', price:'R$ 99', brand:'looks' },
+  { name:'Pulseira Elos Dourados', cat:'Pulseira', price:'R$ 139', brand:'looks' },
+  { name:'Pulseira Riviera Cristal', cat:'Pulseira', price:'R$ 159', brand:'looks' },
+  { name:'Anel Solitário Cristal', cat:'Anel', price:'R$ 99', brand:'looks' },
+  { name:'Anel Duplo Dourado', cat:'Anel', price:'R$ 89', brand:'looks' },
+];
+const ALL_ITEMS = [...BAGS_ITEMS, ...LOOKS_ITEMS].map((it,i)=>({ ...it, id:i }));
+
+const BRAND_LABEL = { bags:'My Favorite Bags', looks:'My Favorite Looks' };
+const WA_NUMBER = '5581995966968';
+
+// Ícones SVG genéricos (fallback para itens sem foto — ex.: Looks)
+function placeholderSVG(cat) {
+  const c = '#B68B73';
+  const map = {
+    'Colar':    `<svg viewBox="0 0 200 220" width="46%" fill="none"><path d="M40 60Q100 130 160 60" stroke="${c}" stroke-width="2.4" fill="none"/><circle cx="100" cy="128" r="12" stroke="${c}" stroke-width="2.2" fill="none"/></svg>`,
+    'Brinco':   `<svg viewBox="0 0 200 220" width="46%" fill="none"><circle cx="100" cy="60" r="9" stroke="${c}" stroke-width="2.2" fill="none"/><path d="M78 100Q100 150 122 100" stroke="${c}" stroke-width="2.2" fill="none"/></svg>`,
+    'Pulseira': `<svg viewBox="0 0 200 220" width="46%" fill="none"><ellipse cx="100" cy="110" rx="70" ry="34" stroke="${c}" stroke-width="2.4" fill="none"/></svg>`,
+    'Anel':     `<svg viewBox="0 0 200 220" width="46%" fill="none"><circle cx="100" cy="130" r="42" stroke="${c}" stroke-width="2.6" fill="none"/><path d="M82 92L100 64L118 92Z" stroke="${c}" stroke-width="2.2" fill="none"/></svg>`,
+  };
+  return map[cat] || map['Colar'];
+}
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let filter = localStorage.getItem('mfb_match_default_filter') || 'all';
+let queue = [];
+let likes = [];
+
+function filteredItems() {
+  if (filter === 'bags') return ALL_ITEMS.filter(i => i.brand === 'bags');
+  if (filter === 'looks') return ALL_ITEMS.filter(i => i.brand === 'looks');
+  return ALL_ITEMS;
+}
+
+function setFilter(f) {
+  filter = f;
+  document.querySelectorAll('.mf-pill').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+  queue = shuffle(filteredItems().slice());
+  render();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function render() {
+  document.querySelectorAll('.mf-pill').forEach(b => b.classList.toggle('on', b.dataset.f === filter));
+  const stage = document.getElementById('mStage');
+  if (!queue.length) {
+    stage.innerHTML = `<div class="m-empty">
+      <div class="m-empty-t">Você viu tudo por aqui ✨</div>
+      <p>Volte mais tarde para novas peças ou troque o filtro.</p>
+    </div>`;
+    return;
+  }
+  const it = queue[0];
+  stage.innerHTML = `
+    <div class="m-card" id="mCard">
+      <div class="m-card-visual">
+        ${it.img ? `<img src="${it.img}" alt="${it.name}">` : placeholderSVG(it.cat)}
+      </div>
+      <div class="m-card-info">
+        <span class="m-card-brand">${BRAND_LABEL[it.brand]}</span>
+        <div class="m-card-name">${it.name}</div>
+        <div class="m-card-cat">${it.cat}</div>
+        <div class="m-card-price">${it.price}</div>
+      </div>
+    </div>`;
+}
+
+function decide(action) {
+  if (!queue.length) return;
+  const it = queue[0];
+  const card = document.getElementById('mCard');
+  if (card) card.classList.add(action === 'like' ? 'leaving-right' : 'leaving-left');
+
+  setTimeout(() => {
+    queue.shift();
+    if (action === 'like') {
+      likes.push(it);
+      render();
+      openMatchOverlay();
+    } else {
+      render();
+    }
+  }, 260);
+}
+
+function openMatchOverlay() {
+  document.getElementById('mOvCount').textContent = likes.length;
+  document.getElementById('mOvSub').innerHTML = `Você já curtiu <b>${likes.length}</b> peça${likes.length !== 1 ? 's' : ''}.`;
+  document.getElementById('mOvList').innerHTML = likes.map(l => `<div class="m-ov-item">${l.name} — ${l.price} <span style="opacity:.5;">(${BRAND_LABEL[l.brand]})</span></div>`).join('');
+  const names = likes.map(l => l.name).join(', ');
+  const msg = `Olá! Dei match em algumas peças no My Favorite Match: ${names}. Pode me dar mais informações?`;
+  document.getElementById('mOvWa').href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  document.getElementById('mOv').classList.add('open');
+}
+function closeMatchOverlay() {
+  document.getElementById('mOv').classList.remove('open');
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+document.querySelectorAll('.mf-pill').forEach(b => b.classList.toggle('on', b.dataset.f === filter));
+queue = shuffle(filteredItems().slice());
+render();
+</script>
+
+</body>
+</html>

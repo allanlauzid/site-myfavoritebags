@@ -3,25 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Favorite Bags — Recife</title>
-<meta name="description" content="Bolsas premium selecionadas para mulheres que sabem o que querem. Recife, PE.">
+<title>My Favorite Looks — Recife</title>
+<meta name="description" content="Acessórios selecionados para compor o seu look. Recife, PE.">
+<script>
+  // Bloqueio/visibilidade controlado pelo painel central do My Favorite Bags (localStorage compartilhado)
+  // ?preview=1 permite que o admin edite/visualize a página mesmo bloqueada, sem publicar.
+  const _isPreview = new URLSearchParams(location.search).get('preview') === '1';
+  if (!_isPreview && (localStorage.getItem('mfb_looks_state') || 'locked') === 'locked') {
+    location.replace('index.html');
+  }
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 
 /* ─── TOKENS ──────────────────────────────────────────────────────────────── */
 :root {
-  --rose:        #B68B73;
-  --rose-dark:   #915E48;
-  --rose-deep:   #653C2B;
-  --bg:          #F3EFE9;
-  --bg2:         #E7E2D9;
+  --rose:        #D8A7B1;
+  --rose-dark:   #C48793;
+  --rose-deep:   #4B1E3F;
+  --bg:          #F7F5F2;
+  --bg2:         #C9C7C2;
   --white:       #FFFFFF;
-  --text:        #653C2B;   /* headings */
-  --text-mid:    #8C6555;   /* subheadings */
-  --text-body:   #7A6055;   /* body */
-  --text-muted:  #AE9888;   /* captions */
-  --line:        rgba(182,139,115,.18);
+  --text:        #4B1E3F;   /* headings */
+  --text-mid:    #6B3B57;   /* subheadings */
+  --text-body:   #7A5468;   /* body */
+  --text-muted:  #A98A98;   /* captions */
+  --line:        rgba(216,167,177,.18);
   --ease:        cubic-bezier(.4,0,.2,1);
 }
 
@@ -58,7 +66,7 @@ nav {
   transition:background .5s, padding .4s, border-color .5s;
 }
 nav.s {
-  background:rgba(243,239,233,.95);
+  background:rgba(236,235,232,.95);
   backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
   padding:16px 64px;
   border-bottom:1px solid var(--line);
@@ -100,7 +108,7 @@ nav.s .nav-links a:hover { color:var(--text); }
 /* CTA button */
 .nav-cta {
   font-size:10px; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--rose); border:1px solid rgba(182,139,115,.5);
+  color:var(--rose); border:1px solid rgba(216,167,177,.5);
   padding:10px 24px; font-weight:400;
   transition:background .3s, color .3s, border-color .3s;
   white-space:nowrap;
@@ -122,10 +130,10 @@ nav.s .nav-links a:hover { color:var(--text); }
 .hero-slide.active { opacity:1; }
 
 /* Clean dark warm tones — no heavy gradients */
-.hs1 { background:linear-gradient(160deg, #3E2318 0%, #2A1610 100%); }
-.hs2 { background:linear-gradient(160deg, #2C1A10 0%, #1E1009 100%); }
-.hs3 { background:linear-gradient(160deg, #341E12 0%, #231309 100%); }
-.hs4 { background:linear-gradient(160deg, #2E1B10 0%, #200F08 100%); }
+.hs1 { background:linear-gradient(160deg, #1B2436 0%, #0C111D 100%); }
+.hs2 { background:linear-gradient(160deg, #171F2E 0%, #090D16 100%); }
+.hs3 { background:linear-gradient(160deg, #202B40 0%, #0E141F 100%); }
+.hs4 { background:linear-gradient(160deg, #192237 0%, #0A0E17 100%); }
 
 /* Subtle texture — thin diagonal lines, very low opacity */
 .hs-tex {
@@ -133,16 +141,16 @@ nav.s .nav-links a:hover { color:var(--text); }
   background-image:repeating-linear-gradient(
     135deg,
     transparent 0px, transparent 28px,
-    rgba(182,139,115,.03) 28px, rgba(182,139,115,.03) 29px
+    rgba(216,167,177,.03) 28px, rgba(216,167,177,.03) 29px
   );
 }
 
 .hero-veil {
   position:absolute; inset:0;
   background:linear-gradient(100deg,
-    rgba(30,16,9,.80) 0%,
-    rgba(30,16,9,.42) 45%,
-    rgba(30,16,9,.06) 100%);
+    rgba(17,24,39,.82) 0%,
+    rgba(17,24,39,.44) 45%,
+    rgba(17,24,39,.06) 100%);
 }
 .hero-fade-bottom {
   position:absolute; bottom:0; left:0; right:0; height:280px;
@@ -312,7 +320,7 @@ nav.s .nav-links a:hover { color:var(--text); }
 /* Sold-out */
 .sold-ov {
   position:absolute; inset:0;
-  background:rgba(243,239,233,.78);
+  background:rgba(236,235,232,.78);
   display:flex; align-items:center; justify-content:center;
 }
 .sold-badge {
@@ -325,7 +333,7 @@ nav.s .nav-links a:hover { color:var(--text); }
 .pcard-action {
   position:absolute; bottom:0; left:0; right:0;
   padding:20px;
-  background:linear-gradient(to top, rgba(101,60,43,.85), transparent);
+  background:linear-gradient(to top, rgba(75,30,63,.85), transparent);
   transform:translateY(101%);
   transition:transform .5s var(--ease);
   display:flex; justify-content:center;
@@ -482,9 +490,9 @@ nav.s .nav-links a:hover { color:var(--text); }
 }
 .ithumb::after {
   content:''; position:absolute; inset:0;
-  background:rgba(101,60,43,0); transition:background .4s;
+  background:rgba(75,30,63,0); transition:background .4s;
 }
-.ithumb:hover::after { background:rgba(101,60,43,.32); }
+.ithumb:hover::after { background:rgba(75,30,63,.32); }
 .ithumb-ico {
   position:absolute; inset:0;
   display:flex; align-items:center; justify-content:center; opacity:.22;
@@ -525,13 +533,13 @@ footer {
 /* ─── WA FLOAT ────────────────────────────────────────────────────────────── */
 .wa-float {
   position:fixed; bottom:32px; right:32px; z-index:300;
-  width:54px; height:54px; background:#8B4A3C; border-radius:50%;
+  width:54px; height:54px; background:#C48793; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 0 14px 3px rgba(37,211,102,.3), 0 4px 16px rgba(139,74,60,.28);
+  box-shadow:0 0 14px 3px rgba(37,211,102,.3), 0 4px 16px rgba(196,135,147,.28);
   animation:waf 3.2s ease-in-out infinite;
   transition:transform .3s var(--ease), box-shadow .3s;
 }
-.wa-float:hover { animation:none; transform:scale(1.1); box-shadow:0 0 14px 3px rgba(37,211,102,.3), 0 8px 24px rgba(139,74,60,.45); }
+.wa-float:hover { animation:none; transform:scale(1.1); box-shadow:0 0 14px 3px rgba(37,211,102,.3), 0 8px 24px rgba(196,135,147,.45); }
 @keyframes waf { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
 .wa-tip {
   position:absolute; right:62px; top:50%; transform:translateY(-50%);
@@ -598,19 +606,15 @@ footer {
 }
 .admin-tabs::-webkit-scrollbar { display:none; }
 .atab {
-  flex:1; text-align:center;
+  flex:1; text-align:center; white-space:nowrap;
   font-size:9px; letter-spacing:.2em; text-transform:uppercase;
   padding:12px 16px; background:none; border:none;
   color:var(--text-muted); cursor:pointer; font-family:'Jost',sans-serif;
   border-bottom:2px solid transparent; margin-bottom:-1px; transition:all .3s;
-  white-space:nowrap;
 }
 .atab.on { color:var(--text); border-bottom-color:var(--rose-dark); }
 
 .apane { display:none; }
-#favBanner img { transition: opacity 0.5s ease; }
-.fav-slide-fade { animation: favFade 0.5s ease; }
-@keyframes favFade { from{opacity:0;transform:translateX(18px)} to{opacity:1;transform:translateX(0)} }
 .apane.on { display:block; }
 
 .frow { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
@@ -636,8 +640,8 @@ footer {
   display:flex; align-items:center;
   padding:14px 10px; border-bottom:1px solid var(--line);
 }
-.arow:nth-child(even) { background:rgba(182,139,115,.06); }
-.arow:nth-child(odd)  { background:rgba(243,239,233,.55); }
+.arow:nth-child(even) { background:rgba(216,167,177,.06); }
+.arow:nth-child(odd)  { background:rgba(236,235,232,.55); }
 .arow-btns { overflow-x:auto; display:flex; align-items:center; gap:6px; flex:1; min-width:0; padding-left:6px; }
 /* esconder scrollbar mas manter funcionalidade */
 .arow-btns::-webkit-scrollbar { display:none; }
@@ -650,11 +654,11 @@ footer {
 #alist input[type=checkbox] {
   appearance:none; -webkit-appearance:none;
   width:16px; height:16px; flex-shrink:0;
-  border:1.5px solid #653C2B; border-radius:3px;
-  background:#F3EFE9; cursor:pointer;
+  border:1.5px solid #4B1E3F; border-radius:3px;
+  background:#ECEBE8; cursor:pointer;
   transition: background .2s, border-color .2s;
 }
-#alist input[type=checkbox]:checked { background:#8B4A3C; border-color:#8B4A3C; }
+#alist input[type=checkbox]:checked { background:#C48793; border-color:#C48793; }
 .athumb {
   width:44px; height:44px; background:var(--bg2); flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
@@ -663,7 +667,7 @@ footer {
 .aname { font-family:'Cormorant Garamond',serif; font-size:17px; color:var(--text); flex:1; }
 .astatus { font-size:8px; letter-spacing:.2em; text-transform:uppercase; padding:4px 12px; }
 .sa { background:rgba(37,211,102,.1); color:#1a7a3e; }
-.ss { background:rgba(182,139,115,.12); color:var(--text-muted); }
+.ss { background:rgba(216,167,177,.12); color:var(--text-muted); }
 .aacts { display:flex; gap:7px; }
 .aabtn {
   font-size:8px; letter-spacing:.14em; text-transform:uppercase;
@@ -779,7 +783,7 @@ footer {
   .hero-title { font-size:clamp(38px,11vw,60px); }
   .hero-sub { display:none; }
   .hero-btn { margin-top:8px; }
-
+  
   .pgrid { grid-template-columns:1fr 1fr; gap:16px 10px; }
   .pname { font-size:16px; }
   .pprice { font-size:15px; }
@@ -818,19 +822,6 @@ footer {
   .nav-cta { display:none; }
 }
 
-/* My Favorite Looks link: header pill on desktop, hero pill on mobile */
-@media(min-width:769px){
-  #bijusHeroBtn { display:none !important; }
-}
-@media(max-width:768px){
-  #navLooksBtn { display:none !important; }
-  #bijusHeroBtn {
-    right:auto !important; left:50% !important; top:auto !important; bottom:36px !important;
-    transform:translateX(-50%) !important; padding:12px 22px !important; font-size:12px !important;
-    white-space:nowrap;
-  }
-}
-
 /* Touch devices: disable hover effects that need mouse */
 @media(hover:none){
   .pcard-action { display:none; }
@@ -864,7 +855,7 @@ nav.s .nav-logo-img { filter: none; }
   <a href="#" class="nav-logo">
     <img src="webp/logo-ou-decoracao-01.webp" alt="MFB" class="nav-logo-img" style="width:38px;height:38px;object-fit:contain;">
     <div class="nav-words">
-      <span class="nav-words-main">My Favorite Bags</span>
+      <span class="nav-words-main">My Favorite Looks</span>
       <span class="nav-words-sub">Recife</span>
     </div>
   </a>
@@ -874,26 +865,25 @@ nav.s .nav-logo-img { filter: none; }
     <li><a href="#sobre">Sobre</a></li>
     <li><a href="https://www.instagram.com/myfavorite.bagsrecife?igsh=MTRlOXU3cTE3cnVvaQ==" target="_blank">Instagram</a></li>
   </ul>
-  <a href="looks.html" id="navLooksBtn" style="display:none;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;border:1.5px solid #B8896F;color:#24343C;font-family:'Cormorant Garamond',serif;font-size:12.5px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;background:#F6F1EC;margin-right:18px;transition:background .3s, box-shadow .3s;">My Favorite Looks <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
   <a href="https://wa.me/5581995966968" target="_blank" class="nav-cta">Fale Conosco</a>
 </nav>
 
 <!-- ═══ HERO ════════════════════════════════════════════════════════════════ -->
 <section class="hero" id="hero">
   <div id="slides">
-    <div class="hero-slide active" style="background:#2A1F18;">
+    <div class="hero-slide active" style="background:#111827;">
       <div class="hs-tex"></div>
       <div id="heroSlideImg-0" style="position:absolute;inset:0;background-image:url('webp/bolsa-02.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
-    <div class="hero-slide" style="background:#2A1F18;">
+    <div class="hero-slide" style="background:#111827;">
       <div class="hs-tex"></div>
       <div id="heroSlideImg-1" style="position:absolute;inset:0;background-image:url('webp/bolsa-03.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
-    <div class="hero-slide" style="background:#2A1F18;">
+    <div class="hero-slide" style="background:#111827;">
       <div class="hs-tex"></div>
       <div id="heroSlideImg-2" style="position:absolute;inset:0;background-image:url('webp/bolsa-04.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
-    <div class="hero-slide" style="background:#2A1F18;">
+    <div class="hero-slide" style="background:#111827;">
       <div class="hs-tex"></div>
       <div id="heroSlideImg-3" style="position:absolute;inset:0;background-image:url('webp/bolsa-05.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
@@ -906,9 +896,9 @@ nav.s .nav-logo-img { filter: none; }
     <svg viewBox="0 0 200 240" fill="none" width="280" height="320">
       <defs>
         <linearGradient id="hbg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"  stop-color="#F3EFE9" stop-opacity=".9"/>
-          <stop offset="50%" stop-color="#B68B73" stop-opacity=".6"/>
-          <stop offset="100%" stop-color="#915E48" stop-opacity=".4"/>
+          <stop offset="0%"  stop-color="#ECEBE8" stop-opacity=".9"/>
+          <stop offset="50%" stop-color="#D8A7B1" stop-opacity=".6"/>
+          <stop offset="100%" stop-color="#C48793" stop-opacity=".4"/>
         </linearGradient>
       </defs>
       <path d="M55 82Q55 50 100 50Q145 50 145 82" stroke="url(#hbg)" stroke-width="2.5" fill="none"/>
@@ -924,14 +914,15 @@ nav.s .nav-logo-img { filter: none; }
   <div class="hero-content">
     <p class="hero-eyebrow">Recife · Coleção Exclusiva</p>
 
-    <!-- Hero logo mark --><img src="webp/bolsa-06.webp" alt="My Favorite Bags" class="hero-logo-img">
+    <!-- Hero logo mark --><img src="webp/bolsa-06.webp" alt="My Favorite Looks" class="hero-logo-img">
 
     <h1 class="hero-title">
-      Sua bolsa<br>
-      <em>favorita</em>
+      Seu look<br>
+      <em>completo</em>
       <span style="display:block;">está aqui.</span>
     </h1>
-    <p class="hero-sub">Peças selecionadas com curadoria especial para mulheres que expressam estilo com autenticidade.</p>
+    <p class="hero-sub">Acessórios selecionados com curadoria especial para compor o seu estilo com autenticidade.</p>
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:10px 22px;border:1px solid rgba(216,167,177,.55);color:#D8A7B1;font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;background:rgba(216,167,177,.08);transition:background .3s;" onmouseover="this.style.background='rgba(216,167,177,.18)'" onmouseout="this.style.background='rgba(216,167,177,.08)'">✨ Confira a coleção — My Favorite Bags</a>
   </div>
 
   <div class="h-dots" id="hdots">
@@ -949,56 +940,20 @@ nav.s .nav-logo-img { filter: none; }
 <!-- ═══ MARQUEE ══════════════════════════════════════════════════════════════ -->
 <div class="marquee-strip">
   <div class="m-track">
-    <span class="m-item">Bolsas Premium <span class="m-sep">✦</span></span>
+    <span class="m-item">Acessórios Premium <span class="m-sep">✦</span></span>
     <span class="m-item">Curadoria Exclusiva <span class="m-sep">✦</span></span>
     <span class="m-item">Recife · PE <span class="m-sep">✦</span></span>
     <span class="m-item">Atendimento via WhatsApp <span class="m-sep">✦</span></span>
     <span class="m-item">Estilo sem Esforço <span class="m-sep">✦</span></span>
-    <span class="m-item">My Favorite Bags <span class="m-sep">✦</span></span>
-    <span class="m-item">Bolsas Premium <span class="m-sep">✦</span></span>
+    <span class="m-item">My Favorite Looks <span class="m-sep">✦</span></span>
+    <span class="m-item">Acessórios Premium <span class="m-sep">✦</span></span>
     <span class="m-item">Curadoria Exclusiva <span class="m-sep">✦</span></span>
     <span class="m-item">Recife · PE <span class="m-sep">✦</span></span>
     <span class="m-item">Atendimento via WhatsApp <span class="m-sep">✦</span></span>
     <span class="m-item">Estilo sem Esforço <span class="m-sep">✦</span></span>
-    <span class="m-item">My Favorite Bags <span class="m-sep">✦</span></span>
+    <span class="m-item">My Favorite Looks <span class="m-sep">✦</span></span>
   </div>
 </div>
-
-<!-- ═══ FAVORITAS DO MOMENTO ════════════════════════════════════════════════ -->
-<section id="favoritos" style="padding:80px 7%;background:var(--bg);">
-  <div class="reveal" style="text-align:center;margin-bottom:48px;">
-    <p class="eyebrow">Seleção Especial</p>
-    <h2 class="section-title">Favoritas <em>do Momento</em></h2>
-  </div>
-  <div class="reveal reveal-d2" style="max-width:700px;margin:0 auto;position:relative;">
-    <div id="favBannerWrap" style="display:none;">
-      <div id="favBanner"></div>
-      <button onclick="favSlide(-1)" style="position:absolute;left:-20px;top:40%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:20px;z-index:2;display:flex;align-items:center;justify-content:center;">&#8249;</button>
-      <button onclick="favSlide(1)"  style="position:absolute;right:-20px;top:40%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:20px;z-index:2;display:flex;align-items:center;justify-content:center;">&#8250;</button>
-    </div>
-    <p id="favEmpty" style="text-align:center;color:var(--text-muted);font-size:13px;display:none;">Nenhuma bolsa marcada como favorita ainda.</p>
-  </div>
-</section>
-
-<!-- ═══ INSTAGRAM ═══════════════════════════════════════════════════════════ -->
-<section class="insta" id="instagram">
-  <div class="insta-head reveal">
-    <p class="eyebrow">@myfavorite.bagsrecife</p>
-    <h2 class="section-title">Siga no <em>Instagram</em></h2>
-  </div>
-  <div class="reveal reveal-d2">
-    <behold-widget feed-id="9XIkCUhCFHqh7CJWgVC0"></behold-widget>
-    <script>
-      (() => {
-        const d=document,s=d.createElement("script");s.type="module";
-        s.src="https://w.behold.so/widget.js";d.head.append(s);
-      })();
-    </script>
-  </div>
-  <a href="https://www.instagram.com/myfavorite.bagsrecife?igsh=MTRlOXU3cTE3cnVvaQ==" target="_blank" class="insta-link reveal">
-    Ver perfil completo →
-  </a>
-</section>
 
 <!-- ═══ FOOTER ══════════════════════════════════════════════════════════════ -->
 
@@ -1013,11 +968,11 @@ nav.s .nav-logo-img { filter: none; }
   </div>
 
   <div class="filters reveal reveal-d2">
-    <button class="fpill on" onclick="fp('all',this)">Todas</button>
-    <button class="fpill"    onclick="fp('tote',this)">Tote Bags</button>
-    <button class="fpill"    onclick="fp('shoulder',this)">Shoulder</button>
-    <button class="fpill"    onclick="fp('clutch',this)">Clutch</button>
-    <button class="fpill"    onclick="fp('mini',this)">Mini Bags</button>
+    <button class="fpill on" onclick="fp('all',this)">Todos</button>
+    <button class="fpill"    onclick="fp('colar',this)">Colares</button>
+    <button class="fpill"    onclick="fp('brinco',this)">Brincos</button>
+    <button class="fpill"    onclick="fp('pulseira',this)">Pulseiras</button>
+    <button class="fpill"    onclick="fp('anel',this)">Anéis</button>
   </div>
 
   <div class="pgrid" id="pgrid"></div>
@@ -1026,10 +981,10 @@ nav.s .nav-logo-img { filter: none; }
 <!-- ═══ STATS ══════════════════════════════════════════════════════════════════ -->
 <div class="stats">
   <div class="stat reveal">
-    <div class="stat-n">Em cada detalhe, a sua escolha.</div>
+    <div class="stat-n">Em cada detalhe, o seu look.</div>
   </div>
   <div class="stat reveal reveal-d2">
-    <div class="stat-n">Assim nasce sua bolsa favorita.</div>
+    <div class="stat-n">Assim nasce o seu estilo favorito.</div>
   </div>
   <div class="stat reveal reveal-d3">
     <div class="stat-n">A arte de ser verdadeiramente única.</div>
@@ -1039,12 +994,12 @@ nav.s .nav-logo-img { filter: none; }
 <!-- ═══ ABOUT ══════════════════════════════════════════════════════════════════ -->
 <section class="about" id="sobre">
   <div class="about-visual reveal">
-    <!-- Large logo in about section --><img src="webp/bolsa-07.webp" alt="My Favorite Bags" class="about-logo-img">
+    <!-- Large logo in about section --><img src="webp/bolsa-07.webp" alt="My Favorite Looks" class="about-logo-img">
   </div>
   <div class="reveal reveal-d2">
     <p class="about-eyebrow">Nossa História</p>
     <h2 class="about-title">Curadoria com <em>olhar</em> feminino</h2>
-    <p class="about-body">Na My Favorite Bags, cada bolsa é escolhida com intenção. Não vendemos produto — apresentamos possibilidades de expressão. Nossa curadoria reúne peças que equilibram beleza, funcionalidade e exclusividade para a mulher pernambucana que vive a vida com presença.</p>
+    <p class="about-body">Na My Favorite Looks, cada peça é escolhida com intenção. Não vendemos produto — apresentamos possibilidades de expressão. Nossa curadoria reúne acessórios que equilibram beleza, versatilidade e exclusividade para a mulher pernambucana que vive a vida com presença.</p>
     <a href="https://wa.me/5581995966968" target="_blank" class="about-cta">
       Fale com a gente <span class="about-cta-arr">→</span>
     </a>
@@ -1056,13 +1011,13 @@ nav.s .nav-logo-img { filter: none; }
   <div class="foot-top">
     <div>
       <div class="foot-logo-row">
-        <img src="webp/bolsa-08.webp" alt="MFB" class="foot-logo-img">
+        <img src="webp/bolsa-08.webp" alt="MFL" class="foot-logo-img">
         <div>
-          <div class="foot-brand">My Favorite Bags</div>
+          <div class="foot-brand">My Favorite Looks</div>
           <div class="foot-brand-sub">Recife</div>
         </div>
       </div>
-      <p class="foot-body">Bolsas premium selecionadas com curadoria para a mulher que sabe o que quer e expressa isso com elegância.</p>
+      <p class="foot-body">Acessórios premium selecionados com curadoria para a mulher que sabe o que quer e expressa isso com elegância.</p>
     </div>
     <div>
       <div class="foot-col-h">Navegação</div>
@@ -1081,7 +1036,7 @@ nav.s .nav-logo-img { filter: none; }
     </div>
   </div>
   <div class="foot-bot" style="flex-direction:column;align-items:flex-start;gap:8px;">
-    <span class="foot-copy">© 2025 My Favorite Bags · Recife <span style="margin:0 10px;opacity:.4;">—</span> Todos os direitos reservados</span>
+    <span class="foot-copy">© 2025 My Favorite Looks · Recife <span style="margin:0 10px;opacity:.4;">—</span> Todos os direitos reservados</span>
     <button class="admin-trig" onclick="openA()">Admin</button>
   </div>
 </footer>
@@ -1103,7 +1058,7 @@ nav.s .nav-logo-img { filter: none; }
     </div>
     <div class="admin-tabs" id="adminTabs" style="display:none;">
       <button class="atab on" onclick="swTab('overview',this)">Visão Geral</button>
-      <button class="atab"    onclick="swTab('add',this)">Adicionar Bolsa</button>
+      <button class="atab"    onclick="swTab('add',this)">Adicionar Peça</button>
       <button class="atab"    onclick="swTab('manage',this)">Gerenciar Catálogo</button>
       <button class="atab"    onclick="swTab('banner',this)">Banner</button>
     </div>
@@ -1113,105 +1068,65 @@ nav.s .nav-logo-img { filter: none; }
 
 <script>
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const ROSE      = '#B68B73';
-const ROSE_DARK = '#915E48';
-const ROSE_DEEP = '#653C2B';
-const BG        = '#F3EFE9';
-const BG2       = '#E7E2D9';
-const LINE      = 'rgba(182,139,115,.18)';
+const ROSE      = '#D8A7B1';
+const ROSE_DARK = '#C48793';
+const ROSE_DEEP = '#4B1E3F';
+const BG        = '#F7F5F2';
+const BG2       = '#C9C7C2';
+const LINE      = 'rgba(216,167,177,.18)';
 const HERO_SLIDES = ['webp/bolsa-02.webp','webp/bolsa-03.webp','webp/bolsa-04.webp','webp/bolsa-05.webp'];
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
 let products = [
-  { id:1, name:'Tote Caramelo', cat:'tote', price:'R$ 389', avail:true, isNew:true, favorite:false, img:'webp/bolsa-09.webp' },
-  { id:2, name:'Tote Vinho', cat:'tote', price:'R$ 349', avail:true, isNew:true, favorite:false, img:'webp/bolsa-10.webp' },
-  { id:3, name:'Tote Vermelho', cat:'tote', price:'R$ 319', avail:true, isNew:true, favorite:false, img:'webp/bolsa-11.webp' },
-  { id:4, name:'Hobo Esmeralda', cat:'shoulder', price:'R$ 299', avail:true, isNew:true, favorite:false, img:'webp/bolsa-12.webp' },
-  { id:5, name:'Flap Matelassê', cat:'clutch', price:'R$ 429', avail:true, isNew:true, favorite:false, img:'webp/bolsa-13.webp' },
-  { id:6, name:'Chain Crossbody Ruby', cat:'shoulder', price:'R$ 379', avail:true, isNew:true, favorite:false, img:'webp/bolsa-14.webp' },
-  { id:7, name:'Valeria Top Handle', cat:'mini', price:'R$ 459', avail:true, isNew:false, favorite:false, img:'webp/bolsa-15.webp' },
-  { id:8, name:'Celestial Top Handle', cat:'mini', price:'R$ 419', avail:true, isNew:false, favorite:false, img:'webp/bolsa-16.webp' },
-  { id:9, name:'Python Duffel', cat:'tote', price:'R$ 489', avail:true, isNew:false, favorite:false, img:'webp/bolsa-17.webp' },
-  { id:10, name:'Duffel Jeans', cat:'tote', price:'R$ 369', avail:true, isNew:false, favorite:false, img:'webp/bolsa-18.webp' },
-  { id:11, name:'Aura Paris Tote', cat:'tote', price:'R$ 339', avail:true, isNew:false, favorite:false, img:'webp/bolsa-19.webp' },
-  { id:12, name:'Tote Borgonha', cat:'tote', price:'R$ 329', avail:true, isNew:false, favorite:false, img:'webp/bolsa-20.webp' },
-  { id:13, name:'Orba Hollo Bag', cat:'shoulder', price:'R$ 289', avail:true, isNew:false, favorite:false, img:'webp/bolsa-21.webp' },
-  { id:14, name:'Solara Hobo Esmeralda', cat:'shoulder', price:'R$ 309', avail:true, isNew:false, favorite:false, img:'webp/bolsa-22.webp' },
-  { id:15, name:'Mimadus Flap Black', cat:'clutch', price:'R$ 449', avail:true, isNew:false, favorite:false, img:'webp/bolsa-23.webp' },
-  { id:16, name:'Zenitn Chain Fluffy', cat:'shoulder', price:'R$ 399', avail:true, isNew:false, favorite:false, img:'webp/bolsa-24.webp' },
-  { id:17, name:'Valeria Leather Bag', cat:'mini', price:'R$ 359', avail:true, isNew:false, favorite:false, img:'webp/bolsa-25.webp' },
-  { id:18, name:'Celestial Handle', cat:'mini', price:'R$ 379', avail:true, isNew:false, favorite:false, img:'webp/bolsa-26.webp' },
-  { id:19, name:'Obaline Embossed', cat:'tote', price:'R$ 319', avail:true, isNew:false, favorite:false, img:'webp/bolsa-27.webp' },
-  { id:20, name:'Python Weekender', cat:'tote', price:'R$ 499', avail:true, isNew:false, favorite:false, img:'webp/bolsa-28.webp' },
-  { id:21, name:'Tote Vermelho Clássico', cat:'tote', price:'R$ 299', avail:true, isNew:false, favorite:false, img:'webp/bolsa-29.webp' },
-  { id:22, name:'Obea Hobo Azul', cat:'shoulder', price:'R$ 279', avail:true, isNew:false, favorite:false, img:'webp/bolsa-30.webp' },
-  { id:23, name:'Obea Hobo Bag', cat:'shoulder', price:'R$ 259', avail:true, isNew:false, favorite:false, img:'webp/bolsa-31.webp' },
-  { id:24, name:'Numelob Suede Emerald', cat:'shoulder', price:'R$ 319', avail:true, isNew:false, favorite:false, img:'webp/bolsa-32.webp' },
-  { id:25, name:'Lumina Embossed Tote', cat:'tote', price:'R$ 389', avail:true, isNew:false, favorite:false, img:'webp/bolsa-33.webp' },
-  { id:26, name:'Cseva Embossed Tve', cat:'tote', price:'R$ 369', avail:true, isNew:false, favorite:false, img:'webp/bolsa-34.webp' },
-  { id:27, name:'Gus.8 Piaci Crossbody', cat:'shoulder', price:'R$ 329', avail:true, isNew:false, favorite:false, img:'webp/bolsa-35.webp' },
-  { id:28, name:'Obaline Embossed Bag', cat:'tote', price:'R$ 299', avail:true, isNew:false, favorite:false, img:'webp/bolsa-36.webp' },
-  { id:29, name:'Python Tote Bege', cat:'tote', price:'R$ 459', avail:true, isNew:false, favorite:false, img:'webp/bolsa-37.webp' },
-  { id:30, name:'Celena Geometra Bag', cat:'tote', price:'R$ 419', avail:true, isNew:false, favorite:false, img:'webp/bolsa-38.webp' },
-  { id:31, name:'Python Tote Ouro', cat:'tote', price:'R$ 469', avail:true, isNew:false, favorite:false, img:'webp/bolsa-39.webp' },
-  { id:32, name:'Nova Python Tote', cat:'tote', price:'R$ 439', avail:true, isNew:false, favorite:false, img:'webp/bolsa-40.webp' },
-  { id:33, name:'Nova Embossed Python', cat:'tote', price:'R$ 409', avail:true, isNew:false, favorite:false, img:'webp/bolsa-41.webp' },
-  { id:34, name:'Zeiotti Embossed Tote', cat:'tote', price:'R$ 379', avail:true, isNew:false, favorite:false, img:'webp/bolsa-42.webp' },
-  { id:35, name:'Aurora Embossed Tole', cat:'tote', price:'R$ 389', avail:true, isNew:false, favorite:false, img:'webp/bolsa-43.webp' },
-  { id:36, name:'Eefelim Cheni Cross', cat:'shoulder', price:'R$ 349', avail:true, isNew:false, favorite:false, img:'webp/bolsa-44.webp' },
-  { id:37, name:'Celena Geometra Tog', cat:'tote', price:'R$ 419', avail:true, isNew:false, favorite:false, img:'webp/bolsa-45.webp' },
-  { id:38, name:'Python Handle Bege', cat:'tote', price:'R$ 479', avail:true, isNew:false, favorite:false, img:'webp/bolsa-46.webp' },
-  { id:39, name:'Tote Vinho Luxo', cat:'tote', price:'R$ 349', avail:true, isNew:false, favorite:false, img:'webp/bolsa-47.webp' },
-  { id:40, name:'Weekender Marrom', cat:'tote', price:'R$ 529', avail:true, isNew:false, favorite:false, img:'webp/bolsa-48.webp' },
-  { id:41, name:'Clutch Prata', cat:'clutch', price:'R$ 189', avail:true, isNew:false, favorite:false, img:'webp/bolsa-49.webp' },
-  { id:42, name:'Franjas Caramelo', cat:'shoulder', price:'R$ 269', avail:true, isNew:false, favorite:false, img:'webp/bolsa-50.webp' },
-  { id:43, name:'Solara Embossed Tote', cat:'tote', price:'R$ 409', avail:true, isNew:false, favorite:false, img:'webp/bolsa-51.webp' },
-  { id:44, name:'Orea Suede Hobo', cat:'shoulder', price:'R$ 289', avail:true, isNew:false, favorite:false, img:'webp/bolsa-52.webp' },
-  { id:45, name:'Lumina Leather Tote', cat:'tote', price:'R$ 359', avail:true, isNew:false, favorite:false, img:'webp/bolsa-53.webp' },
-  { id:46, name:'Cielo Sleek Crossbody', cat:'shoulder', price:'R$ 299', avail:true, isNew:false, favorite:false, img:'webp/bolsa-54.webp' },
-  { id:47, name:'Gpaline Geomebic Tosa', cat:'tote', price:'R$ 339', avail:true, isNew:false, favorite:false, img:'webp/bolsa-55.webp' },
-  { id:48, name:'Opaline Top Handle', cat:'mini', price:'R$ 389', avail:true, isNew:false, favorite:false, img:'webp/bolsa-56.webp' },
-  { id:49, name:'Tote Vinho Premium', cat:'tote', price:'R$ 319', avail:true, isNew:false, favorite:false, img:'webp/bolsa-57.webp' },
-  { id:50, name:'Tote Caramelo Luxo', cat:'tote', price:'R$ 359', avail:true, isNew:false, favorite:false, img:'webp/bolsa-58.webp' },
+  { id:1, name:'Colar Aurora', cat:'colar', price:'R$ 149', avail:true, isNew:true, promo:null },
+  { id:2, name:'Colar Camadas Dourado', cat:'colar', price:'R$ 169', avail:true, isNew:true, promo:null },
+  { id:3, name:'Colar Pérola Vintage', cat:'colar', price:'R$ 189', avail:true, isNew:false, promo:null },
+  { id:4, name:'Colar Choker Cristal', cat:'colar', price:'R$ 129', avail:true, isNew:false, promo:null },
+  { id:5, name:'Brinco Argola Fina', cat:'brinco', price:'R$ 79', avail:true, isNew:true, promo:null },
+  { id:6, name:'Brinco Gota Cristal', cat:'brinco', price:'R$ 99', avail:true, isNew:false, promo:null },
+  { id:7, name:'Brinco Pérola Clássico', cat:'brinco', price:'R$ 89', avail:true, isNew:false, promo:null },
+  { id:8, name:'Brinco Geométrico Dourado', cat:'brinco', price:'R$ 109', avail:true, isNew:false, promo:null },
+  { id:9, name:'Pulseira Elos Dourados', cat:'pulseira', price:'R$ 139', avail:true, isNew:true, promo:null },
+  { id:10, name:'Pulseira Riviera Cristal', cat:'pulseira', price:'R$ 159', avail:true, isNew:false, promo:null },
+  { id:11, name:'Pulseira Fina Trio', cat:'pulseira', price:'R$ 119', avail:true, isNew:false, promo:null },
+  { id:12, name:'Pulseira Charm Coração', cat:'pulseira', price:'R$ 129', avail:true, isNew:false, promo:null },
+  { id:13, name:'Anel Solitário Cristal', cat:'anel', price:'R$ 99', avail:true, isNew:true, promo:null },
+  { id:14, name:'Anel Duplo Dourado', cat:'anel', price:'R$ 89', avail:true, isNew:false, promo:null },
+  { id:15, name:'Anel Trançado Fino', cat:'anel', price:'R$ 79', avail:true, isNew:false, promo:null },
+  { id:16, name:'Anel Pedra Verde', cat:'anel', price:'R$ 109', avail:true, isNew:false, promo:null },
 ];
 
-const CATS = { tote:'Tote Bag', shoulder:'Shoulder', clutch:'Clutch', mini:'Mini Bag' };
+const CATS = { colar:'Colar', brinco:'Brinco', pulseira:'Pulseira', anel:'Anel' };
 
-// Bag SVG illustrations — using brand palette
+// Look SVG illustrations — using brand palette
 function bagSVG(cat, color) {
   const svgs = {
-    tote: `<svg viewBox="0 0 200 220" fill="none" width="108" height="120">
-      <path d="M58 84Q58 54 100 54Q142 54 142 84" stroke="${color}" stroke-width="2.2" fill="none"/>
-      <rect x="28" y="84" width="144" height="112" rx="8" fill="none" stroke="${color}" stroke-width="1.8"/>
-      <line x1="28" y1="114" x2="172" y2="114" stroke="${color}" stroke-width="1" opacity=".4"/>
-      <circle cx="100" cy="99" r="6" stroke="${color}" stroke-width="1.8" fill="none"/>
-      <line x1="100" y1="105" x2="100" y2="114" stroke="${color}" stroke-width="1.2"/>
+    colar: `<svg viewBox="0 0 200 220" fill="none" width="108" height="120">
+      <path d="M40 60Q100 130 160 60" stroke="${color}" stroke-width="2.2" fill="none"/>
+      <circle cx="100" cy="128" r="12" stroke="${color}" stroke-width="2" fill="none"/>
+      <circle cx="40" cy="60" r="4" fill="${color}"/>
+      <circle cx="160" cy="60" r="4" fill="${color}"/>
     </svg>`,
-    shoulder: `<svg viewBox="0 0 200 220" fill="none" width="108" height="120">
-      <path d="M42 100L32 190Q32 198 40 198L160 198Q168 198 168 190L158 100Z" stroke="${color}" stroke-width="1.8" fill="none"/>
-      <path d="M70 100Q70 66 100 66Q130 66 130 100" stroke="${color}" stroke-width="1.8" fill="none"/>
-      <line x1="32" y1="150" x2="168" y2="150" stroke="${color}" stroke-width=".9" opacity=".38"/>
-      <ellipse cx="100" cy="136" rx="18" ry="12" stroke="${color}" stroke-width="1.1" fill="none" opacity=".45"/>
+    brinco: `<svg viewBox="0 0 200 220" fill="none" width="108" height="120">
+      <circle cx="100" cy="60" r="8" stroke="${color}" stroke-width="2" fill="none"/>
+      <line x1="100" y1="68" x2="100" y2="100" stroke="${color}" stroke-width="1.6"/>
+      <path d="M78 100Q100 150 122 100" stroke="${color}" stroke-width="2" fill="none"/>
     </svg>`,
-    clutch: `<svg viewBox="0 0 200 220" fill="none" width="108" height="120">
-      <rect x="22" y="78" width="156" height="92" rx="9" fill="none" stroke="${color}" stroke-width="1.8"/>
-      <path d="M52 78Q52 48 100 48Q148 48 148 78" stroke="${color}" stroke-width="1.8" fill="none"/>
-      <line x1="22" y1="108" x2="178" y2="108" stroke="${color}" stroke-width=".9" opacity=".4"/>
-      <rect x="84" y="99" width="32" height="16" rx="4" stroke="${color}" stroke-width="1.3" fill="none"/>
+    pulseira: `<svg viewBox="0 0 200 220" fill="none" width="108" height="120">
+      <ellipse cx="100" cy="110" rx="70" ry="34" stroke="${color}" stroke-width="2.2" fill="none"/>
+      <circle cx="30" cy="110" r="4" fill="${color}"/>
+      <circle cx="170" cy="110" r="4" fill="${color}"/>
     </svg>`,
-    mini: `<svg viewBox="0 0 200 220" fill="none" width="108" height="120">
-      <rect x="52" y="82" width="96" height="106" rx="11" fill="none" stroke="${color}" stroke-width="1.8"/>
-      <path d="M72 82Q72 58 100 58Q128 58 128 82" stroke="${color}" stroke-width="1.8" fill="none"/>
-      <circle cx="100" cy="138" r="11" stroke="${color}" stroke-width="1.4" fill="none"/>
-      <line x1="100" y1="127" x2="100" y2="149" stroke="${color}" stroke-width="1.1"/>
-      <line x1="89" y1="138" x2="111" y2="138" stroke="${color}" stroke-width="1.1"/>
+    anel: `<svg viewBox="0 0 200 220" fill="none" width="108" height="120">
+      <circle cx="100" cy="130" r="40" stroke="${color}" stroke-width="2.4" fill="none"/>
+      <path d="M84 92L100 66L116 92Z" stroke="${color}" stroke-width="2" fill="none"/>
     </svg>`,
   };
-  return svgs[cat] || svgs.tote;
+  return svgs[cat] || svgs.colar;
 }
 
 function waMsg(name) {
-  return `https://wa.me/5581995966968?text=${encodeURIComponent(`Olá! Tenho interesse na bolsa *${name}*. Pode me dar mais informações?`)}`;
+  return `https://wa.me/5581995966968?text=${encodeURIComponent(`Olá! Tenho interesse em *${name}*. Pode me dar mais informações?`)}`;
 }
 
 // ─── RENDER PRODUCTS ──────────────────────────────────────────────────────────
@@ -1220,7 +1135,7 @@ function renderProducts(filter = 'all') {
   const list = filter === 'all' ? products : products.filter(p => p.cat === filter);
 
   grid.innerHTML = list.map(p => {
-    const ic  = p.avail ? ROSE      : '#C0B4AB';
+    const ic  = p.avail ? ROSE      : '#C9C7C2';
     const bg  = p.avail ? '#FFFFFF' : BG2;
 
     return `
@@ -1301,10 +1216,10 @@ document.querySelectorAll('a, button, .fpill, .pcard:not(.out), .h-dot, .ithumb'
 
 // ─── ADMIN ────────────────────────────────────────────────────────────────────
 let loggedIn = (function(){
-  const t = sessionStorage.getItem('mfb_auth_ts');
+  const t = sessionStorage.getItem('mfl_auth_ts');
   return t && (Date.now() - parseInt(t)) < 600000;
 })();
-const ADMIN_PASS = 'mfb2025';
+const ADMIN_PASS = 'mfl2025';
 
 function openA() {
   const ov = document.getElementById('adminOv');
@@ -1331,7 +1246,7 @@ function renderLogin() {
   document.getElementById('adminBd').innerHTML = `
   <div class="login-wrap">
     <div class="login-t">Acesso Restrito</div>
-    <p class="login-s">Painel · My Favorite Bags</p>
+    <p class="login-s">Painel · My Favorite Looks</p>
     <input class="fi" type="password" id="pw" placeholder="Senha de acesso"/>
     <button class="fb" onclick="tryLogin()">Entrar</button>
     <p class="lerr" id="lerr"></p>
@@ -1340,7 +1255,7 @@ function renderLogin() {
 
 function tryLogin() {
   if (document.getElementById('pw').value === ADMIN_PASS) {
-    loggedIn = true; sessionStorage.setItem('mfb_auth_ts', Date.now()); renderPanel();
+    loggedIn = true; sessionStorage.setItem('mfl_auth_ts', Date.now()); renderPanel();
   } else {
     document.getElementById('lerr').textContent = 'Senha incorreta. Tente novamente.';
   }
@@ -1359,16 +1274,16 @@ function renderPanel() {
 
   <div class="apane" id="tab-add">
     <div class="frow">
-      <div class="fg"><label class="flabel">Nome da Bolsa</label><input class="fi" id="nn" placeholder="Ex: Tote Milano"/></div>
-      <div class="fg"><label class="flabel">Preço</label><input class="fi" id="np" placeholder="R$ 299"/></div>
+      <div class="fg"><label class="flabel">Nome da Peça</label><input class="fi" id="nn" placeholder="Ex: Colar Aurora"/></div>
+      <div class="fg"><label class="flabel">Preço</label><input class="fi" id="np" placeholder="R$ 129"/></div>
     </div>
     <div class="frow">
       <div class="fg"><label class="flabel">Categoria</label>
         <select class="fi" id="nc">
-          <option value="tote">Tote Bag</option>
-          <option value="shoulder">Shoulder</option>
-          <option value="clutch">Clutch</option>
-          <option value="mini">Mini Bag</option>
+          <option value="colar">Colar</option>
+          <option value="brinco">Brinco</option>
+          <option value="pulseira">Pulseira</option>
+          <option value="anel">Anel</option>
         </select>
       </div>
       <div class="fg"><label class="flabel">Disponibilidade</label>
@@ -1400,9 +1315,9 @@ function renderPanel() {
     </p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
       ${HERO_SLIDES.map((img,idx) => `
-      <div style="position:relative;aspect-ratio:3/4;overflow:hidden;border-radius:6px;border:1px solid ${LINE};background:#2A1F18;">
+      <div style="position:relative;aspect-ratio:3/4;overflow:hidden;border-radius:6px;border:1px solid ${LINE};background:#111827;">
         <img id="bannerImg-${idx}" src="${img}" alt="Slide ${idx+1}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-        <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(20,12,7,.88) 0%, rgba(20,12,7,.35) 45%, rgba(20,12,7,.15) 100%);"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.88) 0%, rgba(17,24,39,.35) 45%, rgba(17,24,39,.15) 100%);"></div>
         <div style="position:absolute;left:0;right:0;bottom:0;padding:16px;text-align:center;">
           <p style="font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:4px;">Slide ${idx+1}</p>
           <p style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:10px;">Publicado no banner</p>
@@ -1427,9 +1342,9 @@ function setAnalyticsPeriod(k) {
   _analyticsPeriod = k;
   document.querySelectorAll('[id^="apbtn-"]').forEach(b => {
     const active = b.id === 'apbtn-' + k;
-    b.style.border = active ? '1px solid #8B4A3C' : '1px solid var(--line)';
-    b.style.background = active ? 'rgba(139,74,60,.1)' : 'transparent';
-    b.style.color = active ? '#8B4A3C' : '#A08070';
+    b.style.border = active ? '1px solid #C48793' : '1px solid var(--line)';
+    b.style.background = active ? 'rgba(196,135,147,.1)' : 'transparent';
+    b.style.color = active ? '#C48793' : '#A98A98';
   });
   const picker = document.getElementById('analyticsPeriodPicker');
   if (picker) picker.style.display = k === 'custom' ? 'block' : 'none';
@@ -1463,7 +1378,7 @@ function renderAnalyticsBody() {
   const body = document.getElementById('analyticsBody');
   if (!body) return;
   const ids = [...new Set([...Object.keys(analytics.views), ...Object.keys(analytics.wa)])].map(Number);
-  if (!ids.length) { body.innerHTML = '<p style="font-size:12px;color:#A08070;">Nenhum clique registrado ainda.</p>'; return; }
+  if (!ids.length) { body.innerHTML = '<p style="font-size:12px;color:#A98A98;">Nenhum clique registrado ainda.</p>'; return; }
 
   let grandTotal = 0;
   const rows = ids.map(id => {
@@ -1476,64 +1391,53 @@ function renderAnalyticsBody() {
     grandTotal += tot;
     return `<div style="padding:7px 0;border-bottom:1px solid var(--line);">
       <div style="display:flex;justify-content:space-between;align-items:baseline;">
-        <div style="font-size:12px;font-weight:600;color:#653C2B;">${p.name}</div>
-        <div style="font-size:11px;font-weight:700;color:#8B4A3C;">${tot} clique${tot!==1?'s':''}</div>
+        <div style="font-size:12px;font-weight:600;color:#4B1E3F;">${p.name}</div>
+        <div style="font-size:11px;font-weight:700;color:#C48793;">${tot} clique${tot!==1?'s':''}</div>
       </div>
-      <div style="font-size:11px;color:#A08070;margin-top:2px;">
-        <span style="color:#8B4A3C;">👁</span> Catálogo: <b>${cat}</b> · Favoritos: <b>${fav}</b> &nbsp;|&nbsp;
-        <span style="color:#8B4A3C;">💬</span> WhatsApp: <b>${wa}</b>
+      <div style="font-size:11px;color:#A98A98;margin-top:2px;">
+        <span style="color:#C48793;">👁</span> Catálogo: <b>${cat}</b> &nbsp;|&nbsp;
+        <span style="color:#C48793;">💬</span> WhatsApp: <b>${wa}</b>
       </div>
     </div>`;
   }).join('');
 
   body.innerHTML = rows + `
     <div style="margin-top:10px;padding-top:10px;border-top:2px solid var(--rose);display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:11px;font-weight:600;color:#A08070;letter-spacing:.1em;">TOTAL</span>
-      <span style="font-size:14px;font-weight:800;color:#8B4A3C;">${grandTotal} clique${grandTotal!==1?'s':''}</span>
+      <span style="font-size:11px;font-weight:600;color:#A98A98;letter-spacing:.1em;">TOTAL</span>
+      <span style="font-size:14px;font-weight:800;color:#C48793;">${grandTotal} clique${grandTotal!==1?'s':''}</span>
     </div>`;
 }
 
 function renderOverviewTab() {
   const el = document.getElementById('overviewBody');
   if (!el) return;
-  const favs  = products.filter(p => p.favorite);
   const avail = products.filter(p => p.avail);
   const esgot = products.filter(p => !p.avail);
   const novas = products.filter(p => p.isNew);
   el.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
-      <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
-        <div style="font-size:28px;font-weight:800;color:#8B4A3C;">${products.length}</div>
-        <div style="font-size:10px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Total de Bolsas</div>
+      <div style="background:#ECEBE8;border-radius:10px;padding:18px;text-align:center;">
+        <div style="font-size:28px;font-weight:800;color:#C48793;">${products.length}</div>
+        <div style="font-size:10px;letter-spacing:.12em;color:#A98A98;text-transform:uppercase;margin-top:4px;">Total de Peças</div>
       </div>
-      <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
+      <div style="background:#ECEBE8;border-radius:10px;padding:18px;text-align:center;">
         <div style="font-size:28px;font-weight:800;color:#1a7a3e;">${avail.length}</div>
-        <div style="font-size:10px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Disponíveis</div>
+        <div style="font-size:10px;letter-spacing:.12em;color:#A98A98;text-transform:uppercase;margin-top:4px;">Disponíveis</div>
       </div>
-      <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
+      <div style="background:#ECEBE8;border-radius:10px;padding:18px;text-align:center;">
         <div style="font-size:28px;font-weight:800;color:#7A1E1E;">${esgot.length}</div>
-        <div style="font-size:10px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Esgotadas</div>
-      </div>
-      <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
-        <div style="font-size:28px;font-weight:800;color:var(--rose-deep);">${favs.length}</div>
-        <div style="font-size:10px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Favoritas</div>
+        <div style="font-size:10px;letter-spacing:.12em;color:#A98A98;text-transform:uppercase;margin-top:4px;">Esgotadas</div>
       </div>
     </div>
-    <div style="background:#faf7f4;border-radius:10px;padding:16px 18px;margin-bottom:12px;">
-      <p style="font-weight:700;font-size:12px;margin-bottom:10px;color:#8B4A3C;">★ Favoritas do Momento</p>
-      ${favs.length
-        ? favs.map(p => `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:12px;"><span style="color:#653C2B;">${p.name}</span><span style="color:#8B4A3C;font-weight:600;">${p.price}</span></div>`).join('')
-        : `<p style="font-size:12px;color:#A08070;">Nenhuma marcada.</p>`}
-    </div>
-    <div style="background:#faf7f4;border-radius:10px;padding:16px 18px;margin-top:12px;">
+    <div style="background:#ECEBE8;border-radius:10px;padding:16px 18px;margin-top:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-        <p style="font-weight:700;font-size:12px;color:#8B4A3C;margin:0;">👜 Cliques por Bolsa</p>
+        <p style="font-weight:700;font-size:12px;color:#C48793;margin:0;">💍 Cliques por Peça</p>
         <div style="display:flex;gap:4px;flex-wrap:wrap;">
           ${['1d','7d','30d','365d','custom'].map(k => `
           <button onclick="setAnalyticsPeriod('${k}')" id="apbtn-${k}"
-            style="font-size:9px;padding:3px 8px;border:1px solid ${k==='30d'?'#8B4A3C':'var(--line)'};
-                   background:${k==='30d'?'rgba(139,74,60,.1)':'transparent'};
-                   color:${k==='30d'?'#8B4A3C':'#A08070'};cursor:pointer;border-radius:4px;
+            style="font-size:9px;padding:3px 8px;border:1px solid ${k==='30d'?'#C48793':'var(--line)'};
+                   background:${k==='30d'?'rgba(196,135,147,.1)':'transparent'};
+                   color:${k==='30d'?'#C48793':'#A98A98'};cursor:pointer;border-radius:4px;
                    font-family:'Jost',sans-serif;letter-spacing:.08em;">
             ${k==='1d'?'1 dia':k==='7d'?'7 dias':k==='30d'?'30 dias':k==='365d'?'1 ano':'Período'}
           </button>`).join('')}
@@ -1542,125 +1446,18 @@ function renderOverviewTab() {
       <div id="analyticsPeriodPicker" style="display:none;margin-bottom:10px;display:none;">
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <input type="date" id="apFrom" style="font-size:11px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
-          <span style="font-size:11px;color:#A08070;">até</span>
+          <span style="font-size:11px;color:#A98A98;">até</span>
           <input type="date" id="apTo" style="font-size:11px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
-          <button onclick="applyCustomPeriod()" style="font-size:10px;padding:4px 10px;border:1px solid #8B4A3C;color:#8B4A3C;background:transparent;cursor:pointer;border-radius:4px;">OK</button>
+          <button onclick="applyCustomPeriod()" style="font-size:10px;padding:4px 10px;border:1px solid #C48793;color:#C48793;background:transparent;cursor:pointer;border-radius:4px;">OK</button>
         </div>
       </div>
       <div id="analyticsBody">
-        <p style="font-size:12px;color:#A08070;">Nenhum clique registrado ainda.</p>
+        <p style="font-size:12px;color:#A98A98;">Nenhum clique registrado ainda.</p>
       </div>
     </div>
 
-    <div id="centralPanel" style="margin-top:20px;padding:18px 20px;border:1px solid var(--line);border-radius:10px;background:#faf7f4;">
-      <p style="font-size:13px;font-weight:700;color:#8B4A3C;margin-bottom:4px;">🔗 Painel Central · Looks &amp; Match</p>
-      <p style="font-size:11px;color:#A08070;margin-bottom:14px;">Controle o acesso às outras frentes da marca.</p>
-      <div id="centralPanelRows"></div>
-    </div>`;
+    `;
   renderAnalyticsBody();
-  renderCentralPanel();
-}
-
-// ─── PAINEL CENTRAL: BLOQUEIO / VISIBILIDADE (Looks & Match) ──────────────────
-const SITE_STATE_KEY = { looks: 'mfb_looks_state', match: 'mfb_match_state' };
-const SITE_LABEL      = { looks: 'My Favorite Looks', match: 'My Favorite Match' };
-
-function getSiteState(site) {
-  return localStorage.getItem(SITE_STATE_KEY[site]) || 'locked';
-}
-function setSiteState(site, state) {
-  localStorage.setItem(SITE_STATE_KEY[site], state);
-  renderCentralPanel();
-  applyLooksButtonVisibility();
-}
-
-const SITE_PAGE = { looks: 'looks.html', match: 'match.html' };
-
-function renderCentralPanel() {
-  const el = document.getElementById('centralPanelRows');
-  if (!el) return;
-  const opts = [
-    { v:'locked',  l:'Bloqueado' },
-    { v:'hidden',  l:'Oculto' },
-    { v:'visible', l:'Visível' },
-  ];
-  const filterOpts = [
-    { v:'all',   l:'Todos' },
-    { v:'bags',  l:'Bags' },
-    { v:'looks', l:'Looks' },
-  ];
-  const curFilter = localStorage.getItem('mfb_match_default_filter') || 'all';
-  el.innerHTML = ['looks','match'].map(site => {
-    const cur = getSiteState(site);
-    const isMatch = site === 'match';
-    return `
-    <div style="padding:12px 0;border-top:1px solid var(--line);">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-        <span style="font-size:12px;font-weight:600;color:#653C2B;padding-top:6px;">${SITE_LABEL[site]}</span>
-        ${isMatch ? `
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
-          <span style="font-size:12px;font-weight:600;color:#653C2B;">Filtro de itens</span>
-          <div style="display:flex;gap:4px;">
-            ${filterOpts.map(o => `
-            <button onclick="setMatchDefaultFilter('${o.v}')"
-              style="font-size:9px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;
-                     font-family:'Jost',sans-serif;font-weight:600;
-                     border:1px solid ${curFilter===o.v ? '#8B4A3C' : 'var(--line)'};
-                     background:${curFilter===o.v ? 'rgba(139,74,60,.12)' : 'transparent'};
-                     color:${curFilter===o.v ? '#8B4A3C' : '#A08070'};">${o.l}</button>`).join('')}
-          </div>
-        </div>` : ''}
-        <a href="${SITE_PAGE[site]}?preview=1" target="_blank"
-          style="font-size:8.5px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;margin-top:6px;
-                 font-family:'Jost',sans-serif;font-weight:600;text-decoration:none;text-transform:uppercase;
-                 border:1px solid var(--line); background:var(--bg); color:#A08070;">Editar (sem publicar)</a>
-      </div>
-      <div style="display:flex;gap:4px;">
-        ${opts.map(o => `
-        <button onclick="setSiteState('${site}','${o.v}')"
-          style="font-size:9px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;
-                 font-family:'Jost',sans-serif;font-weight:600;
-                 border:1px solid ${cur===o.v ? '#8B4A3C' : 'var(--line)'};
-                 background:${cur===o.v ? 'rgba(139,74,60,.12)' : 'transparent'};
-                 color:${cur===o.v ? '#8B4A3C' : '#A08070'};">${o.l}</button>`).join('')}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function setMatchDefaultFilter(v) {
-  localStorage.setItem('mfb_match_default_filter', v);
-  renderCentralPanel();
-}
-
-function applyLooksButtonVisibility() {
-  let btn = document.getElementById('bijusHeroBtn');
-  const visible = getSiteState('looks') === 'visible';
-  if (visible) {
-    if (!btn) {
-      btn = document.createElement('a');
-      btn.id = 'bijusHeroBtn';
-      btn.href = 'looks.html';
-      btn.style.cssText = 'position:absolute;right:7%;top:50%;transform:translateY(-50%);z-index:5;display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:999px;border:1.5px solid #B8896F;color:#24343C;font-family:"Cormorant Garamond",serif;font-size:15px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;background:#F6F1EC;box-shadow:0 6px 22px rgba(36,52,60,.18);transition:box-shadow .3s, transform .3s, background .3s;';
-      btn.innerHTML = 'My Favorite Looks <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
-      btn.onmouseover = () => { btn.style.background = '#EADFD7'; btn.style.boxShadow = '0 8px 26px rgba(36,52,60,.26)'; btn.style.transform = 'translateY(-50%) translateY(-2px)'; };
-      btn.onmouseout  = () => { btn.style.background = '#F6F1EC'; btn.style.boxShadow = '0 6px 22px rgba(36,52,60,.18)'; btn.style.transform = 'translateY(-50%)'; };
-      const hero = document.getElementById('hero');
-      if (hero) hero.appendChild(btn);
-    }
-  } else {
-    if (btn) btn.remove();
-  }
-
-  const navBtn = document.getElementById('navLooksBtn');
-  if (navBtn) {
-    navBtn.style.display = visible ? 'inline-flex' : 'none';
-    if (!navBtn._wired) {
-      navBtn._wired = true;
-      navBtn.onmouseover = () => { navBtn.style.background = '#EADFD7'; navBtn.style.boxShadow = '0 4px 14px rgba(36,52,60,.18)'; };
-      navBtn.onmouseout  = () => { navBtn.style.background = '#F6F1EC'; navBtn.style.boxShadow = 'none'; };
-    }
-  }
 }
 
 function swTab(name, btn) {
@@ -1677,10 +1474,9 @@ function renderAdminList() {
 
   // Cabeçalho com checkboxes "selecionar todos"
   const allAvail = products.length > 0 && products.every(p => p.avail);
-  const allFav   = products.length > 0 && products.every(p => p.favorite);
   const allNew   = products.length > 0 && products.every(p => p.isNew);
 
-  const chkStyle = 'width:16px;height:16px;cursor:pointer;appearance:none;-webkit-appearance:none;border:1.5px solid #653C2B;border-radius:3px;flex-shrink:0;transition:background .2s,border-color .2s;';
+  const chkStyle = 'width:16px;height:16px;cursor:pointer;appearance:none;-webkit-appearance:none;border:1.5px solid #4B1E3F;border-radius:3px;flex-shrink:0;transition:background .2s,border-color .2s;';
 
   const header = `
     <div style="display:flex;align-items:stretch;border-bottom:2px solid var(--rose);background:var(--bg);">
@@ -1690,22 +1486,17 @@ function renderAdminList() {
           <div style="width:94px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <input type="checkbox" id="chkAllAvail" ${allAvail?'checked':''} title="Selecionar todos como disponível"
               onchange="bulkToggle('avail',this.checked)"
-              style="${chkStyle}background:${allAvail?'#8B4A3C':'#F3EFE9'};border-color:${allAvail?'#8B4A3C':'#653C2B'};">
+              style="${chkStyle}background:${allAvail?'#C48793':'#ECEBE8'};border-color:${allAvail?'#C48793':'#4B1E3F'};">
           </div>
           <div style="width:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <input type="checkbox" id="chkAllPromo" title="Gerenciar promoções em massa"
               onclick="openBulkPromoModal(this);return false;"
               style="${chkStyle}background:#B34545;border-color:#B34545;">
           </div>
-          <div style="width:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <input type="checkbox" id="chkAllFav" ${allFav?'checked':''} title="Selecionar todos como favorito"
-              onchange="bulkToggle('favorite',this.checked)"
-              style="${chkStyle}background:${allFav?'#8B4A3C':'#F3EFE9'};border-color:${allFav?'#8B4A3C':'#653C2B'};">
-          </div>
           <div style="width:64px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <input type="checkbox" id="chkAllNew" ${allNew?'checked':''} title="Selecionar todos como Novo"
               onchange="bulkToggle('isNew',this.checked)"
-              style="${chkStyle}background:${allNew?'#8B4A3C':'#F3EFE9'};border-color:${allNew?'#8B4A3C':'#653C2B'};">
+              style="${chkStyle}background:${allNew?'#C48793':'#ECEBE8'};border-color:${allNew?'#C48793':'#4B1E3F'};">
           </div>
           <div style="width:72px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <input type="checkbox" id="chkAllDel" title="Excluir todos os itens"
@@ -1717,7 +1508,7 @@ function renderAdminList() {
     </div>`;
 
   const rows = products.map((p, i) => {
-    const bg = i % 2 === 0 ? 'rgba(243,239,233,.55)' : 'rgba(182,139,115,.06)';
+    const bg = i % 2 === 0 ? 'rgba(236,235,232,.55)' : 'rgba(216,167,177,.06)';
     return `
     <div style="display:flex;align-items:stretch;background:${bg};border-bottom:1px solid var(--line);">
       <div class="alist-name" id="aname-${p.id}"
@@ -1734,25 +1525,19 @@ function renderAdminList() {
             style="height:29px;width:94px;padding:0;flex-shrink:0;cursor:pointer;transition:all .3s;
                    font-size:9.6px;letter-spacing:.18em;font-family:'Jost',sans-serif;font-weight:600;
                    ${p.avail ? 'background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.4);color:#1a7a3e;'
-                             : 'background:transparent;border:1px solid #C0B4AB;color:#A08070;'}">
+                             : 'background:transparent;border:1px solid #C9C7C2;color:#A98A98;'}">
             ${p.avail ? 'DISPONÍVEL' : 'ESGOTADO'}
           </button>
           <button class="aabtn" onclick="openPriceModal(${p.id})"
             style="font-size:16px;padding:0;width:38px;height:38px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;border:1px solid var(--rose);
-                   background:rgba(139,74,60,.06);color:#8B4A3C;cursor:pointer;">$</button>
-          <button class="aabtn" onclick="togFav(${p.id})"
-            style="font-size:18px;padding:0;width:38px;height:38px;display:flex;align-items:center;
-                   justify-content:center;flex-shrink:0;
-                   border:1px solid ${p.favorite ? '#f5c518' : 'var(--line)'};
-                   background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};
-                   color:${p.favorite ? '#f5c518' : '#C0B4AB'};">${p.favorite ? '★' : '☆'}</button>
+                   background:rgba(196,135,147,.06);color:#C48793;cursor:pointer;">$</button>
           <button class="aabtn" onclick="togNew(${p.id})"
             style="font-size:9px;padding:0;width:64px;height:38px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;letter-spacing:.1em;
                    border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};
                    background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};
-                   color:${p.isNew ? '#2196a8' : '#C0B4AB'};">${p.isNew ? 'NOVO ✓' : 'NOVO'}</button>
+                   color:${p.isNew ? '#2196a8' : '#C9C7C2'};">${p.isNew ? 'NOVO ✓' : 'NOVO'}</button>
           <button class="aabtn del" onclick="confirmDel(${p.id})"
             style="width:72px;height:38px;padding:0;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;border-color:#b83232;color:#b83232;">Remover</button>
@@ -1791,7 +1576,7 @@ function renderAdminList() {
 
 function showToast(msg) {
   const t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#2A1F18;color:#fff;padding:10px 20px;border-radius:8px;font-size:12px;font-family:"Jost",sans-serif;z-index:9999;opacity:0;transition:opacity .3s;white-space:nowrap;';
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 20px;border-radius:8px;font-size:12px;font-family:"Jost",sans-serif;z-index:9999;opacity:0;transition:opacity .3s;white-space:nowrap;';
   t.textContent = msg;
   document.body.appendChild(t);
   requestAnimationFrame(() => { t.style.opacity = '1'; });
@@ -1803,36 +1588,36 @@ function openBulkPromoModal(chk) {
   const hasPromo = products.some(p => p.promo);
   const wrap = document.createElement('div');
   wrap.id = 'bulkPromoModal';
-  wrap.style.cssText = 'position:fixed;inset:0;z-index:9450;background:rgba(42,31,24,.7);display:flex;align-items:center;justify-content:center;';
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:9450;background:rgba(17,24,39,.7);display:flex;align-items:center;justify-content:center;';
   wrap.innerHTML = `
     <div style="background:var(--bg);border-radius:12px;padding:28px 28px;max-width:340px;width:90%;font-family:'Jost',sans-serif;">
-      <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Promoções em Massa</p>
-      <p style="font-size:11px;color:#A08070;margin-bottom:20px;">Escolha uma ação para aplicar a todos os itens.</p>
+      <p style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">Promoções em Massa</p>
+      <p style="font-size:11px;color:#A98A98;margin-bottom:20px;">Escolha uma ação para aplicar a todos os itens.</p>
 
       <div style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:14px;">
-        <p style="font-size:11px;font-weight:600;color:#8B4A3C;letter-spacing:.08em;margin-bottom:10px;">APLICAR DESCONTO EM TODOS</p>
-        <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PERCENTUAL DE DESCONTO</label>
+        <p style="font-size:11px;font-weight:600;color:#C48793;letter-spacing:.08em;margin-bottom:10px;">APLICAR DESCONTO EM TODOS</p>
+        <label style="font-size:10px;letter-spacing:.14em;color:#A98A98;display:block;margin-bottom:4px;">PERCENTUAL DE DESCONTO</label>
         <div style="display:flex;align-items:stretch;margin-bottom:10px;">
           <input id="bulkPct" class="fi" placeholder="ex: 20" inputmode="decimal" style="border-radius:4px 0 0 4px;border-right:none;">
-          <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
+          <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#FFFFFF;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
         </div>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px;">
-          <input type="checkbox" id="bulkShowPct" checked style="accent-color:#8B4A3C;">
-          <span style="font-size:11px;color:#A08070;">Mostrar percentual de desconto na bolsa</span>
+          <input type="checkbox" id="bulkShowPct" checked style="accent-color:#C48793;">
+          <span style="font-size:11px;color:#A98A98;">Mostrar percentual de desconto na peça</span>
         </label>
         <button onclick="applyBulkPromoPct()" style="width:100%;padding:10px;border:none;border-radius:6px;background:var(--rose-dark);color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Aplicar a Todos</button>
       </div>
 
       <div style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:18px;">
         <p style="font-size:11px;font-weight:600;color:#b83232;letter-spacing:.08em;margin-bottom:10px;">REMOVER TODAS AS PROMOÇÕES</p>
-        <p style="font-size:11px;color:#A08070;margin-bottom:12px;">${hasPromo ? `${products.filter(p=>p.promo).length} item(s) com promoção ativa.` : 'Nenhum item tem promoção ativa.'}</p>
-        <button onclick="removeAllPromos()" ${hasPromo ? '' : 'disabled'} style="width:100%;padding:10px;border:none;border-radius:6px;background:${hasPromo?'#b83232':'#D9CFC6'};color:#fff;cursor:${hasPromo?'pointer':'not-allowed'};font-size:12px;font-weight:700;">Remover Todas</button>
+        <p style="font-size:11px;color:#A98A98;margin-bottom:12px;">${hasPromo ? `${products.filter(p=>p.promo).length} item(s) com promoção ativa.` : 'Nenhum item tem promoção ativa.'}</p>
+        <button onclick="removeAllPromos()" ${hasPromo ? '' : 'disabled'} style="width:100%;padding:10px;border:none;border-radius:6px;background:${hasPromo?'#b83232':'#C9C7C2'};color:#fff;cursor:${hasPromo?'pointer':'not-allowed'};font-size:12px;font-weight:700;">Remover Todas</button>
       </div>
 
       <p id="bulkPromoErr" style="font-size:11px;color:#b83232;margin-bottom:10px;display:none;"></p>
 
       <div style="display:flex;justify-content:flex-end;">
-        <button onclick="document.getElementById('bulkPromoModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;">Fechar</button>
+        <button onclick="document.getElementById('bulkPromoModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A98A98;">Fechar</button>
       </div>
     </div>`;
   document.body.appendChild(wrap);
@@ -1893,7 +1678,7 @@ function bulkDeleteAll(chk) {
     'Tem certeza absoluta? Esta ação é irreversível.',
     () => {
       products = [];
-      markDirty(); renderProducts('all'); renderAdminList(); renderOverviewTab(); renderFavCarousel();
+      markDirty(); renderProducts('all'); renderAdminList(); renderOverviewTab();
       showToast('Todos os itens foram excluídos.');
     }
   );
@@ -1902,14 +1687,14 @@ function bulkDeleteAll(chk) {
 function showConfirmDouble(title, msg1, msg2, onConfirm) {
   // Primeira confirmação
   const w1 = document.createElement('div');
-  w1.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(42,31,24,.7);display:flex;align-items:center;justify-content:center;';
+  w1.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(17,24,39,.7);display:flex;align-items:center;justify-content:center;';
   w1.innerHTML = `
     <div style="background:var(--bg);border-radius:12px;padding:28px 28px;max-width:320px;width:90%;font-family:'Jost',sans-serif;text-align:center;">
-      <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:8px;">${title}</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:24px;">${msg1}</p>
+      <p style="font-size:14px;font-weight:700;color:#111827;margin-bottom:8px;">${title}</p>
+      <p style="font-size:12px;color:#A98A98;margin-bottom:24px;">${msg1}</p>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button onclick="this.closest('[style*=z-index]').remove()"
-          style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;border-radius:6px;">Cancelar</button>
+          style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A98A98;border-radius:6px;">Cancelar</button>
         <button id="c1yes"
           style="padding:10px 22px;border:none;background:#b83232;color:#fff;cursor:pointer;font-size:12px;font-weight:700;border-radius:6px;">Sim, continuar</button>
       </div>
@@ -1919,14 +1704,14 @@ function showConfirmDouble(title, msg1, msg2, onConfirm) {
     w1.remove();
     // Segunda confirmação
     const w2 = document.createElement('div');
-    w2.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(42,31,24,.75);display:flex;align-items:center;justify-content:center;';
+    w2.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(17,24,39,.75);display:flex;align-items:center;justify-content:center;';
     w2.innerHTML = `
       <div style="background:var(--bg);border-radius:12px;padding:28px 28px;max-width:320px;width:90%;font-family:'Jost',sans-serif;text-align:center;">
         <p style="font-size:14px;font-weight:700;color:#b83232;margin-bottom:8px;">⚠️ Confirmação final</p>
-        <p style="font-size:12px;color:#A08070;margin-bottom:24px;">${msg2}</p>
+        <p style="font-size:12px;color:#A98A98;margin-bottom:24px;">${msg2}</p>
         <div style="display:flex;gap:10px;justify-content:center;">
           <button onclick="this.closest('[style*=z-index]').remove()"
-            style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;border-radius:6px;">Não, voltar</button>
+            style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A98A98;border-radius:6px;">Não, voltar</button>
           <button id="c2yes"
             style="padding:10px 22px;border:none;background:#b83232;color:#fff;cursor:pointer;font-size:12px;font-weight:700;border-radius:6px;">Confirmar</button>
         </div>
@@ -1939,13 +1724,12 @@ function showConfirmDouble(title, msg1, msg2, onConfirm) {
 function syncChk(el, active) {
   if (!el) return;
   el.checked = active;
-  el.style.background  = active ? '#8B4A3C' : '#F3EFE9';
-  el.style.borderColor = active ? '#8B4A3C' : '#653C2B';
+  el.style.background  = active ? '#C48793' : '#ECEBE8';
+  el.style.borderColor = active ? '#C48793' : '#4B1E3F';
 }
 
 function syncAllChk() {
   syncChk(document.getElementById('chkAllAvail'), products.length > 0 && products.every(p => p.avail));
-  syncChk(document.getElementById('chkAllFav'),   products.length > 0 && products.every(p => p.favorite));
   syncChk(document.getElementById('chkAllNew'),   products.length > 0 && products.every(p => p.isNew));
 }
 
@@ -1953,7 +1737,6 @@ function bulkToggle(field, value) {
   products.forEach(p => { p[field] = value; });
   markDirty();
   renderProducts('all');
-  renderFavCarousel();
   renderOverviewTab();
 
   // Atualiza cada botão no DOM sem recriar a lista (evita reset do scroll/largura)
@@ -1962,21 +1745,14 @@ function bulkToggle(field, value) {
       const btn = document.querySelector(`button[onclick="togAvail(${p.id})"]`);
       if (btn) {
         btn.textContent = p.avail ? 'DISPONÍVEL' : 'ESGOTADO';
-        btn.style.cssText = `height:29px;width:94px;padding:0;flex-shrink:0;cursor:pointer;transition:all .3s;font-size:9.6px;letter-spacing:.18em;font-family:'Jost',sans-serif;font-weight:600;${p.avail ? 'background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.4);color:#1a7a3e;' : 'background:transparent;border:1px solid #C0B4AB;color:#A08070;'}`;
-      }
-    }
-    if (field === 'favorite') {
-      const btn = document.querySelector(`button[onclick="togFav(${p.id})"]`);
-      if (btn) {
-        btn.textContent = p.favorite ? '★' : '☆';
-        btn.style.cssText = `font-size:18px;padding:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid ${p.favorite ? '#f5c518' : 'var(--line)'};background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};color:${p.favorite ? '#f5c518' : '#C0B4AB'};cursor:pointer;`;
+        btn.style.cssText = `height:29px;width:94px;padding:0;flex-shrink:0;cursor:pointer;transition:all .3s;font-size:9.6px;letter-spacing:.18em;font-family:'Jost',sans-serif;font-weight:600;${p.avail ? 'background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.4);color:#1a7a3e;' : 'background:transparent;border:1px solid #C9C7C2;color:#A98A98;'}`;
       }
     }
     if (field === 'isNew') {
       const btn = document.querySelector(`button[onclick="togNew(${p.id})"]`);
       if (btn) {
         btn.textContent = p.isNew ? 'NOVO ✓' : 'NOVO';
-        btn.style.cssText = `font-size:9px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
+        btn.style.cssText = `font-size:9px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C9C7C2'};cursor:pointer;`;
       }
     }
   });
@@ -2019,8 +1795,7 @@ function addProd() {
   products.unshift({
     id: Date.now(), name, cat: document.getElementById('nc').value,
     price, avail: document.getElementById('na').value === 'true',
-    isNew: document.getElementById('nin').value === 'true',
-    favorite: false
+    isNew: document.getElementById('nin').value === 'true'
   });
   markDirty();
   renderProducts('all');
@@ -2037,50 +1812,50 @@ function openPriceModal(id) {
   if (!p) return;
   const wrap = document.createElement('div');
   wrap.id = 'priceModal';
-  wrap.style.cssText = 'position:fixed;inset:0;z-index:9400;background:rgba(42,31,24,.65);display:flex;align-items:center;justify-content:center;';
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:9400;background:rgba(17,24,39,.65);display:flex;align-items:center;justify-content:center;';
   wrap.innerHTML = `
     <div style="background:var(--bg);border-radius:12px;padding:28px 32px;max-width:360px;width:92%;font-family:'Jost',sans-serif;">
-      <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Editar Preço</p>
-      <p style="font-size:11px;color:#A08070;margin-bottom:20px;">${p.name}</p>
+      <p style="font-size:14px;font-weight:700;color:#111827;margin-bottom:4px;">Editar Preço</p>
+      <p style="font-size:11px;color:#A98A98;margin-bottom:20px;">${p.name}</p>
 
-      <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:6px;">PREÇO ATUAL</label>
+      <label style="font-size:10px;letter-spacing:.14em;color:#A98A98;display:block;margin-bottom:6px;">PREÇO ATUAL</label>
       <div style="display:flex;align-items:stretch;margin-bottom:18px;">
-        <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
+        <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#FFFFFF;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
         <input id="pmPrice" class="fi" value="${priceNum(p.price)}" placeholder="0" inputmode="decimal" style="border-radius:0 4px 4px 0;border-left:none;">
       </div>
 
       <div id="pmPromoWrap" style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:18px;">
         <div style="display:flex;align-items:center;margin-bottom:10px;">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-            <input type="checkbox" id="pmPromoOn" ${p.promo ? 'checked' : ''} onchange="togglePromoFields()" style="accent-color:#8B4A3C;">
-            <span style="font-size:11px;font-weight:600;color:#8B4A3C;letter-spacing:.1em;">ATIVAR PROMOÇÃO</span>
+            <input type="checkbox" id="pmPromoOn" ${p.promo ? 'checked' : ''} onchange="togglePromoFields()" style="accent-color:#C48793;">
+            <span style="font-size:11px;font-weight:600;color:#C48793;letter-spacing:.1em;">ATIVAR PROMOÇÃO</span>
           </label>
         </div>
         <div id="pmPromoFields" style="display:${p.promo ? 'block' : 'none'};">
-          <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO ORIGINAL (riscado)</label>
+          <label style="font-size:10px;letter-spacing:.14em;color:#A98A98;display:block;margin-bottom:4px;">PREÇO ORIGINAL (riscado)</label>
           <div style="display:flex;align-items:stretch;margin-bottom:10px;">
-            <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:#A08070;font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
-            <input id="pmOldPrice" class="fi" value="${priceNum(p.promo ? p.promo.old : p.price)}" placeholder="0" readonly style="border-radius:0 4px 4px 0;border-left:none;background:#F2ECE6;color:#A08070;cursor:not-allowed;">
+            <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#FFFFFF;color:#A98A98;font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
+            <input id="pmOldPrice" class="fi" value="${priceNum(p.promo ? p.promo.old : p.price)}" placeholder="0" readonly style="border-radius:0 4px 4px 0;border-left:none;background:#FFFFFF;color:#A98A98;cursor:not-allowed;">
           </div>
           <div style="display:flex;gap:10px;margin-bottom:10px;">
             <div style="flex:1;">
-              <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO PROMOCIONAL</label>
+              <label style="font-size:10px;letter-spacing:.14em;color:#A98A98;display:block;margin-bottom:4px;">PREÇO PROMOCIONAL</label>
               <div style="display:flex;align-items:stretch;">
-                <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
+                <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#FFFFFF;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
                 <input id="pmNewPrice" class="fi" value="${p.promo ? priceNum(p.promo.new) : ''}" placeholder="0" inputmode="decimal" oninput="syncFromPrice()" style="border-radius:0 4px 4px 0;border-left:none;">
               </div>
             </div>
             <div style="flex:1;">
-              <label style="font-size:10px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">DESCONTO</label>
+              <label style="font-size:10px;letter-spacing:.14em;color:#A98A98;display:block;margin-bottom:4px;">DESCONTO</label>
               <div style="display:flex;align-items:stretch;">
                 <input id="pmPct" class="fi" value="${p.promo && p.promo.pct ? p.promo.pct : ''}" placeholder="0" inputmode="decimal" oninput="syncFromPct()" style="border-radius:4px 0 0 4px;border-right:none;">
-                <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
+                <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#FFFFFF;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
               </div>
             </div>
           </div>
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-            <input type="checkbox" id="pmShowPct" ${(!p.promo || p.promo.showPct !== false) ? 'checked' : ''} style="accent-color:#8B4A3C;">
-            <span style="font-size:11px;color:#A08070;">Mostrar percentual de desconto na bolsa</span>
+            <input type="checkbox" id="pmShowPct" ${(!p.promo || p.promo.showPct !== false) ? 'checked' : ''} style="accent-color:#C48793;">
+            <span style="font-size:11px;color:#A98A98;">Mostrar percentual de desconto na peça</span>
           </label>
         </div>
       </div>
@@ -2088,7 +1863,7 @@ function openPriceModal(id) {
       <p id="pmErr" style="font-size:11px;color:#b83232;margin-bottom:10px;display:none;"></p>
 
       <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button onclick="document.getElementById('priceModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;">Cancelar</button>
+        <button onclick="document.getElementById('priceModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A98A98;">Cancelar</button>
         <button onclick="savePrice(${id})" style="padding:10px 20px;border:none;background:var(--rose-dark);color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Salvar</button>
       </div>
     </div>`;
@@ -2182,12 +1957,12 @@ function confirmDel(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'position:fixed;inset:0;z-index:9300;background:rgba(42,31,24,.65);display:flex;align-items:center;justify-content:center;';
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:9300;background:rgba(17,24,39,.65);display:flex;align-items:center;justify-content:center;';
   wrap.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px 32px;max-width:340px;text-align:center;">
-    <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:6px;">Remover bolsa?</p>
-    <p style="font-size:12px;color:#A08070;margin-bottom:22px;">"${p.name}" será removida do catálogo.</p>
+    <p style="font-size:14px;font-weight:700;color:#111827;margin-bottom:6px;">Remover peça?</p>
+    <p style="font-size:12px;color:#A98A98;margin-bottom:22px;">"${p.name}" será removida do catálogo.</p>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button id="delNo"  style="padding:10px 22px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Não, cancelar</button>
+      <button id="delNo"  style="padding:10px 22px;border:1px solid #C9C7C2;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Não, cancelar</button>
       <button id="delYes" style="padding:10px 22px;border:none;border-radius:8px;background:#b83232;color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Sim, remover</button>
     </div>
   </div>`;
@@ -2210,15 +1985,6 @@ function togNew(id) {
   updateAdminRow(id);
 }
 
-function togFav(id) {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  p.favorite = !p.favorite;
-  markDirty();
-  renderFavCarousel();
-  updateAdminRow(id);
-}
-
 // Update a single admin row without re-rendering the entire list
 function updateAdminRow(id) {
   renderOverviewTab();
@@ -2230,102 +1996,19 @@ function updateAdminRow(id) {
   const availBtn = document.querySelector(`button[onclick="togAvail(${id})"]`);
   if (availBtn) {
     availBtn.textContent = p.avail ? 'DISPONÍVEL' : 'ESGOTADO';
-    availBtn.style.cssText = `height:29px;width:94px;padding:0;flex-shrink:0;cursor:pointer;transition:all .3s;font-size:9.6px;letter-spacing:.18em;font-family:'Jost',sans-serif;font-weight:600;${p.avail ? 'background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.4);color:#1a7a3e;' : 'background:transparent;border:1px solid #C0B4AB;color:#A08070;'}`;
+    availBtn.style.cssText = `height:29px;width:94px;padding:0;flex-shrink:0;cursor:pointer;transition:all .3s;font-size:9.6px;letter-spacing:.18em;font-family:'Jost',sans-serif;font-weight:600;${p.avail ? 'background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.4);color:#1a7a3e;' : 'background:transparent;border:1px solid #C9C7C2;color:#A98A98;'}`;
     availBtn.title = p.avail ? 'Clique para esgotar' : 'Clique para ativar';
-  }
-
-  const favBtn = document.querySelector(`button[onclick="togFav(${id})"]`);
-  if (favBtn) {
-    favBtn.textContent = p.favorite ? '★' : '☆';
-    favBtn.style.cssText = `font-size:18px;padding:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid ${p.favorite ? '#f5c518' : 'var(--line)'};background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};color:${p.favorite ? '#f5c518' : '#C0B4AB'};cursor:pointer;`;
-    favBtn.title = p.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
   }
 
   const newBtn = document.querySelector(`button[onclick="togNew(${id})"]`);
   if (newBtn) {
     newBtn.textContent = p.isNew ? 'NOVO ✓' : 'NOVO';
-    newBtn.style.cssText = `font-size:9px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
+    newBtn.style.cssText = `font-size:9px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C9C7C2'};cursor:pointer;`;
     newBtn.title = p.isNew ? 'Remover badge Novo' : 'Adicionar badge Novo';
   }
 
   // Sincroniza checkboxes do cabeçalho
   syncAllChk();
-}
-
-// ─── FAVORITES BANNER CAROUSEL ────────────────────────────────────────────────
-let favIdx = 0;
-let favTimer = null;
-
-function renderFavCarousel() {
-  const favs = products.filter(p => p.favorite && p.avail);
-  const wrap  = document.getElementById('favBannerWrap');
-  const empty = document.getElementById('favEmpty');
-  if (!wrap) return;
-
-  if (favs.length === 0) {
-    wrap.style.display  = 'none';
-    if (empty) empty.style.display = 'block';
-    clearInterval(favTimer);
-    return;
-  }
-  wrap.style.display  = 'block';
-  if (empty) empty.style.display = 'none';
-
-  favIdx = 0;
-  showFavSlide(favs);
-
-  clearInterval(favTimer);
-  favTimer = setInterval(() => {
-    favIdx = (favIdx + 1) % favs.length;
-    showFavSlide(favs);
-  }, 3000);
-}
-
-function showFavSlide(favs) {
-  const banner = document.getElementById('favBanner');
-  if (!banner) return;
-  const p = favs[favIdx];
-
-  banner.innerHTML = `
-    <div onclick="openBagModal(${p.id},'fav')" class="fav-slide-fade" style="width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;cursor:pointer;border-radius:12px;">
-      ${p.img
-        ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;transition:opacity .4s ease;">`
-        : `<div style="width:100%;height:100%;background:var(--bg2);display:flex;align-items:center;justify-content:center;">
-             <svg viewBox="0 0 200 220" width="80" fill="none"><path d="M58 84Q58 54 100 54Q142 54 142 84" stroke="#B68B73" stroke-width="3" fill="none"/><rect x="28" y="84" width="144" height="112" rx="8" fill="none" stroke="#B68B73" stroke-width="2.5"/></svg>
-           </div>`}
-      <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(42,31,24,.7));padding:24px 20px 16px;pointer-events:none;">
-        <div style="color:#fff;font-size:15px;font-weight:700;">${p.name}</div>
-        <div style="color:#f5c9ad;font-size:13px;font-weight:600;">${p.price}</div>
-      </div>
-      <div style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.9);border-radius:20px;padding:4px 12px;font-size:10px;letter-spacing:.1em;font-weight:600;color:#8B4A3C;pointer-events:none;">Toque para ver</div>
-    </div>
-    <div style="display:flex;justify-content:center;gap:6px;margin-top:12px;">
-      ${favs.map((_,i) => `<span onclick="jumpFav(${i})" style="width:${i===favIdx?'20px':'6px'};height:6px;border-radius:4px;background:${i===favIdx?'var(--rose-deep)':'var(--line)'};cursor:pointer;transition:width .3s,background .3s;display:inline-block;"></span>`).join('')}
-    </div>`;
-}
-
-function favSlide(dir) {
-  const favs = products.filter(p => p.favorite && p.avail);
-  if (!favs.length) return;
-  favIdx = (favIdx + dir + favs.length) % favs.length;
-  showFavSlide(favs);
-  clearInterval(favTimer);
-  favTimer = setInterval(() => {
-    favIdx = (favIdx + 1) % favs.length;
-    showFavSlide(favs);
-  }, 3000);
-}
-
-function jumpFav(i) {
-  const favs = products.filter(p => p.favorite && p.avail);
-  if (!favs.length) return;
-  favIdx = i;
-  showFavSlide(favs);
-  clearInterval(favTimer);
-  favTimer = setInterval(() => {
-    favIdx = (favIdx + 1) % favs.length;
-    showFavSlide(favs);
-  }, 3000);
 }
 
 // ─── ANALYTICS ────────────────────────────────────────────────────────────────
@@ -2378,28 +2061,21 @@ let pendingSave  = null;    // snapshot of changes to save
 function markDirty() { adminDirty = true; }
 
 function openReview() {
-  const favs   = products.filter(p => p.favorite);
   const avail  = products.filter(p => p.avail);
   const esgot  = products.filter(p => !p.avail);
 
   document.getElementById('reviewBody').innerHTML = `
-    <div style="background:#faf7f4;border-radius:8px;padding:16px 18px;margin-bottom:14px;">
-      <p style="font-weight:700;margin-bottom:8px;color:#2A1F18;">📦 Catálogo</p>
-      <p>Total de bolsas: <strong>${products.length}</strong></p>
+    <div style="background:#ECEBE8;border-radius:8px;padding:16px 18px;margin-bottom:14px;">
+      <p style="font-weight:700;margin-bottom:8px;color:#111827;">📦 Catálogo</p>
+      <p>Total de peças: <strong>${products.length}</strong></p>
       <p>Disponíveis: <strong style="color:#1a7a3e;">${avail.length}</strong></p>
       <p>Esgotadas: <strong style="color:#7A1E1E;">${esgot.length}</strong></p>
     </div>
-    <div style="background:#faf7f4;border-radius:8px;padding:16px 18px;margin-bottom:14px;">
-      <p style="font-weight:700;margin-bottom:8px;color:#2A1F18;">★ Favoritas do Momento</p>
-      ${favs.length
-        ? favs.map(p => `<p>· ${p.name} <span style="color:#A08070;">(${p.price})</span></p>`).join('')
-        : `<p style="color:#A08070;">Nenhuma bolsa marcada como favorita.</p>`}
-    </div>
-    <div style="background:#faf7f4;border-radius:8px;padding:16px 18px;">
-      <p style="font-weight:700;margin-bottom:8px;color:#2A1F18;">🆕 Bolsas com badge "Novo"</p>
+    <div style="background:#ECEBE8;border-radius:8px;padding:16px 18px;">
+      <p style="font-weight:700;margin-bottom:8px;color:#111827;">🆕 Peças com badge "Novo"</p>
       ${products.filter(p => p.isNew).length
         ? products.filter(p => p.isNew).map(p => `<p>· ${p.name}</p>`).join('')
-        : `<p style="color:#A08070;">Nenhuma.</p>`}
+        : `<p style="color:#A98A98;">Nenhuma.</p>`}
     </div>`;
 
   const m = document.getElementById('reviewModal');
@@ -2416,7 +2092,6 @@ function confirmSave() {
   adminDirty = false;
   closeReview();
   renderProducts('all');
-  renderFavCarousel();
   _origCloseA(); // close admin panel
   const msg = document.createElement('div');
   msg.textContent = '✓ Configurações salvas com sucesso!';
@@ -2435,13 +2110,13 @@ const _origCloseA = closeA;
 closeA = function() {
   if (adminDirty) {
     const wrap = document.createElement('div');
-    wrap.style.cssText = 'position:fixed;inset:0;z-index:9200;background:rgba(42,31,24,.6);display:flex;align-items:center;justify-content:center;';
+    wrap.style.cssText = 'position:fixed;inset:0;z-index:9200;background:rgba(17,24,39,.6);display:flex;align-items:center;justify-content:center;';
     wrap.innerHTML = `<div style="background:#fff;border-radius:12px;padding:32px;max-width:340px;text-align:center;">
-      <p style="font-size:15px;font-weight:700;color:#2A1F18;margin-bottom:8px;">Alterações não salvas</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:24px;">Você fez alterações no painel. Deseja salvar antes de sair?</p>
+      <p style="font-size:15px;font-weight:700;color:#111827;margin-bottom:8px;">Alterações não salvas</p>
+      <p st      <p style="font-size:12px;color:#A98A98;margin-bottom:24px;">Você fez alterações no painel. Deseja salvar antes de sair?</p>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button id="btnDiscardExit" style="padding:10px 18px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Sair sem salvar</button>
-        <button id="btnSaveExit"    style="padding:10px 18px;border:none;border-radius:8px;background:#8B4A3C;color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Revisar e Salvar</button>
+        <button id="btnDiscardExit" style="padding:10px 18px;border:1px solid #C9C7C2;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Sair sem salvar</button>
+        <button id="btnSaveExit"    style="padding:10px 18px;border:none;border-radius:8px;background:#C48793;color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Revisar e Salvar</button>
       </div>
     </div>`;
     document.body.appendChild(wrap);
@@ -2454,21 +2129,19 @@ closeA = function() {
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderProducts('all');
-renderFavCarousel();
-applyLooksButtonVisibility();
 </script>
 
-<!-- ═══ BAG DETAIL MODAL ════════════════════════════════════════════════════ -->
-<div id="bagModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(42,31,24,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+<!-- ═══ ITEM DETAIL MODAL ════════════════════════════════════════════════════ -->
+<div id="bagModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(17,24,39,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
   <div style="background:var(--bg);border-radius:16px;max-width:520px;width:92%;overflow:hidden;position:relative;animation:modalIn .28s ease;">
     <button onclick="closeBagModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);z-index:2;">✕</button>
     <div id="modalImgWrap" style="width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--bg2);cursor:zoom-in;position:relative;touch-action:none;">
       <img id="modalPhoto" src="" alt="" style="width:100%;height:100%;object-fit:cover;transform-origin:center center;will-change:transform;">
     </div>
     <div style="padding:24px 28px 28px;background:var(--bg);">
-      <div id="modalName"  style="font-size:18px;font-weight:700;color:#2A1F18;margin-bottom:6px;"></div>
-      <div id="modalCat"   style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#A08070;margin-bottom:16px;"></div>
-      <div id="modalPrice" style="font-size:22px;font-weight:800;color:#8B4A3C;margin-bottom:20px;"></div>
+      <div id="modalName"  style="font-size:18px;font-weight:700;color:#111827;margin-bottom:6px;"></div>
+      <div id="modalCat"   style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#A98A98;margin-bottom:16px;"></div>
+      <div id="modalPrice" style="font-size:22px;font-weight:800;color:#C48793;margin-bottom:20px;"></div>
       <a id="modalWa" href="#" target="_blank" class="pwa" style="text-decoration:none;width:fit-content;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
         Comprar via WhatsApp
@@ -2514,77 +2187,4 @@ applyLooksButtonVisibility();
   // Pinch zoom (touch)
   document.getElementById('modalImgWrap').addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
-      lastDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    } else if (e.touches.length === 1 && scale > 1) {
-      dragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
-    }
-  }, {passive:true});
-
-  document.getElementById('modalImgWrap').addEventListener('touchmove', function(e) {
-    const img = document.getElementById('modalPhoto');
-    if (e.touches.length === 2) {
-      e.preventDefault();
-      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      scale = Math.max(1, Math.min(5, scale * (dist / lastDist)));
-      lastDist = dist;
-      clampTranslate(this);
-      applyTransform(img, false);
-      this.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
-    } else if (e.touches.length === 1 && dragging) {
-      e.preventDefault();
-      tx += e.touches[0].clientX - lastX;
-      ty += e.touches[0].clientY - lastY;
-      lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
-      clampTranslate(this);
-      applyTransform(img, false);
-    }
-  }, {passive:false});
-
-  document.getElementById('modalImgWrap').addEventListener('touchend', function() {
-    dragging = false;
-    const img = document.getElementById('modalPhoto');
-    if (scale < 1.05) resetZoom(img, this);
-  });
-
-  // Mouse drag
-  document.getElementById('modalImgWrap').addEventListener('mousedown', function(e) {
-    if (scale > 1) { dragging = true; lastX = e.clientX; lastY = e.clientY; this.style.cursor = 'grabbing'; }
-  });
-  document.addEventListener('mousemove', function(e) {
-    if (!dragging) return;
-    const wrap = document.getElementById('modalImgWrap');
-    const img  = document.getElementById('modalPhoto');
-    tx += e.clientX - lastX; ty += e.clientY - lastY;
-    lastX = e.clientX; lastY = e.clientY;
-    clampTranslate(wrap);
-    applyTransform(img, false);
-  });
-  document.addEventListener('mouseup', function() {
-    if (dragging) { dragging = false; const w = document.getElementById('modalImgWrap'); if(w) w.style.cursor = scale > 1 ? 'grab' : 'zoom-in'; }
-  });
-
-  // Reset ao fechar
-  const origClose = window.closeBagModal;
-  window.closeBagModal = function() {
-    scale = 1; tx = 0; ty = 0;
-    const img = document.getElementById('modalPhoto');
-    if (img) { img.style.transform = ''; img.style.transition = ''; }
-    origClose();
-  };
-})();
-</script>
-
-<!-- ═══ ADMIN REVIEW MODAL ══════════════════════════════════════════════════ -->
-<div id="reviewModal" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(42,31,24,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:14px;max-width:480px;width:92%;max-height:80vh;overflow-y:auto;padding:32px;">
-    <h3 style="font-size:15px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Revisão das Configurações</h3>
-    <p style="font-size:11px;color:#A08070;margin-bottom:24px;">Confira antes de salvar</p>
-    <div id="reviewBody" style="font-size:12px;color:#4A3728;line-height:1.8;"></div>
-    <div style="display:flex;gap:12px;margin-top:28px;">
-      <button onclick="closeReview()" style="flex:1;padding:12px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Voltar e Editar</button>
-      <button onclick="confirmSave()" style="flex:1;padding:12px;border:none;border-radius:8px;background:#8B4A3C;color:#fff;cursor:pointer;font-size:12px;font-weight:700;">✓ Confirmar e Salvar</button>
-    </div>
-  </div>
-</div>
-</body>
-</html>
+      lastDist = Math.hypot(e.touches[0].clientX - e.touches[1]
