@@ -1,0 +1,142 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CABEÇALHO (NAV) — layout compartilhado entre index.html e looks.html
+   Estrutura, tamanhos e espaçamentos são idênticos nas duas páginas.
+   Apenas as CORES mudam, através das variáveis abaixo definidas no :root
+   de cada página (com fallback sensato quando a página não precisa de um
+   valor diferente do padrão):
+
+     --nav-idle-bg      fundo do nav no topo, antes de rolar (padrão: transparente)
+     --nav-idle-blur    desfoque do nav no topo (padrão: nenhum)
+     --nav-idle-border  borda inferior do nav no topo (padrão: transparente)
+     --nav-scrolled-bg  fundo do nav após rolar a página (obrigatório)
+     --nav-idle-text        cor do nome da loja no topo, antes de rolar
+     --nav-idle-text-sub    cor do subtítulo (“Recife”) no topo, antes de rolar
+     --nav-idle-link        cor dos links (Coleção/Sobre/Instagram) no topo
+     --nav-idle-link-hover  cor dos links no hover, no topo
+     --nav-cta-border       cor da borda do botão "Fale Conosco"
+   ═══════════════════════════════════════════════════════════════════════════ */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  padding:28px 64px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--nav-idle-bg, transparent);
+  backdrop-filter:var(--nav-idle-blur, none);
+  -webkit-backdrop-filter:var(--nav-idle-blur, none);
+  border-bottom:1px solid var(--nav-idle-border, transparent);
+  transition:background .5s, padding .4s, border-color .5s;
+}
+nav.s {
+  background:var(--nav-scrolled-bg);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  padding:16px 64px;
+  border-bottom:1px solid var(--line);
+}
+
+/* Logo */
+.nav-logo { display:flex; align-items:center; gap:14px; }
+.nav-mono { width:38px; height:38px; flex-shrink:0; }
+.nav-words { display:flex; flex-direction:column; gap:1px; }
+.nav-words-main {
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px; font-weight:500;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:var(--nav-idle-text); transition:color .4s; line-height:1;
+}
+.nav-words-sub {
+  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--nav-idle-text-sub); transition:color .4s;
+}
+nav.s .nav-words-main { color:var(--text); }
+nav.s .nav-words-sub  { color:var(--text-muted); }
+
+.nav-logo-img { display:block; width:44px; height:44px; object-fit:contain; transition: filter .4s; }
+@media(max-width:600px){ .nav-logo-img { width:38px; height:38px; } }
+
+/* Links */
+.nav-links { display:flex; gap:40px; list-style:none; }
+.nav-right { display:flex; align-items:center; gap:40px; }
+.nav-links a {
+  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--nav-idle-link); font-weight:400;
+  transition:color .3s; position:relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:-4px; left:0; right:100%;
+  height:1px; background:var(--rose);
+  transition:right .4s var(--ease);
+}
+.nav-links a:hover { color:var(--nav-idle-link-hover); }
+.nav-links a:hover::after { right:0; }
+nav.s .nav-links a { color:var(--text-muted); }
+nav.s .nav-links a:hover { color:var(--text); }
+
+/* CTA "Fale Conosco" */
+.nav-cta {
+  font-size:12px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--rose); border:1px solid var(--nav-cta-border);
+  padding:10px 24px; font-weight:400;
+  transition:background .3s, color .3s, border-color .3s;
+  white-space:nowrap;
+}
+.nav-cta:hover { background:var(--rose-dark); color:#fff; border-color:var(--rose-dark); }
+
+/* Botão de navegação cruzada (My Favorite Bags ⇄ My Favorite Looks) */
+.nav-cross-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:9px 18px; border-radius:999px;
+  border:1.5px solid #B8896F; color:#24343C;
+  font-family:'Cormorant Garamond',serif; font-size:12.5px; font-weight:500;
+  letter-spacing:.04em; text-transform:uppercase; text-decoration:none;
+  background:#F6F1EC; margin-right:18px;
+  transition:background .3s, box-shadow .3s;
+}
+.nav-cross-btn svg { flex:0 0 auto; }
+
+/* ── Responsive hardening (idêntico nas duas páginas) ──────────────────── */
+nav {
+  gap:clamp(.75rem, 2vw, 2rem);
+  padding:clamp(1rem, 2.5vw, 1.75rem) var(--page-gutter);
+}
+nav.s { padding:clamp(.75rem, 1.8vw, 1rem) var(--page-gutter); }
+.nav-logo { min-width:0; min-height:44px; }
+.nav-words { min-width:0; }
+.nav-words-main {
+  font-size:clamp(.78rem, .72rem + .25vw, .94rem);
+  letter-spacing:clamp(.11em, .7vw, .2em);
+}
+.nav-words-sub { letter-spacing:clamp(.24em, 1vw, .38em); }
+.nav-links { gap:clamp(1.2rem, 3vw, 2.5rem); }
+.nav-right { gap:clamp(1.2rem, 3vw, 2.5rem); }
+.nav-links a,
+.nav-cta,
+.nav-cross-btn {
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.nav-cta {
+  padding:clamp(.62rem, 1.2vw, .75rem) clamp(.9rem, 2vw, 1.5rem);
+  font-size:clamp(0.8125rem, .68rem + .18vw, .9rem);
+}
+.nav-cross-btn {
+  max-width:min(42vw, 14rem);
+  min-width:13.5rem;
+  justify-content:center;
+  margin-right:clamp(.4rem, 1.4vw, 1.1rem) !important;
+  padding:clamp(.55rem, 1vw, .7rem) clamp(.75rem, 1.6vw, 1.1rem) !important;
+  font-size:clamp(0.8125rem, .75rem + .2vw, .9rem) !important;
+  line-height:1.15;
+  white-space:normal;
+  text-align:center;
+}
+@media(max-width:769px){
+  .nav-cross-btn { min-width:0; }
+}
+
+@media(max-width:430px){
+  .nav-logo { gap:.65rem; }
+  .nav-logo-img { width:2.25rem; height:2.25rem; }
+  .nav-words-main { font-size:.76rem; max-width:9rem; }
+  .nav-words-sub { font-size:.75rem; }
+}
