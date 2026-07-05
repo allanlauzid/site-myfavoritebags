@@ -384,6 +384,10 @@ button { font-family:'Jost',sans-serif; }
   font-size:12px; letter-spacing:.16em; text-transform:uppercase;
   background:var(--rose-deep); color:#fff; padding:5px 11px;
 }
+/* Versão do badge "Novo" acima do nome do item (não mais sobre a foto) */
+.new-b-inline {
+  position:static; display:inline-block; margin-bottom:8px;
+}
 .promo-b {
   position:absolute; top:14px; right:14px;
   font-size:12px; font-weight:700; letter-spacing:.04em;
@@ -1673,7 +1677,7 @@ function renderProducts(filter = 'all') {
         <div class="pcard-img">
           <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;" onerror="this.onerror=null;this.style.display='none';this.closest('.pcard-visual').classList.add('img-fallback');">` : bagSVG(p.cat, ic)}</div>
           ${!isAvail ? `<div class="sold-ov"><div class="sold-badge">${ovText}</div></div>` : ''}
-          ${p.isNew && isAvail ? `<div class="new-b">Novo</div>` : ''}
+
           ${isAvail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
           <div class="pcard-action">
             <button onclick="openBagModal(${p.id})" class="slide-btn" style="border:none;cursor:pointer;">Ver Detalhes</button>
@@ -1681,6 +1685,7 @@ function renderProducts(filter = 'all') {
         </div>
       </div>
       <div class="pcard-info">
+        ${p.isNew && isAvail ? `<div class="new-b new-b-inline">Novo</div>` : ''}
         <div class="pname">${p.name}</div>
         <div class="pmeta">
           <span class="pcat">${CATS[p.cat]}</span>
