@@ -36,7 +36,7 @@ serve(async (req) => {
         headers: { ...CORS_HEADERS, "content-type": "application/json" },
       });
     }
-    if (!ALLOWED_TABLES.includes(table)) {
+    if (action !== "upload_image" && !ALLOWED_TABLES.includes(table)) {
       return new Response(JSON.stringify({ error: "invalid table" }), {
         status: 400,
         headers: { ...CORS_HEADERS, "content-type": "application/json" },
@@ -44,38 +44,28 @@ serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-    let result;
 
-    if (action === "upsert") {
-      result = await supabase.from(table).upsert(payload).select();
-    } else if (action === "delete") {
-      result = await supabase.from(table).delete().eq("id", payload.id);
-    } else if (action === "set_setting") {
-      result = await supabase
-        .from("site_settings")
-        .upsert({ key: payload.key, value: payload.value })
-        .select();
-    } else {
-      return new Response(JSON.stringify({ error: "invalid action" }), {
-        status: 400,
-        headers: { ...CORS_HEADERS, "content-type": "application/json" },
+    // Upload de imagem (já com fundo removido, vindo do remove-bg) pro
+    // Storage. Devolve a URL pública, que é o que fica salvo em bags.img /
+    // looks.img.
+    if (action === "upload_image") {
+      const { base64, filename } = payload;
+      const commaIdx = base64.indexOf(",");
+      const meta = base64.slice(0, commaIdx);
+      const raw = base64.slice(commaIdx + 1);
+      const contentType = /data:(.*?);base64/.exec(meta)?.[1] || "image/png";
+      const bytes = Uint8Array.from(atob(raw), (c) => c.charCodeAt(0));
+      const path = `${Date.now()}-${filename.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+
+      const up = await supabase.storage.from("product-images").upload(path, bytes, {
+        contentType,
+        upsert: true,
       });
-    }
-
-    if (result.error) {
-      return new Response(JSON.stringify({ error: result.error.message }), {
-        status: 500,
-        headers: { ...CORS_HEADERS, "content-type": "application/json" },
-      });
-    }
-
-    return new Response(JSON.stringify({ data: result.data }), {
-      headers: { ...CORS_HEADERS, "content-type": "application/json" },
-    });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: String(e) }), {
-      status: 500,
-      headers: { ...CORS_HEADERS, "content-type": "application/json" },
-    });
-  }
-});
+      if (up.error) {
+        return new Response(JSON.stringify({ error: up.error.message }), {
+          status: 500,
+          headers: { ...CORS_HEADERS, "content-type": "application/json" },
+        });
+      }
+      const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+      return new Response(JSON.stringify({ data: { url: pub.pub
