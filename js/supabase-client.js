@@ -19,6 +19,18 @@ async function sbSelect(table) {
   return res.json();
 }
 
+// Algumas linhas antigas do banco ficaram com a extensão errada depois da
+// migração pra webp (ex: "webp/bag-01.png" apontando pra um arquivo que não
+// existe mais, já que só existe "webp/bag-01.webp"). Corrige isso na leitura
+// pra não depender de rodar uma migração de dados no banco.
+function fixImgPath(img) {
+  if (!img) return img;
+  if (/^webp\//.test(img) && /\.(png|jpg|jpeg)$/i.test(img)) {
+    return img.replace(/\.(png|jpg|jpeg)$/i, '.webp');
+  }
+  return img;
+}
+
 // Converte snake_case do banco (is_new, sort_order) para o formato camelCase
 // que o restante do site já usa (isNew) — mantém o resto do código intacto.
 function rowToProduct(row) {
@@ -31,7 +43,7 @@ function rowToProduct(row) {
     status: row.status,
     isNew: row.is_new,
     favorite: row.favorite ?? false,
-    img: row.img,
+    img: fixImgPath(row.img),
     tags: row.tags || [],
     occasion: row.occasion || null,
     order: row.sort_order,
