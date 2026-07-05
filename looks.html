@@ -2821,6 +2821,7 @@ function openBagModal(id, source) {
   if (!p) return;
   document.getElementById('modalPhoto').src = p.img || '';
   document.getElementById('modalPhoto').style.display = p.img ? 'block' : 'none';
+  document.getElementById('modalNewBadge').style.display = (p.isNew && p.status === 'available') ? 'inline-block' : 'none';
   document.getElementById('modalName').textContent  = p.name;
   document.getElementById('modalCat').textContent   = CATS[p.cat] || '';
   document.getElementById('modalPrice').innerHTML = (p.status !== 'available')
@@ -3066,6 +3067,7 @@ positionBagsBtnMobile();
       <img id="modalPhoto" src="" alt="" style="width:100%;height:100%;object-fit:cover;transform-origin:center center;will-change:transform;">
     </div>
     <div style="padding:24px 28px 28px;background:var(--bg);">
+      <div id="modalNewBadge" class="new-b new-b-inline" style="display:none;">Novo</div>
       <div id="modalName"  style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;"></div>
       <div id="modalCat"   style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;"></div>
       <div id="modalPrice" style="font-size:22px;font-weight:800;color:var(--rose-dark);margin-bottom:20px;"></div>
