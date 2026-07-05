@@ -1645,7 +1645,7 @@ function renderProducts(filter = 'all') {
     <div class="pcard ${isAvail ? '' : 'out'}" data-id="${p.id}">
       <div class="pcard-float" data-drag-id="${p.id}">
         <div class="pcard-img">
-          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo">` : bagSVG(p.cat, ic)}</div>
+          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;">` : bagSVG(p.cat, ic)}</div>
           ${!isAvail ? `<div class="sold-ov"><div class="sold-badge">${ovText}</div></div>` : ''}
           ${p.isNew && isAvail ? `<div class="new-b">Novo</div>` : ''}
           ${isAvail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
