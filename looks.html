@@ -166,6 +166,10 @@ button { font-family:'Jost',sans-serif; }
   animation:matchRadarPing 2.6s 1.1s ease-out infinite;
 }
 #matchHeroBtn.dragging { cursor:grabbing; animation:none; transition:none; opacity:1; }
+/* Depois que a animação de entrada já rodou uma vez, o botão fica
+   marcado como "entered" — assim, ao soltar de um arraste, ele não
+   reinicia o fade-in (que reaparecia toda vez que soltava o toque). */
+#matchHeroBtn.entered { opacity:1; animation:none; }
 #matchHeroBtn.dragging::before { animation:none; opacity:0; }
 #matchHeroBtn.dragging .mhb-visual { animation:none; box-shadow:none; }
 #matchHeroBtn:hover { transform:scale(1.06); }
@@ -3013,6 +3017,12 @@ function applyMatchButtonVisibility() {
       hero.appendChild(btn);
       positionMatchBtn(btn, hero);
       makeMatchBtnDraggable(btn, hero);
+      // Marca como "já entrou" assim que a animação de entrada termina, pra
+      // soltar o botão depois de arrastar não disparar o fade-in de novo.
+      btn.addEventListener('animationend', e => {
+        if (e.animationName === 'matchEnter') btn.classList.add('entered');
+      });
+      setTimeout(() => btn.classList.add('entered'), 1300);
       window.addEventListener('resize', () => positionMatchBtn(btn, hero));
       window.addEventListener('load', () => positionMatchBtn(btn, hero));
     }
