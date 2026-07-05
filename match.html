@@ -1238,4 +1238,12 @@ setOccasion(occasion);
   const exitUrl = from === 'looks' ? 'looks.html' : 'index.html';
   ['mExitConfig', 'mExitCard'].forEach(id => {
     const el = document.getElementById(id);
-    i
+    if (el) el.href = exitUrl;
+  });
+})();
+</script>
+
+<script src="js/cursor.js"></script>
+
+</body>
+</html>
