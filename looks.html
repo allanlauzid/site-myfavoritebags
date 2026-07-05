@@ -3023,16 +3023,10 @@ function applyMatchButtonVisibility() {
 }
 
 function positionMatchBtn(btn, hero) {
-  let pos = null;
-  try { pos = JSON.parse(localStorage.getItem(MATCH_BTN_POS_KEY)); } catch (e) {}
+  // Posição sempre fixa (não salva mais no localStorage): o botão pode ser
+  // arrastado, mas sempre volta pro mesmo lugar ao soltar.
   const heroRect = hero.getBoundingClientRect();
-  if (pos && typeof pos.xFrac === 'number' && typeof pos.yFrac === 'number') {
-    btn.style.left = (pos.xFrac * heroRect.width) + 'px';
-    btn.style.top  = (pos.yFrac * heroRect.height) + 'px';
-    btn.style.right = 'auto';
-    return;
-  }
-  // Sem posição salva: Y alinhado com o topo da logo do nav, X centralizado com "Fale Conosco"
+  // Y alinhado com o topo da logo do nav, X centralizado com "Fale Conosco"
   const logo = document.querySelector('.hero-logo-img') || document.querySelector('.nav-logo');
   const cta  = document.querySelector('.nav-cta');
   const btnSize = btn.getBoundingClientRect().width || 92;
@@ -3080,11 +3074,10 @@ function makeMatchBtnDraggable(btn, hero) {
     dragging = false;
     btn.classList.remove('dragging');
     if (moved) {
-      const heroRect = hero.getBoundingClientRect();
-      const r = btn.getBoundingClientRect();
-      const xFrac = (r.left - heroRect.left) / heroRect.width;
-      const yFrac = (r.top - heroRect.top) / heroRect.height;
-      try { localStorage.setItem(MATCH_BTN_POS_KEY, JSON.stringify({ xFrac, yFrac })); } catch (e) {}
+      // Sempre volta pra posição original ao soltar (não fica onde foi largado)
+      btn.style.left = startLeft + 'px';
+      btn.style.top  = startTop + 'px';
+      btn.style.right = 'auto';
     }
   }
   function onClick(e) {
