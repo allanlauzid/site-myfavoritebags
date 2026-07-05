@@ -1727,6 +1727,24 @@ function renderProducts(filter = 'all') {
   }
   grid.innerHTML = rows.join('');
   initFloatingDrag(grid);
+  initViewShake(grid);
+}
+
+// Toda vez que um item flutuante entra na tela (primeira vez, ou de novo ao
+// rolar pra cima e voltar a descer), dispara a animação de shake — não só
+// uma vez, sempre que ele reaparece no viewport.
+const _viewShakeObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.querySelectorAll('.pcard-visual > img, .pcard-visual > svg').forEach(v => {
+      v.classList.remove('tap-shake');
+      void v.offsetWidth;
+      v.classList.add('tap-shake');
+    });
+  });
+}, { threshold: 0.4 });
+function initViewShake(scope) {
+  scope.querySelectorAll('.pcard-float').forEach(el => _viewShakeObserver.observe(el));
 }
 
 // ─── PEÇAS FLUTUANTES — arrastáveis, voltam sozinhas pra posição original ──
