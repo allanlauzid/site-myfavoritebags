@@ -341,6 +341,7 @@ button { font-family:'Jost',sans-serif; }
   width:100%; height:100%;
   display:flex; align-items:center; justify-content:center;
   transition:transform .75s var(--ease);
+  position:relative;
 }
 .pcard:not(.out):hover .pcard-visual { transform:scale(1.03); }
 
@@ -1645,7 +1646,7 @@ function renderProducts(filter = 'all') {
     <div class="pcard ${isAvail ? '' : 'out'}" data-id="${p.id}">
       <div class="pcard-float" data-drag-id="${p.id}">
         <div class="pcard-img">
-          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;">` : bagSVG(p.cat, ic)}</div>
+          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;" onerror="this.onerror=null;this.style.display='none';this.closest('.pcard-visual').classList.add('img-fallback');">` : bagSVG(p.cat, ic)}</div>
           ${!isAvail ? `<div class="sold-ov"><div class="sold-badge">${ovText}</div></div>` : ''}
           ${p.isNew && isAvail ? `<div class="new-b">Novo</div>` : ''}
           ${isAvail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
@@ -1682,44 +1683,60 @@ function renderProducts(filter = 'all') {
 }
 
 // ─── BOLSAS FLUTUANTES — arrastáveis, voltam sozinhas pra posição original ──
-let _dragActive = null;
+// Pointer Events + setPointerCapture: o navegador garante que TODO ponteirodown
+// que iniciou no elemento vai entregar seus eventos de move/up a ele, não
+// importa pra onde o cursor vá — isso elimina o problema de "arraste que não
+// solta" que acontece com mousedown/mousemove/mouseup soltos.
 function initFloatingDrag(scope) {
   scope.querySelectorAll('.pcard-float').forEach(el => {
-    el.addEventListener('mousedown', e => { _dragStart(el, e.clientX, e.clientY); e.preventDefault(); });
-    el.addEventListener('touchstart', e => { const t = e.touches[0]; _dragStart(el, t.clientX, t.clientY); }, { passive: true });
-    el.addEventListener('touchmove', e => { const t = e.touches[0]; _dragMove(t.clientX, t.clientY); }, { passive: true });
-    el.addEventListener('touchend', _dragEnd);
-    el.addEventListener('click', e => {
-      if (_dragActive && _dragActive.el === el && _dragActive.wasMoved) {
-        e.preventDefault(); e.stopPropagation();
-        _dragActive.wasMoved = false;
-        return;
+    let startX = 0, startY = 0, moved = false, wasMoved = false, activePointerId = null;
+
+    el.addEventListener('pointerdown', e => {
+      if (e.button !== undefined && e.button !== 0) return; // só botão esquerdo do mouse
+      activePointerId = e.pointerId;
+      startX = e.clientX; startY = e.clientY;
+      moved = false;
+      try { el.setPointerCapture(activePointerId); } catch (err) {}
+    });
+
+    el.addEventListener('pointermove', e => {
+      if (activePointerId === null || e.pointerId !== activePointerId) return;
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+        moved = true;
+        el.classList.add('dragging');
       }
+      if (moved) el.style.transform = `translate(${dx * .7}px, ${dy * .7}px)`;
+    });
+
+    function release(e) {
+      if (activePointerId === null || (e && e.pointerId !== activePointerId)) return;
+      try { el.releasePointerCapture(activePointerId); } catch (err) {}
+      activePointerId = null;
+      el.classList.remove('dragging');
+      el.style.transform = ''; // sempre volta pra posição original
+      wasMoved = moved;
+    }
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+    el.addEventListener('lostpointercapture', release);
+
+    el.addEventListener('click', e => {
+      if (wasMoved) { e.preventDefault(); e.stopPropagation(); wasMoved = false; return; }
       openBagModal(Number(el.dataset.dragId));
     });
   });
 }
-function _dragStart(el, x, y) { _dragActive = { el, startX: x, startY: y, moved: false, wasMoved: false }; }
-function _dragMove(x, y) {
-  if (!_dragActive) return;
-  const { el, startX, startY } = _dragActive;
-  const dx = x - startX, dy = y - startY;
-  if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
-    _dragActive.moved = true;
-    el.classList.add('dragging');
-  }
-  if (_dragActive.moved) el.style.transform = `translate(${dx * .7}px, ${dy * .7}px)`;
-}
-function _dragEnd() {
-  if (!_dragActive) return;
-  const { el, moved } = _dragActive;
-  el.classList.remove('dragging');
-  el.style.transform = '';
-  _dragActive.wasMoved = moved;
-  _dragActive = moved ? _dragActive : null;
-}
-document.addEventListener('mousemove', e => { if (_dragActive) _dragMove(e.clientX, e.clientY); });
-document.addEventListener('mouseup', _dragEnd);
+
+// Rede de segurança: se por algum motivo o ponteiro travar (ex: perdeu o
+// pointerup por causa de outro elemento), soltar em qualquer lugar da janela
+// também reseta todos os itens flutuantes.
+window.addEventListener('pointerup', () => {
+  document.querySelectorAll('.pcard-float.dragging').forEach(el => {
+    el.classList.remove('dragging');
+    el.style.transform = '';
+  });
+});
 
 let lastCatFilter = 'all';
 function fp(cat, btn) {
