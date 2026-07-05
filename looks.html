@@ -479,7 +479,8 @@ button { font-family:'Jost',sans-serif; }
 /* Itens flutuantes: só a foto, sem badge "novo" nem painel "ver detalhes" (clicar na foto já abre o modal) */
 .pcard-float .new-b, .pcard-float .pcard-action { display:none !important; }
 
-.pcard-float { position:relative; cursor:grab; user-select:none; }
+.pcard-float { position:relative; cursor:grab; user-select:none; touch-action:none; }
+.pcard-float.armed .bag-photo { filter:drop-shadow(0 14px 22px rgba(59,37,26,.20)) drop-shadow(0 0 0 3px rgba(182,139,115,.35)); }
 .pcard-float.dragging { cursor:grabbing; z-index:5; }
 .pcard-float:not(.dragging) .pcard-img { transition:transform .55s var(--ease); }
 .pcard-float.dragging .pcard-img { transition:none; }
@@ -527,9 +528,12 @@ button { font-family:'Jost',sans-serif; }
   .pcard-info { flex:1 1 auto; }
 }
 
-/* Mobile/tablet: peça flutuante em cima, descrição embaixo (como já era) */
+/* Mobile/tablet: peça flutuante em cima, descrição embaixo (como já era).
+   align-items:end alinha as duas colunas da dupla pela base (o botão de
+   comprar fica sempre na mesma linha, mesmo com fotos de tamanhos diferentes) */
 @media (max-width:900px) {
   .pcard-float { width:100%; }
+  .prow { align-items:end; }
 }
 
 /* ─── STATS STRIP ─────────────────────────────────────────────────────────── */
@@ -1733,6 +1737,19 @@ function renderProducts(filter = 'all') {
 function initFloatingDrag(scope) {
   scope.querySelectorAll('.pcard-float').forEach(el => {
     let startX = 0, startY = 0, moved = false, wasMoved = false, activePointerId = null;
+    // No toque, o arraste só é liberado depois de um toque duplo ("armar"),
+    // pra não conflitar com o toque simples (que faz o shake / abre o modal).
+    // Um segundo toque duplo "solta" o item, que volta pra posição original.
+    let armed = false, suppressNextClick = false;
+    let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
+
+    function checkDoubleTap(x, y) {
+      const now = Date.now();
+      const isDouble = (now - lastTapTime < 350) && (Math.hypot(x - lastTapX, y - lastTapY) < 30);
+      lastTapTime = isDouble ? 0 : now; // evita um 3º toque disparar de novo
+      lastTapX = x; lastTapY = y;
+      return isDouble;
+    }
 
     el.addEventListener('pointerdown', e => {
       if (e.button !== undefined && e.button !== 0) return; // só botão esquerdo do mouse
@@ -1740,10 +1757,32 @@ function initFloatingDrag(scope) {
       startX = e.clientX; startY = e.clientY;
       moved = false;
       try { el.setPointerCapture(activePointerId); } catch (err) {}
+
+      if (e.pointerType === 'touch') {
+        // No toque, o shake dispara assim que encosta no item, mesmo que em
+        // seguida vire um arraste (no mouse o shake já acontece no hover).
+        el.querySelectorAll('.pcard-visual > img, .pcard-visual > svg').forEach(v => {
+          v.classList.remove('tap-shake');
+          void v.offsetWidth;
+          v.classList.add('tap-shake');
+        });
+
+        if (checkDoubleTap(e.clientX, e.clientY)) {
+          armed = !armed;
+          el.classList.toggle('armed', armed);
+          suppressNextClick = true;
+          if (!armed) {
+            // 2º toque duplo: solta e volta pra posição original
+            el.classList.remove('dragging');
+            el.style.transform = '';
+          }
+        }
+      }
     });
 
     el.addEventListener('pointermove', e => {
       if (activePointerId === null || e.pointerId !== activePointerId) return;
+      if (e.pointerType === 'touch' && !armed) return; // no toque, só arrasta depois de "armar"
       const dx = e.clientX - startX, dy = e.clientY - startY;
       if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
         moved = true;
@@ -1756,6 +1795,12 @@ function initFloatingDrag(scope) {
       if (activePointerId === null || (e && e.pointerId !== activePointerId)) return;
       try { el.releasePointerCapture(activePointerId); } catch (err) {}
       activePointerId = null;
+      if (e && e.pointerType === 'touch' && armed) {
+        // continua "armado": o item fica onde está até o próximo toque
+        // duplo, que aí sim solta e volta pra posição original.
+        wasMoved = moved;
+        return;
+      }
       el.classList.remove('dragging');
       el.style.transform = ''; // sempre volta pra posição original
       wasMoved = moved;
@@ -1765,6 +1810,7 @@ function initFloatingDrag(scope) {
     el.addEventListener('lostpointercapture', release);
 
     el.addEventListener('click', e => {
+      if (suppressNextClick) { suppressNextClick = false; e.preventDefault(); e.stopPropagation(); return; }
       if (wasMoved) { e.preventDefault(); e.stopPropagation(); wasMoved = false; return; }
       openBagModal(Number(el.dataset.dragId));
     });
