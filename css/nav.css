@@ -10,7 +10,7 @@
      --nav-idle-border  borda inferior do nav no topo (padrão: transparente)
      --nav-scrolled-bg  fundo do nav após rolar a página (obrigatório)
      --nav-idle-text        cor do nome da loja no topo, antes de rolar
-     --nav-idle-text-sub    cor do subtítulo no topo, antes de rolar
+     --nav-idle-text-sub    cor do subtítulo (“Recife”) no topo, antes de rolar
      --nav-idle-link        cor dos links (Coleção/Sobre/Instagram) no topo
      --nav-idle-link-hover  cor dos links no hover, no topo
      --nav-cta-border       cor da borda do botão "Fale Conosco"
@@ -229,4 +229,3 @@ nav.s { padding:clamp(.75rem, 1.8vw, 1rem) var(--page-gutter); }
   .nav-words-main { font-size:.7rem; }
   .nav-words-sub { font-size:.75rem; }
 }
-               
