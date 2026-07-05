@@ -448,6 +448,8 @@ button { font-family:'Jost',sans-serif; }
   filter:drop-shadow(0 14px 22px rgba(59,37,26,.20));
 }
 @media(max-width:900px){ .pcard-float .pcard-img { height:240px; } }
+/* Itens flutuantes: só a foto, sem badge "novo" nem painel "ver detalhes" (clicar na foto já abre o modal) */
+.pcard-float .new-b, .pcard-float .pcard-action { display:none !important; }
 
 .pcard-float { position:relative; cursor:grab; user-select:none; }
 .pcard-float.dragging { cursor:grabbing; z-index:5; }
