@@ -845,17 +845,18 @@ function startSwiping() {
   history = [];
   started = true;
   updateUndoBtn();
-  // Anima a tela de configuração "sendo removida" de cima pra baixo (clip-path),
-  // em vez de sumir na hora ou deslizar — só depois disso mostra o baralho.
+  // Monta o baralho ATRÁS da tela de configuração ANTES de começar a "remover"
+  // ela — assim, quando a animação revela o que tem por trás, já é o card
+  // carregado, e não o fundo escuro vazio do frame.
+  document.getElementById('mTop').style.display = 'flex';
+  document.getElementById('mStage').style.display = 'block';
+  document.getElementById('mActions').style.display = 'flex';
+  render();
   const cfg = document.getElementById('mConfig');
   cfg.classList.add('wiping');
   setTimeout(() => {
     cfg.classList.remove('wiping');
     cfg.classList.add('hidden');
-    document.getElementById('mTop').style.display = 'flex';
-    document.getElementById('mStage').style.display = 'block';
-    document.getElementById('mActions').style.display = 'flex';
-    render();
     startTutorial();
   }, 550);
 }
