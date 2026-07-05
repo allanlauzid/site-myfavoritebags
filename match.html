@@ -1253,6 +1253,22 @@ setOccasion(occasion);
     if (el) el.href = exitUrl;
   });
 })();
+
+// ─── ATALHOS DE TECLADO — seta direita curte, esquerda passa, cima favorita,
+// backspace desfaz (só quando o baralho já começou, sem overlay/info aberto,
+// e sem estar digitando em algum campo de texto). ───────────────────────────
+document.addEventListener('keydown', e => {
+  if (!started) return;
+  const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+  if (tag === 'textarea' || tag === 'input') return;
+  const ovOpen = document.getElementById('mOv')?.classList.contains('open');
+  if (ovOpen || infoOpen) return;
+
+  if (e.key === 'ArrowRight') { e.preventDefault(); decide('like'); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); decide('pass'); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); decide('super'); }
+  else if (e.key === 'Backspace') { e.preventDefault(); decide('undo'); }
+});
 </script>
 
 <script src="js/cursor.js"></script>
