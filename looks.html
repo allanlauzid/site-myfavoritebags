@@ -501,6 +501,8 @@ button { font-family:'Jost',sans-serif; }
   .pcard-float .drag-handle { display:none; }
 }
 .pcard-float.dragging { cursor:grabbing; z-index:5; }
+/* Ao soltar, volta pra posição original com uma animação de mola suave */
+.pcard-float.snapping { transition:transform .45s cubic-bezier(.22,.68,0,1.2); }
 .pcard-float:not(.dragging) .pcard-img { transition:transform .55s var(--ease); }
 .pcard-float.dragging .pcard-img { transition:none; }
 
@@ -1821,7 +1823,15 @@ function initFloatingDrag(scope) {
       try { el.releasePointerCapture(activePointerId); } catch (err) {}
       activePointerId = null;
       el.classList.remove('dragging');
-      el.style.transform = ''; // sempre volta pra posição original
+      if (moved) {
+        // Sempre volta pra posição original ao soltar, com animação suave
+        // (não de forma instantânea)
+        el.classList.add('snapping');
+        el.style.transform = '';
+        setTimeout(() => el.classList.remove('snapping'), 460);
+      } else {
+        el.style.transform = '';
+      }
       if (e && e.pointerType === 'touch') el.style.touchAction = '';
       wasMoved = moved;
     }
