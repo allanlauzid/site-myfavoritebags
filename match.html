@@ -119,6 +119,11 @@ body{
   z-index:0;
 }
 .m-config.hidden{ display:none; }
+@keyframes mConfigWipe {
+  from { clip-path:inset(0 0 0 0); }
+  to   { clip-path:inset(100% 0 0 0); }
+}
+.m-config.wiping { animation:mConfigWipe .55s var(--ease) forwards; pointer-events:none; }
 .m-config-close { position:absolute; top:14px; right:16px; z-index:2; }
 .m-config-brand {
   position:relative; z-index:1; flex-shrink:0;
@@ -220,7 +225,7 @@ body{
 
 .m-card-visual {
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  background:var(--bg2);
+  background:var(--bg);
 }
 .m-card-visual img { width:100%; height:100%; object-fit:cover; }
 
@@ -840,12 +845,19 @@ function startSwiping() {
   history = [];
   started = true;
   updateUndoBtn();
-  document.getElementById('mConfig').classList.add('hidden');
-  document.getElementById('mTop').style.display = 'flex';
-  document.getElementById('mStage').style.display = 'block';
-  document.getElementById('mActions').style.display = 'flex';
-  render();
-  startTutorial();
+  // Anima a tela de configuração "sendo removida" de cima pra baixo (clip-path),
+  // em vez de sumir na hora ou deslizar — só depois disso mostra o baralho.
+  const cfg = document.getElementById('mConfig');
+  cfg.classList.add('wiping');
+  setTimeout(() => {
+    cfg.classList.remove('wiping');
+    cfg.classList.add('hidden');
+    document.getElementById('mTop').style.display = 'flex';
+    document.getElementById('mStage').style.display = 'block';
+    document.getElementById('mActions').style.display = 'flex';
+    render();
+    startTutorial();
+  }, 550);
 }
 
 // ─── TUTORIAL (coach marks) ─────────────────────────────────────────────────
