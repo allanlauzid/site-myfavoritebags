@@ -9,6 +9,8 @@
   if (!curEl || !ringEl) return;
 
   document.addEventListener('mousemove', e => {
+    curEl.classList.add('on');
+    ringEl.classList.add('on');
     curEl.style.left = e.clientX + 'px';
     curEl.style.top  = e.clientY + 'px';
     setTimeout(() => {
@@ -56,8 +58,4 @@
       t.x += (tx - t.x) * 0.13;
       t.y += (ty - t.y) * 0.13;
       t.el.style.transform = `translate(${t.x}px, ${t.y}px) translate(-50%,-50%)`;
-      tx = t.x; ty = t.y;
-    });
-    requestAnimationFrame(loop);
-  })();
-})();
+      tx = t.x; ty

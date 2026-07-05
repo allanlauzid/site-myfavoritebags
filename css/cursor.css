@@ -6,20 +6,24 @@
 body { cursor:none; }
 
 .cursor {
-  position:fixed; width:6px; height:6px;
+  position:fixed; width:6px; height:6px; left:0; top:0;
   background:var(--rose-deep); border-radius:50%;
   pointer-events:none; z-index:9999;
   transform:translate(-50%,-50%);
   box-shadow:0 0 0 4px var(--rose);
-  transition:width .3s var(--ease), height .3s var(--ease), background .3s, box-shadow .3s;
+  opacity:0; /* só aparece depois do primeiro movimento real do mouse (evita "cursor travado" no centro) */
+  transition:width .3s var(--ease), height .3s var(--ease), background .3s, box-shadow .3s, opacity .2s;
 }
+.cursor.on { opacity:1; }
 .cursor-ring {
-  position:fixed; width:34px; height:34px;
+  position:fixed; width:34px; height:34px; left:0; top:0;
   border:1.5px solid var(--rose); border-radius:50%;
   pointer-events:none; z-index:9998;
-  transform:translate(-50%,-50%); opacity:.55;
+  transform:translate(-50%,-50%); opacity:0;
   transition:width .45s var(--ease), height .45s var(--ease), opacity .3s;
 }
+.cursor-ring.on { opacity:.55; }
+.cursor-ring.on.h { opacity:.25; }
 .cursor.h { width:5px; height:5px; background:var(--rose-dark); box-shadow:0 0 0 4px var(--rose); }
 .cursor-ring.h { width:46px; height:46px; opacity:.25; }
 
@@ -32,7 +36,7 @@ body { cursor:none; }
   will-change:transform, opacity;
 }
 
-@media(hover:none){
+@media(hover:none), (pointer:coarse){
   .cursor, .cursor-ring, .trail-dot { display:none; }
   body { cursor:auto; }
 }

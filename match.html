@@ -103,14 +103,15 @@ body{
   display:flex; flex-direction:column;
   padding:clamp(1.5rem,7vw,2.2rem);
   background:linear-gradient(160deg, #1c130d 0%, #150D08 60%);
-  overflow-y:auto;
+  overflow-x:hidden; overflow-y:auto;
 }
 .m-config::before {
   content:'';
   position:absolute;
-  right:-20%;
-  bottom:-30%;
-  width:min(117%, 34.5rem);
+  right:-10%;
+  bottom:0;
+  width:min(90%, 26rem);
+  max-height:100%;
   aspect-ratio:500/976;
   background:url('webp/logo-match-background.webp') center/contain no-repeat;
   opacity:.10;
@@ -1237,5 +1238,4 @@ setOccasion(occasion);
   const exitUrl = from === 'looks' ? 'looks.html' : 'index.html';
   ['mExitConfig', 'mExitCard'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.href = exitUrl;
-  });
+    i
