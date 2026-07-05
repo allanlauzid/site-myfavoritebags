@@ -743,7 +743,7 @@ function buildLooksItems() {
   return (window.MFB_LOOKS || []).filter(p => p.status !== 'hidden').map(p => ({
     name:p.name, catLabel: {colar:'Colar',brinco:'Brinco',pulseira:'Pulseira',anel:'Anel'}[p.cat] || p.cat,
     cat: {colar:'Colar',brinco:'Brinco',pulseira:'Pulseira',anel:'Anel'}[p.cat] || p.cat,
-    price:p.price, status:p.status || 'available', brand:'looks',
+    price:p.price, status:p.status || 'available', brand:'looks', img:p.img,
     isNew: !!p.isNew, tags: Array.isArray(p.tags) ? p.tags : [], occasion: inferOccasion(p,'looks'),
   }));
 }
