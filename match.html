@@ -9,7 +9,8 @@
   // Bloqueio/visibilidade controlado pelo painel central do My Favorite Bags (localStorage compartilhado)
   // ?preview=1 permite que o admin edite/visualize a página mesmo bloqueada, sem publicar.
   const _isPreview = new URLSearchParams(location.search).get('preview') === '1';
-  if (!_isPreview && (localStorage.getItem('mfb_match_state') || 'locked') === 'locked') {
+  // Padrão: visível (só bloqueia se o admin marcar explicitamente como "locked")
+  if (!_isPreview && localStorage.getItem('mfb_match_state') === 'locked') {
     location.replace('index.html');
   }
 </script>
@@ -1238,10 +1239,3 @@ setOccasion(occasion);
     const el = document.getElementById(id);
     if (el) el.href = exitUrl;
   });
-})();
-</script>
-
-<script src="js/cursor.js"></script>
-
-</body>
-</html>
