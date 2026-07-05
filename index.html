@@ -455,7 +455,7 @@ button { font-family:'Jost',sans-serif; }
 /* Itens flutuantes: só a foto, sem badge "novo" nem painel "ver detalhes" (clicar na foto já abre o modal) */
 .pcard-float .new-b, .pcard-float .pcard-action { display:none !important; }
 
-.pcard-float { position:relative; cursor:grab; user-select:none; touch-action:none; }
+.pcard-float { position:relative; cursor:grab; user-select:none; touch-action:pan-y; }
 .pcard-float.armed .bag-photo { filter:drop-shadow(0 14px 22px rgba(59,37,26,.20)) drop-shadow(0 0 0 3px rgba(182,139,115,.35)); }
 .pcard-float.dragging { cursor:grabbing; z-index:5; }
 .pcard-float:not(.dragging) .pcard-img { transition:transform .55s var(--ease); }
@@ -1777,6 +1777,10 @@ function initFloatingDrag(scope) {
           armed = !armed;
           el.classList.toggle('armed', armed);
           suppressNextClick = true;
+          // Só bloqueia o scroll da página quando o item está armado pra
+          // arrastar de verdade — no resto do tempo o dedo pode rolar
+          // normalmente por cima do item (o shake não trava o scroll).
+          el.style.touchAction = armed ? 'none' : '';
           if (!armed) {
             // 2º toque duplo: solta e volta pra posição original
             el.classList.remove('dragging');
