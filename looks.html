@@ -166,6 +166,8 @@ button { font-family:'Jost',sans-serif; }
   animation:matchRadarPing 2.6s 1.1s ease-out infinite;
 }
 #matchHeroBtn.dragging { cursor:grabbing; animation:none; transition:none; opacity:1; }
+/* Ao soltar, volta pra posição original suavemente (não de forma instantânea) */
+#matchHeroBtn.snapping { transition:left .45s cubic-bezier(.22,.68,0,1.2), top .45s cubic-bezier(.22,.68,0,1.2); }
 /* Depois que a animação de entrada já rodou uma vez, o botão fica
    marcado como "entered" — assim, ao soltar de um arraste, ele não
    reinicia o fade-in (que reaparecia toda vez que soltava o toque). */
@@ -3074,10 +3076,13 @@ function makeMatchBtnDraggable(btn, hero) {
     dragging = false;
     btn.classList.remove('dragging');
     if (moved) {
-      // Sempre volta pra posição original ao soltar (não fica onde foi largado)
+      // Sempre volta pra posição original ao soltar, com uma animação suave
+      // (não de forma instantânea)
+      btn.classList.add('snapping');
       btn.style.left = startLeft + 'px';
       btn.style.top  = startTop + 'px';
       btn.style.right = 'auto';
+      setTimeout(() => btn.classList.remove('snapping'), 460);
     }
   }
   function onClick(e) {
