@@ -457,11 +457,21 @@ button { font-family:'Jost',sans-serif; }
 .pcard { display:flex; flex-direction:column; }
 .pcard-info { min-width:0; }
 
-/* Item flutuante sem moldura/fundo — só a peça (já sem fundo, via remove.bg) */
+/* Item flutuante sem moldura/fundo — só a peça (já sem fundo, via remove.bg).
+   Nada de "quadrado invisível" atrás: sem aspect-ratio fixo, sem overflow
+   cortando nada — só a imagem, com uma sombra suave pra dar profundidade
+   (igual às flores do outro site). */
 .pcard-float .pcard-img {
   background:transparent !important; border:none !important;
+  aspect-ratio:auto !important; overflow:visible !important;
+  height:290px; display:flex; align-items:center; justify-content:center;
 }
-.pcard-float .bag-photo { object-fit:contain !important; }
+.pcard-float .pcard-visual { overflow:visible !important; }
+.pcard-float .bag-photo {
+  object-fit:contain !important; width:auto !important; max-width:100%; height:100%;
+  filter:drop-shadow(0 14px 22px rgba(59,37,26,.20));
+}
+@media(max-width:900px){ .pcard-float .pcard-img { height:240px; } }
 
 .pcard-float { position:relative; cursor:grab; user-select:none; }
 .pcard-float.dragging { cursor:grabbing; z-index:5; }
@@ -476,6 +486,18 @@ button { font-family:'Jost',sans-serif; }
 @keyframes pieceFloat {
   0%, 100% { transform:translateY(0); }
   50%      { transform:translateY(-14px); }
+}
+@media (hover:hover) and (pointer:fine) {
+  .pcard-float:hover:not(.dragging) .pcard-visual > img,
+  .pcard-float:hover:not(.dragging) .pcard-visual > svg { animation:itemHoverShake .6s ease !important; }
+}
+@keyframes itemHoverShake {
+  0% { transform:rotate(0deg); }
+  20% { transform:rotate(-8deg); }
+  40% { transform:rotate(6deg); }
+  60% { transform:rotate(-4deg); }
+  80% { transform:rotate(2deg); }
+  100% { transform:rotate(0deg); }
 }
 @keyframes itemShake {
   0%, 90%, 100% { transform:rotate(0deg); }
@@ -1000,6 +1022,7 @@ nav.s .nav-logo-img { filter: brightness(0) opacity(.74); }
 
 .pcard:not(.out):hover .bag-photo { transform: scale(1.04); }
 .pcard-visual { overflow:hidden; }
+.pcard-float .pcard-visual { overflow:visible !important; }
 
 /* Responsive hardening */
 :root {
