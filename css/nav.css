@@ -14,7 +14,95 @@
      --nav-idle-link        cor dos links (Coleção/Sobre/Instagram) no topo
      --nav-idle-link-hover  cor dos links no hover, no topo
      --nav-cta-border       cor da borda do botão "Fale Conosco"
+
+   Cor de marca compartilhada (usada onde quer que o botão My Favorite Bags
+   apareça preenchido de marrom — hoje em looks.html e match.html):
+     --brand-bags-brown        preenchimento/borda do botão
+     --brand-bags-brown-hover  preenchimento/borda no hover
    ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --brand-bags-brown: #653C2B;
+  --brand-bags-brown-hover: #915E48;
+}
+a.brand-bags-fill {
+  background:var(--brand-bags-brown);
+  border-color:var(--brand-bags-brown);
+  color:#F3EFE9;
+  box-shadow:0 10px 24px rgba(101,60,43,.18);
+}
+a.brand-bags-fill svg { stroke:currentColor; }
+a.brand-bags-fill:hover {
+  background:var(--brand-bags-brown-hover);
+  border-color:var(--brand-bags-brown-hover);
+  color:#FFFFFF;
+}
+
+/* ─── DROPDOWN CUSTOMIZADO DE CATEGORIA (admin) — compartilhado entre
+   index.html e looks.html. Substitui o <select> nativo para permitir
+   estilizar o hover das opções (impossível via CSS no select nativo).
+   Usa as variáveis de cada página: --bg, --text, --rose-dark, --line. ─── */
+.csel-trigger {
+  display:flex; align-items:center; justify-content:space-between; gap:6px;
+  cursor:pointer; text-align:left;
+}
+/* Seletor com elemento (button.csel-trigger) para vencer a especificidade de .fi
+   independente da ordem de carregamento do CSS na página. */
+button.csel-trigger {
+  background:var(--rose-dark) !important;
+  border-color:var(--rose-dark) !important;
+  color:var(--csel-bg, var(--bg2)) !important;
+}
+.csel-trigger .csel-arrow { flex-shrink:0; transition:transform .2s; color:inherit; }
+.csel-trigger.open .csel-arrow { transform:rotate(180deg); }
+.csel-popup {
+  background:var(--csel-bg, var(--bg2)); border:1px solid var(--line); border-radius:4px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18); overflow-y:auto; max-height:220px;
+  font-family:'Jost',sans-serif; font-size:13px;
+}
+.csel-opt {
+  padding:9px 12px; color:var(--text); cursor:pointer;
+  transition:background .12s, color .12s;
+}
+.csel-opt:hover { background:var(--rose-dark); color:var(--csel-bg, var(--bg2)); }
+.csel-opt.sel { background:var(--rose-dark); color:var(--csel-bg, var(--bg2)); font-weight:700; }
+
+/* ─── BOTÃO FLUTUANTE DO WHATSAPP — compartilhado entre index.html e looks.html ───
+   --wa-bg          cor de fundo do botão
+   --wa-shadow-rgb  mesma cor acima, em "r,g,b", usada na sombra
+   (cada página define esses dois valores no seu :root; padrão = tom do Bags) */
+:root {
+  --wa-bg: #8B4A3C;
+  --wa-shadow-rgb: 139,74,60;
+}
+.wa-float {
+  position:fixed; bottom:32px; right:32px; z-index:300;
+  width:54px; height:54px; background:var(--wa-bg); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 14px 3px rgba(37,211,102,.3), 0 4px 16px rgba(var(--wa-shadow-rgb),.28);
+  animation:waf 3.2s ease-in-out infinite;
+  transition:transform .3s var(--ease), box-shadow .3s;
+}
+.wa-float:hover { animation:none; transform:scale(1.1); box-shadow:0 0 14px 3px rgba(37,211,102,.3), 0 8px 24px rgba(var(--wa-shadow-rgb),.45); }
+@keyframes waf { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+.wa-tip {
+  position:absolute; right:62px; top:50%; transform:translateY(-50%);
+  background:var(--rose-deep); color:#fff;
+  font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+  padding:7px 14px; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity .3s;
+}
+.wa-float:hover .wa-tip { opacity:1; }
+.wa-float {
+  width:clamp(3rem, 8vw, 3.4rem);
+  height:clamp(3rem, 8vw, 3.4rem);
+}
+@media(max-width:900px){
+  .wa-tip { display:none; }
+}
+@media(max-width:600px){
+  .wa-float { width:48px; height:48px; bottom:20px; right:20px; }
+}
+
 nav {
   position:fixed; top:0; left:0; right:0; z-index:200;
   padding:28px 64px;
@@ -41,6 +129,7 @@ nav.s {
   font-size:15px; font-weight:500;
   letter-spacing:.2em; text-transform:uppercase;
   color:var(--nav-idle-text); transition:color .4s; line-height:1;
+  white-space:nowrap;
 }
 .nav-words-sub {
   font-size:12px; letter-spacing:.16em; text-transform:uppercase;
@@ -137,6 +226,6 @@ nav.s { padding:clamp(.75rem, 1.8vw, 1rem) var(--page-gutter); }
 @media(max-width:430px){
   .nav-logo { gap:.65rem; }
   .nav-logo-img { width:2.25rem; height:2.25rem; }
-  .nav-words-main { font-size:.76rem; max-width:9rem; }
+  .nav-words-main { font-size:.7rem; }
   .nav-words-sub { font-size:.75rem; }
 }

@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/cursor.css">
+<link rel="stylesheet" href="css/nav.css">
 <style>
 :root {
   --rose:        #B68B73;
@@ -103,15 +104,33 @@ body{
   background:linear-gradient(160deg, #1c130d 0%, #150D08 60%);
   overflow-y:auto;
 }
+.m-config::before {
+  content:'';
+  position:absolute;
+  right:-20%;
+  bottom:-30%;
+  width:min(117%, 34.5rem);
+  aspect-ratio:500/976;
+  background:url('webp/logo-match-background.webp') center/contain no-repeat;
+  opacity:.10;
+  pointer-events:none;
+  z-index:0;
+}
 .m-config.hidden{ display:none; }
 .m-config-close { position:absolute; top:14px; right:16px; z-index:2; }
+.m-config-brand {
+  position:relative; z-index:1; flex-shrink:0;
+  text-align:center; font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.65rem,6.6vw,2.025rem); letter-spacing:.05em; color:#fff;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
 .m-config-body {
+  position:relative;
+  z-index:1;
   display:flex; flex-direction:column; gap:clamp(1.1rem,5vw,1.6rem);
   margin-top:auto; margin-bottom:auto;
-}
-.m-config-brand {
-  text-align:center; font-family:'Cormorant Garamond',serif;
-  font-size:clamp(1.1rem,4.4vw,1.35rem); letter-spacing:.05em; color:#fff;
 }
 .m-config-brand em { color:var(--rose); font-style:italic; }
 .m-config-title {
@@ -139,6 +158,8 @@ body{
 }
 .m-config-start:active{ transform:scale(.98); }
 .m-config-nav {
+  position:relative;
+  z-index:1;
   display:flex; gap:.6rem; margin-top:auto; padding-top:1.4rem; flex-wrap:wrap; justify-content:center;
 }
 .m-config-navbtn {
@@ -150,7 +171,6 @@ body{
   transition:background .3s, box-shadow .3s;
 }
 .m-config-navbtn:hover { background:#EADFD7; box-shadow:0 4px 14px rgba(36,52,60,.18); }
-
 /* ─── CARD STACK (full-bleed) ───────────────────────────────────────────── */
 .m-stage {
   position:relative; flex:1; overflow:hidden;
@@ -317,7 +337,15 @@ body{
   padding:30px;
 }
 .m-ov.open{ display:flex; }
-.m-ov-card { text-align:center; width:100%; animation:mOvIn .5s var(--ease); }
+.m-ov-card { position:relative; text-align:center; width:100%; animation:mOvIn .5s var(--ease); }
+.m-ov-close {
+  position:absolute; top:-6px; right:-6px; width:32px; height:32px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2);
+  border-radius:50%; color:#fff; cursor:pointer; font-size:16px; line-height:1;
+  transition:background .3s;
+}
+.m-ov-close:hover { background:rgba(255,255,255,.18); }
 @keyframes mOvIn{
   0%{ transform:scale(.7); opacity:0; }
   60%{ transform:scale(1.04); opacity:1; }
@@ -386,7 +414,7 @@ body{
   text-shadow:0 2px 10px rgba(0,0,0,.6);
 }
 .m-tut-text b { font-style:normal; font-weight:600; color:var(--rose); }
-.m-tut-hand-wrap { width:41px; height:61px; position:relative; }
+.m-tut-hand-wrap { width:41px; height:124px; position:relative; }
 .m-tut-hand {
   position:absolute; left:50%; top:50%; width:41px;
   transform:translate(-50%,-50%);
@@ -399,10 +427,10 @@ body{
 .m-tut-hand.point-above { animation:tutPointPulseDown 1.2s ease-in-out infinite; }
 .m-tut-hand.point-below { animation:tutPointPulseUp 1.2s ease-in-out infinite; }
 @keyframes tutSwipeRight {
-  0%   { transform:translate(calc(-50% - 14px),-50%) rotate(90deg); opacity:0; }
+  0%   { transform:translate(calc(-50% - 14px),-50%) scaleY(-1) rotate(90deg); opacity:0; }
   20%  { opacity:1; }
   80%  { opacity:1; }
-  100% { transform:translate(calc(-50% + 14px),-50%) rotate(90deg); opacity:0; }
+  100% { transform:translate(calc(-50% + 14px),-50%) scaleY(-1) rotate(90deg); opacity:0; }
 }
 @keyframes tutSwipeLeft {
   0%   { transform:translate(calc(-50% + 14px),-50%) rotate(-90deg); opacity:0; }
@@ -417,8 +445,8 @@ body{
   100% { transform:translate(-50%, calc(-50% - 14px)) rotate(0deg); opacity:0; }
 }
 @keyframes tutPointPulseDown {
-  0%,100% { transform:translate(-50%,-50%) rotate(180deg); }
-  50%     { transform:translate(-50%, calc(-50% + 8px)) rotate(180deg); }
+  0%,100% { transform:translate(-50%,-50%) rotate(180deg) scaleX(-1); }
+  50%     { transform:translate(-50%, calc(-50% + 8px)) rotate(180deg) scaleX(-1); }
 }
 @keyframes tutPointPulseUp {
   0%,100% { transform:translate(-50%,-50%) rotate(0deg); }
@@ -596,11 +624,11 @@ button:focus-visible {
     <a href="index.html" id="mExitConfig" class="m-icon-btn m-config-close" aria-label="Sair">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
     </a>
+    <div class="m-config-brand">My Favorite <em>Match</em></div>
     <div class="m-config-body">
-      <div class="m-config-brand">My Favorite <em>Match</em></div>
       <div>
         <div class="m-config-title">O que você quer ver <em>hoje?</em></div>
-        <p class="m-config-sub">Escolha o catálogo e a ocasião — a gente monta o baralho certinho pra você.</p>
+        <p class="m-config-sub">Escolha o catálogo e a ocasião.<br>A gente monta o baralho certinho pra você.</p>
       </div>
       <div class="m-config-group">
         <span class="m-config-label">Catálogo</span>
@@ -623,7 +651,7 @@ button:focus-visible {
     </div>
 
     <div class="m-config-nav">
-      <a href="index.html" class="m-config-navbtn">My Favorite Bags <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+      <a href="index.html" id="mConfigBagsBtn" class="m-config-navbtn brand-bags-fill">My Favorite Bags <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
       <a href="looks.html" class="m-config-navbtn">My Favorite Looks <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     </div>
   </div>
@@ -662,9 +690,9 @@ button:focus-visible {
     <div class="m-tut-backdrop" onclick="nextTutorialStep()"></div>
     <div class="m-tut-cluster" id="mTutCluster">
       <p class="m-tut-text" id="mTutText"></p>
-      <div class="m-tut-hand-wrap">
+      <div class="m-tut-hand-wrap" id="mTutHandWrap">
         <div class="m-tut-hand" id="mTutHand">
-          <img src="img/hand_tutorial_v2.svg" alt="" draggable="false">
+          <img src="img/hand_tutorial.png" alt="" draggable="false">
         </div>
       </div>
     </div>
@@ -673,6 +701,7 @@ button:focus-visible {
 
   <div class="m-ov" id="mOv">
     <div class="m-ov-card">
+      <button class="m-ov-close" onclick="closeMatchOverlay()" aria-label="Fechar">✕</button>
       <div class="m-ov-emoji">💛</div>
       <div class="m-ov-t" id="mOvTitle">Deu match!</div>
       <p class="m-ov-s" id="mOvSub">Você já curtiu <b id="mOvCount">1</b> peça(s).</p>
@@ -799,8 +828,8 @@ const TUTORIAL_STEPS = [
   { type:'swipe-left',  text:'Arraste para a <b>esquerda</b> para passar para a próxima.' },
   { type:'swipe-up',    text:'Arraste para <b>cima</b> para favoritar uma peça que você amou.' },
   { type:'point', handSide:'above', target:'#btnUndo', text:'Toque aqui para <b>voltar</b> e desfazer a última escolha.' },
-  { type:'point', handSide:'below', target:'#mTop button.m-icon-btn', text:'Toque aqui para abrir as <b>configurações</b> e trocar o filtro.' },
-  { type:'point', handSide:'below', target:'#mTop a.m-icon-btn', text:'Toque aqui para <b>sair</b> do My Favorite Match.' },
+  { type:'point', handSide:'below', target:'#mTop button.m-icon-btn', text:'Toque aqui para abrir as <b>configurações</b> e trocar o filtro.', offsetY:8, handOffsetX:15, handOffsetY:6 },
+  { type:'point', handSide:'below', target:'#mTop a.m-icon-btn', text:'Toque aqui para <b>sair</b> do My Favorite Match.', offsetY:8, handOffsetX:55, handOffsetY:6 },
 ];
 let tutStep = 0;
 let tutCloneEl = null;
@@ -825,6 +854,7 @@ function renderTutorialStep() {
   cluster.style.bottom = '';
   cluster.style.left = '';
   cluster.style.transform = '';
+  document.getElementById('mTutHandWrap').style.transform = '';
 
   const frame = document.querySelector('.frame');
   const frameR = frame.getBoundingClientRect();
@@ -833,7 +863,9 @@ function renderTutorialStep() {
     const target = document.querySelector(step.target);
     if (target) {
       const r = target.getBoundingClientRect();
-      const rawX = r.left - frameR.left + r.width / 2;
+      const offsetX = step.offsetX || 0;
+      const offsetY = step.offsetY || 0;
+      const rawX = r.left - frameR.left + r.width / 2 + offsetX;
       const clampedX = Math.min(Math.max(rawX, 95), frameR.width - 95);
       cluster.style.left = clampedX + 'px';
       cluster.style.transform = 'translateX(-50%)';
@@ -853,8 +885,13 @@ function renderTutorialStep() {
         tutCloneEl = clone;
 
         cluster.classList.add('point-mode');
-        cluster.style.top = (r.bottom - frameR.top + 2) + 'px';
+        cluster.style.top = (r.bottom - frameR.top + 2 + offsetY) + 'px';
         hand.classList.add('point-below');
+        if (step.handOffsetX || step.handOffsetY) {
+          const hx = step.handOffsetX || 0;
+          const hy = step.handOffsetY || 0;
+          document.getElementById('mTutHandWrap').style.transform = `translate(${hx}px, ${hy}px)`;
+        }
       } else {
         target.classList.add('m-tut-target-glow');
         target.style.pointerEvents = 'none';
@@ -1126,13 +1163,13 @@ function buildWaMessage() {
   parts.push('Olá! Dei match em algumas peças no My Favorite Match:');
 
   if (available.length) {
-    parts.push(`\n\nDisponíveis (gostaria de mais informações):\n${available.map(l => `- ${l.name}${l.superLiked ? ' (favorito)' : ''} (${l.price})`).join('\n')}`);
+    parts.push(`\n\nDisponíveis (gostaria de mais informações):\n${available.map(l => `- ${l.name}${l.superLiked ? ' *[Favorito]*' : ''} (${l.price})`).join('\n')}`);
   }
   if (soldOut.length) {
-    parts.push(`\n\nEsgotadas (gostaria de saber se há previsão de chegada/reposição):\n${soldOut.map(l => `- ${l.name}${l.superLiked ? ' (favorito)' : ''}`).join('\n')}`);
+    parts.push(`\n\nEsgotadas (gostaria de saber se há previsão de chegada/reposição):\n${soldOut.map(l => `- ${l.name}${l.superLiked ? ' *[Favorito]*' : ''}`).join('\n')}`);
   }
   if (comingSoon.length) {
-    parts.push(`\n\nEm Breve (gostaria de saber a previsão de chegada):\n${comingSoon.map(l => `- ${l.name}${l.superLiked ? ' (favorito)' : ''}`).join('\n')}`);
+    parts.push(`\n\nEm Breve (gostaria de saber a previsão de chegada):\n${comingSoon.map(l => `- ${l.name}${l.superLiked ? ' *[Favorito]*' : ''}`).join('\n')}`);
   }
   const extra = (document.getElementById('mOvMsg') || {}).value?.trim();
   if (extra) {

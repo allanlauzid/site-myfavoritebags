@@ -18,6 +18,7 @@
   --rose-deep:   #653C2B;
   --bg:          #F3EFE9;
   --bg2:         #E7E2D9;
+  --csel-bg:     #EFE6D8; /* bege claro usado no dropdown customizado (popup e caixa fechada) */
   --white:       #FFFFFF;
   --text:        #653C2B;   /* headings */
   --text-mid:    #8C6555;   /* subheadings */
@@ -25,6 +26,14 @@
   --text-muted:  #AE9888;   /* captions */
   --line:        rgba(182,139,115,.18);
   --ease:        cubic-bezier(.4,0,.2,1);
+  --wa-bg: #653C2B;
+  --wa-shadow-rgb: 101,60,43;
+
+  /* Cores dos modais do admin (compartilhados via js/catalog-admin.js) */
+  --modal-backdrop-rgb: 42,31,24;
+  --modal-title: #2A1F18;
+  --modal-muted: #A08070;
+  --modal-error: #b83232;
 
   /* Cores do nav (compartilhado via css/nav.css) — hero escuro no topo */
   --nav-idle-text:       #fff;
@@ -94,12 +103,36 @@ button { font-family:'Jost',sans-serif; }
 
 /* ─── MY FAVORITE MATCH — botão flutuante animado e arrastável ────────── */
 @keyframes matchFloat {
-  0%, 100% { transform:translateY(0) rotate(-2deg); }
-  50%      { transform:translateY(-14px) rotate(2deg); }
+  0%, 18%, 42%, 100% { transform:translateY(0) rotate(0) scale(1); }
+  22% { transform:translateY(-3px) rotate(-1.2deg) scale(1.025); }
+  26% { transform:translateY(0) rotate(1deg) scale(1.01); }
+  30% { transform:translateY(-2px) rotate(0) scale(1.018); }
 }
 @keyframes matchGlow {
-  0%, 100% { filter:drop-shadow(0 8px 20px rgba(139,74,60,.32)); }
-  50%      { filter:drop-shadow(0 14px 28px rgba(139,74,60,.42)); }
+  0%, 100% { filter:drop-shadow(0 8px 20px rgba(139,74,60,.28)); }
+  50%      { filter:drop-shadow(0 12px 24px rgba(139,74,60,.36)); }
+}
+@keyframes matchEnter {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+@keyframes matchShine {
+  0%, 88.24% { transform:translateX(-160%) rotate(18deg); opacity:0; }
+  94.12% { opacity:.42; }
+  100% { transform:translateX(165%) rotate(18deg); opacity:0; }
+}
+@keyframes matchRadarPing {
+  0%   { transform:scale(1); opacity:.55; }
+  70%  { transform:scale(1.55); opacity:0; }
+  100% { transform:scale(1.55); opacity:0; }
+}
+@keyframes matchOpacityPulse {
+  0%, 80%, 100% { opacity:1; }
+  90% { opacity:.55; }
+}
+@keyframes matchGoldGlow {
+  0%, 76.92%, 100% { box-shadow:0 0 0 0 rgba(212,175,55,0); }
+  88.46% { box-shadow:0 0 28px 10px rgba(212,175,55,.65); }
 }
 #matchHeroBtn {
   position:absolute; z-index:6;
@@ -107,12 +140,47 @@ button { font-family:'Jost',sans-serif; }
   display:flex; align-items:center; justify-content:center;
   cursor:grab; text-decoration:none;
   touch-action:none;
-  animation:matchFloat 4.2s ease-in-out infinite, matchGlow 3.2s ease-in-out infinite;
+  border-radius:50%;
+  opacity:0;
+  animation:matchEnter .7s .45s ease forwards;
   transition:transform .3s var(--ease, ease);
 }
-#matchHeroBtn.dragging { cursor:grabbing; animation:none; transition:none; }
-#matchHeroBtn:hover { transform:scale(1.08); }
-#matchHeroBtn img { width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; -webkit-user-drag:none; }
+#matchHeroBtn::before {
+  content:'';
+  position:absolute; inset:0;
+  border-radius:50%;
+  border:2px solid rgba(139,74,60,.55);
+  pointer-events:none;
+  animation:matchRadarPing 2.6s 1.1s ease-out infinite;
+}
+#matchHeroBtn.dragging { cursor:grabbing; animation:none; transition:none; opacity:1; }
+#matchHeroBtn.dragging::before { animation:none; opacity:0; }
+#matchHeroBtn.dragging .mhb-visual { animation:none; box-shadow:none; }
+#matchHeroBtn:hover { transform:scale(1.06); }
+.mhb-visual {
+  position:absolute; inset:0;
+  border-radius:50%;
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  animation:matchGoldGlow 13s 1.1s ease-in-out infinite;
+}
+.mhb-visual::after {
+  content:'';
+  position:absolute;
+  top:-18%; bottom:-18%; left:0;
+  width:34%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.58), transparent);
+  pointer-events:none;
+  transform:translateX(-160%) rotate(18deg);
+  animation:matchShine 17s 2.4s ease-in-out infinite;
+}
+#matchHeroBtn.dragging .mhb-visual::after { animation:none; opacity:0; }
+#matchHeroBtn img {
+  width:100%; height:100%; object-fit:contain; display:block;
+  pointer-events:none; -webkit-user-drag:none;
+  animation:matchFloat 10.5s 1.2s ease-in-out infinite, matchGlow 7.8s ease-in-out infinite, matchOpacityPulse 15s 2.2s ease-in-out infinite;
+}
+#matchHeroBtn.dragging img { animation-play-state:paused; }
 #matchHeroBtn .mhb-tip {
   position:absolute; top:100%; left:50%; transform:translateX(-50%);
   margin-top:8px; white-space:nowrap;
@@ -121,9 +189,6 @@ button { font-family:'Jost',sans-serif; }
   opacity:0; pointer-events:none; transition:opacity .3s;
 }
 #matchHeroBtn:hover .mhb-tip { opacity:1; }
-@media(prefers-reduced-motion:reduce) {
-  #matchHeroBtn { animation:none; }
-}
 @media(max-width:768px) {
   #matchHeroBtn { width:68px; height:68px; }
 }
@@ -215,9 +280,9 @@ button { font-family:'Jost',sans-serif; }
 .m-track { display:flex; white-space:nowrap; animation:mq 26s linear infinite; }
 .m-item {
   font-size:12px; letter-spacing:.16em; text-transform:uppercase;
-  color:rgba(255,255,255,.55); padding:0 36px; flex-shrink:0;
+  color:rgba(255,255,255,.55); flex-shrink:0;
 }
-.m-sep { color:var(--rose); opacity:.7; }
+.m-sep { color:var(--rose); opacity:.7; margin:0 18px; display:inline-block; }
 @keyframes mq { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
 /* ─── SHARED SECTION TOKENS ───────────────────────────────────────────────── */
@@ -442,6 +507,7 @@ button { font-family:'Jost',sans-serif; }
   text-align:center;
 }
 .insta-head { margin-bottom:56px; }
+.insta.insta-tight { padding-top:40px; }
 .insta-grid {
   display:grid; grid-template-columns:repeat(5,1fr);
   gap:3px; margin-bottom:48px;
@@ -467,6 +533,15 @@ button { font-family:'Jost',sans-serif; }
   transition:color .3s, border-color .3s, gap .4s;
 }
 .insta-link:hover { color:var(--rose-dark); border-color:var(--rose-dark); gap:18px; }
+.insta-link.profile-big {
+  margin-top:34px;
+  font-size:18px;
+  gap:16px;
+  padding-bottom:8px;
+  border-bottom-width:2px;
+  line-height:1.1;
+}
+.insta-link.profile-big:hover { gap:24px; }
 
 /* ─── FOOTER ──────────────────────────────────────────────────────────────── */
 footer {
@@ -494,25 +569,6 @@ footer {
 .foot-rule { width:32px; height:1px; background:var(--rose); opacity:.4; }
 
 /* ─── WA FLOAT ────────────────────────────────────────────────────────────── */
-.wa-float {
-  position:fixed; bottom:32px; right:32px; z-index:300;
-  width:54px; height:54px; background:#8B4A3C; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 0 14px 3px rgba(37,211,102,.3), 0 4px 16px rgba(139,74,60,.28);
-  animation:waf 3.2s ease-in-out infinite;
-  transition:transform .3s var(--ease), box-shadow .3s;
-}
-.wa-float:hover { animation:none; transform:scale(1.1); box-shadow:0 0 14px 3px rgba(37,211,102,.3), 0 8px 24px rgba(139,74,60,.45); }
-@keyframes waf { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
-.wa-tip {
-  position:absolute; right:62px; top:50%; transform:translateY(-50%);
-  background:var(--rose-deep); color:#fff;
-  font-size:12px; letter-spacing:.14em; text-transform:uppercase;
-  padding:7px 14px; white-space:nowrap;
-  opacity:0; pointer-events:none; transition:opacity .3s;
-}
-.wa-float:hover .wa-tip { opacity:1; }
-
 /* ─── ADMIN ───────────────────────────────────────────────────────────────── */
 .admin-trig {
   font-size:12px; letter-spacing:.16em; text-transform:uppercase;
@@ -594,6 +650,18 @@ footer {
   color:var(--text); outline:none; transition:border-color .3s; width:100%;
 }
 .fi:focus { border-color:var(--rose-dark); }
+select.fi {
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  color:#653C2B;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23653C2B' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat;
+  background-position:right 10px center;
+  background-size:10px 7px;
+  padding-right:28px;
+}
+select.fi option { color:#653C2B; background-color:#F3EFE9; }
+select.fi option:checked,
+select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
 .fb {
   font-family:'Jost',sans-serif; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
   padding:13px 28px; background:var(--rose-dark); color:#fff;
@@ -769,7 +837,6 @@ footer {
   .insta-grid .ithumb:nth-child(4),
   .insta-grid .ithumb:nth-child(5) { display:none; }
   
-  .wa-float { width:48px; height:48px; bottom:20px; right:20px; }
   .admin-trig { bottom:20px; left:20px; }
   
   body { cursor:auto; }
@@ -790,16 +857,30 @@ footer {
 }
 
 /* My Favorite Looks link: header pill on desktop, hero pill on mobile */
+.looks-btn-logo { display:block; height:20px; width:auto; object-fit:contain; }
 @media(min-width:769px){
   #bijusHeroBtn { display:none !important; }
 }
 @media(max-width:768px){
   #navLooksBtn { display:none !important; }
   #bijusHeroBtn {
-    right:auto !important; left:50% !important; top:auto !important; bottom:36px !important;
-    transform:translateX(-50%) !important; padding:12px 22px !important; font-size:12px !important;
-    white-space:nowrap;
+    right:auto !important; bottom:auto !important;
+    padding:0 !important; font-size:12px !important;
+    white-space:nowrap !important;
+    background:transparent !important; border:none !important; box-shadow:none !important;
+    color:#F6F1EC !important;
+    animation: looksBlink 5s ease-in-out infinite, crossBtnEnter .7s ease .2s both !important;
   }
+  #bijusHeroBtn svg { stroke:#F6F1EC !important; }
+  #bijusHeroBtn .looks-btn-logo { height:16px; filter: brightness(0) invert(1); }
+}
+@keyframes looksBlink {
+  0%, 40%, 100% { opacity:.1; }
+  70% { opacity:.5; }
+}
+@keyframes crossBtnEnter {
+  from { filter:opacity(0); translate:0 -16px; }
+  to   { filter:opacity(1); translate:0 0; }
 }
 
 /* Touch devices: disable hover effects that need mouse */
@@ -883,8 +964,8 @@ textarea:focus-visible {
   letter-spacing:clamp(.14em, .8vw, .26em);
 }
 .h-dot {
-  min-width:44px;
-  min-height:44px;
+  min-width:20px;
+  min-height:0;
   display:flex;
   align-items:center;
 }
@@ -896,9 +977,10 @@ textarea:focus-visible {
   background:currentColor;
   opacity:0;
 }
-.h-dot.on { min-width:52px; }
+.h-dot.on { min-width:42px; }
 
 .catalog, .insta { padding:var(--section-y) var(--page-gutter); }
+.catalog { padding-top:0; }
 .about { padding:var(--section-y) var(--page-gutter); gap:clamp(3rem, 6vw, 6rem); }
 .cat-head {
   gap:clamp(1rem, 3vw, 2rem);
@@ -1005,11 +1087,6 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   display:inline-flex;
   align-items:center;
 }
-.wa-float {
-  width:clamp(3rem, 8vw, 3.4rem);
-  height:clamp(3rem, 8vw, 3.4rem);
-}
-
 .admin-panel {
   width:min(56.25rem, calc(100vw - 1rem));
   max-width:calc(100vw - 1rem);
@@ -1105,25 +1182,23 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   .fpill { flex:1 1 calc(50% - .5rem); }
   .about-visual::before { inset:.9rem -.9rem -.9rem .9rem; }
   .foot-bot { align-items:flex-start; gap:1rem; flex-direction:column; }
-  .wa-tip { display:none; }
   .admin-panel { height:calc(100svh - 1rem); max-height:calc(100svh - 1rem); }
 }
 
 @media(max-width:430px){
   .nav-logo { gap:.65rem; }
   .nav-logo-img { width:2.25rem; height:2.25rem; }
-  .nav-words-main { font-size:.76rem; max-width:9rem; }
-  .nav-words-sub { font-size:.75rem; }
+  .nav-words-main { font-size:.7rem; white-space:nowrap; }
+  .nav-words-sub { font-size:.55rem; }
   .nav-cta { padding-inline:.75rem; letter-spacing:.12em; }
   .hero-eyebrow::before { width:1.1rem; }
   .hero-title { font-size:clamp(2.15rem, 11vw, 3.15rem); }
   .hero-sub { max-width:28ch; }
   #bijusHeroBtn {
-    max-width:calc(100vw - 2rem);
-    bottom:1.1rem !important;
-    min-height:44px;
-    white-space:normal !important;
-    text-align:center;
+    max-width:none;
+    bottom:auto !important;
+    white-space:nowrap !important;
+    text-align:left;
   }
   .section-title, .about-title { font-size:clamp(1.8rem, 8vw, 2.45rem); }
   .stats { padding-inline:1rem; }
@@ -1254,7 +1329,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 </div>
 
 <!-- ═══ FAVORITAS DO MOMENTO ════════════════════════════════════════════════ -->
-<section id="favoritos" style="padding:80px 7%;background:var(--bg);">
+<section id="favoritos" style="padding:80px 7%;background:var(--bg);display:none;">
   <div class="reveal" style="text-align:center;margin-bottom:48px;">
     <p class="eyebrow">Seleção Especial</p>
     <h2 class="section-title">Favoritas <em>do Momento</em></h2>
@@ -1284,7 +1359,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
       })();
     </script>
   </div>
-  <a href="https://www.instagram.com/myfavorite.bagsrecife?igsh=MTRlOXU3cTE3cnVvaQ==" target="_blank" class="insta-link reveal">
+  <a href="https://www.instagram.com/myfavorite.bagsrecife?igsh=MTRlOXU3cTE3cnVvaQ==" target="_blank" class="insta-link profile-big reveal">
     Ver perfil completo →
   </a>
 </section>
@@ -1298,7 +1373,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
       <p class="eyebrow">Coleção Atual</p>
       <h2 class="section-title">Todas as <em>peças</em></h2>
     </div>
-    <p class="cat-desc">Atualizado frequentemente com peças selecionadas.<br>Fale com a gente via WhatsApp.</p>
+    <p class="cat-desc">Atualizado frequentemente com&nbsp;peças&nbsp;selecionadas.<br>Fale com a gente via WhatsApp.</p>
   </div>
 
   <div class="filters reveal reveal-d2" id="catFilters">
@@ -1404,7 +1479,9 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 </div>
 
 <script src="data/products-bags.js"></script>
+<script src="js/supabase-client.js"></script>
 <script src="js/cursor.js"></script>
+<script src="js/catalog-admin.js"></script>
 <script>
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const ROSE      = '#B68B73';
@@ -1416,27 +1493,28 @@ const LINE      = 'rgba(182,139,115,.18)';
 const HERO_SLIDES = ['webp/bolsa-02.webp','webp/bolsa-03.webp','webp/bolsa-04.webp','webp/bolsa-05.webp'];
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
-// Dados agora vêm de data/products-bags.js (window.MFB_BAGS) — fonte única
-// compartilhada com match.html. Editar aqui edita apenas a cópia em memória
-// desta sessão (sem persistência real em disco, como já era o caso antes).
+// Fonte de verdade: banco de dados (Supabase). data/products-bags.js fica só
+// como fallback de emergência (site continua funcionando se o banco cair).
 let products = window.MFB_BAGS;
 
+async function loadProductsFromDB() {
+  try {
+    const dbProducts = await sbFetchBags();
+    if (dbProducts && dbProducts.length) {
+      products = dbProducts;
+      renderProducts('all');
+      renderFavCarousel();
+      if (document.getElementById('tab-manage')?.classList.contains('on')) renderAdminList();
+    }
+  } catch (e) {
+    console.warn('Não foi possível carregar bolsas do banco, usando dados locais.', e);
+  }
+}
+loadProductsFromDB();
+
 // ─── STATUS (4 estados) ───────────────────────────────────────────────────────
-const STATUS_LABEL = { available:'DISPONÍVEL', sold_out:'ESGOTADO', coming_soon:'EM BREVE', hidden:'OCULTO' };
-const STATUS_BADGE = { available:'Disponível', sold_out:'Esgotado', coming_soon:'Em Breve', hidden:'Oculto' };
-const STATUS_COLOR = {
-  available:   { bg:'rgba(37,211,102,.1)',  border:'rgba(37,211,102,.4)', text:'#1a7a3e' },
-  sold_out:    { bg:'rgba(184,50,50,.1)',   border:'rgba(184,50,50,.4)',  text:'#b83232' },
-  coming_soon: { bg:'rgba(201,122,61,.12)', border:'rgba(201,122,61,.45)', text:'#C97A3D' },
-  hidden:      { bg:'rgba(120,120,120,.14)', border:'rgba(120,120,120,.45)', text:'#6B6B6B' },
-};
-function statusBtnCss(st) {
-  const c = STATUS_COLOR[st] || STATUS_COLOR.available;
-  return `background:${c.bg};border:1px solid ${c.border};color:${c.text};`;
-}
-function nextStatus(st) {
-  return st === 'available' ? 'sold_out' : st === 'sold_out' ? 'coming_soon' : st === 'coming_soon' ? 'hidden' : 'available';
-}
+// STATUS_LABEL/STATUS_BADGE/STATUS_COLOR/statusBtnCss/nextStatus/catLabel/
+// slugifyCat/CATS agora vêm de js/catalog-admin.js (compartilhado com looks.html).
 
 // ─── CATEGORIAS (editáveis pelo admin) ─────────────────────────────────────────
 let CATS_LIST = [
@@ -1445,21 +1523,6 @@ let CATS_LIST = [
   { key:'clutch',   label:'Clutch' },
   { key:'mini',     label:'Mini Bag' },
 ];
-function catLabel(key) {
-  const c = CATS_LIST.find(c => c.key === key);
-  return c ? c.label : (key || '—');
-}
-function slugifyCat(name) {
-  let base = name.trim().toLowerCase()
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  if (!base) base = 'cat';
-  let slug = base, n = 2;
-  while (CATS_LIST.some(c => c.key === slug)) { slug = `${base}-${n++}`; }
-  return slug;
-}
-// Compat: código antigo que ainda referenciar CATS[x] continua funcionando
-const CATS = new Proxy({}, { get: (_, key) => catLabel(key) });
 
 // Bag SVG illustrations — using brand palette
 function bagSVG(cat, color) {
@@ -1556,123 +1619,8 @@ function fp(cat, btn) {
 
 // ─── Filtros de categoria no site + <select> do admin — regenerados sempre
 // que uma categoria é criada/renomeada/excluída ────────────────────────────
-function renderCatFilters() {
-  const wrap = document.getElementById('catFilters');
-  if (!wrap) return;
-  if (!CATS_LIST.some(c => c.key === lastCatFilter)) lastCatFilter = 'all';
-  wrap.innerHTML = `<button class="fpill${lastCatFilter==='all'?' on':''}" onclick="fp('all',this)">Todas</button>` +
-    CATS_LIST.map(c => `<button class="fpill${lastCatFilter===c.key?' on':''}" onclick="fp('${c.key}',this)">${c.label}</button>`).join('');
-  renderProducts(lastCatFilter);
-}
-function renderCatSelect() {
-  const sel = document.getElementById('nc');
-  if (!sel) return;
-  const cur = sel.value;
-  sel.innerHTML = CATS_LIST.map(c => `<option value="${c.key}">${c.label}</option>`).join('');
-  if (CATS_LIST.some(c => c.key === cur)) sel.value = cur;
-}
-
-// ─── MODAIS DE CATEGORIA (Nova / Editar) ───────────────────────────────────────
-function openNewCategoryModal() {
-  const wrap = document.createElement('div');
-  wrap.id = 'catModal';
-  wrap.style.cssText = 'position:fixed;inset:0;z-index:9400;background:rgba(42,31,24,.65);display:flex;align-items:center;justify-content:center;';
-  wrap.innerHTML = `
-    <div style="background:var(--bg);border-radius:12px;padding:28px 32px;max-width:360px;width:92%;font-family:'Jost',sans-serif;">
-      <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Nova Categoria</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:18px;">Digite o nome da nova categoria.</p>
-      <input class="fi" id="newCatName" placeholder="Ex: Necessaire" style="margin-bottom:14px;">
-      <p id="newCatErr" style="font-size:12px;color:#b83232;margin-bottom:10px;display:none;"></p>
-      <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button onclick="document.getElementById('catModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;">Cancelar</button>
-        <button onclick="saveNewCategory()" style="padding:10px 20px;border:none;background:var(--rose-dark);color:#fff;cursor:pointer;font-size:12px;font-weight:700;border-radius:6px;">Salvar</button>
-      </div>
-    </div>`;
-  document.body.appendChild(wrap);
-  document.getElementById('newCatName').focus();
-}
-function saveNewCategory() {
-  const input = document.getElementById('newCatName');
-  const name = input.value.trim();
-  const err = document.getElementById('newCatErr');
-  if (!name) { err.textContent = 'Digite um nome para a categoria.'; err.style.display = 'block'; return; }
-  if (CATS_LIST.some(c => c.label.toLowerCase() === name.toLowerCase())) {
-    err.textContent = 'Já existe uma categoria com esse nome.'; err.style.display = 'block'; return;
-  }
-  CATS_LIST.push({ key: slugifyCat(name), label: name });
-  markDirty();
-  renderCatSelect();
-  renderCatFilters();
-  const m = document.getElementById('catModal'); if (m) m.remove();
-}
-
-function openEditCategoryModal() {
-  const wrap = document.createElement('div');
-  wrap.id = 'catModal';
-  wrap.style.cssText = 'position:fixed;inset:0;z-index:9400;background:rgba(42,31,24,.65);display:flex;align-items:center;justify-content:center;';
-  wrap.innerHTML = `
-    <div style="background:var(--bg);border-radius:12px;padding:28px 32px;max-width:420px;width:92%;max-height:80vh;overflow-y:auto;font-family:'Jost',sans-serif;">
-      <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Editar Categorias</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:18px;">Renomeie ou exclua uma categoria existente.</p>
-      <div id="editCatList"></div>
-      <div style="display:flex;justify-content:flex-end;margin-top:18px;">
-        <button onclick="document.getElementById('catModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;">Fechar</button>
-      </div>
-    </div>`;
-  document.body.appendChild(wrap);
-  renderEditCategoryList();
-}
-function renderEditCategoryList() {
-  const box = document.getElementById('editCatList');
-  if (!box) return;
-  box.innerHTML = CATS_LIST.map(c => `
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);">
-      <input class="fi" id="editCatName-${c.key}" value="${c.label}" style="flex:1;">
-      <button onclick="saveCategoryRename('${c.key}')" title="Salvar novo nome"
-        style="padding:9px 12px;border:1px solid var(--rose-dark);background:transparent;color:var(--rose-dark);cursor:pointer;font-size:12px;border-radius:4px;">Salvar</button>
-      <button onclick="deleteCategory('${c.key}')" title="Excluir categoria"
-        style="padding:9px 12px;border:1px solid #b83232;background:transparent;color:#b83232;cursor:pointer;font-size:12px;border-radius:4px;">Excluir</button>
-    </div>`).join('') || `<p style="font-size:12px;color:#A08070;">Nenhuma categoria cadastrada.</p>`;
-}
-function saveCategoryRename(key) {
-  const input = document.getElementById(`editCatName-${key}`);
-  const name = input.value.trim();
-  if (!name) return;
-  const c = CATS_LIST.find(c => c.key === key);
-  if (!c) return;
-  c.label = name;
-  markDirty();
-  renderCatSelect();
-  renderCatFilters();
-  renderAdminList();
-  renderProducts(lastCatFilter);
-}
-function deleteCategory(key) {
-  const c = CATS_LIST.find(c => c.key === key);
-  if (!c) return;
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(42,31,24,.7);display:flex;align-items:center;justify-content:center;';
-  wrap.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px 32px;max-width:340px;text-align:center;">
-    <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:6px;">Excluir categoria "${c.label}"?</p>
-    <p style="font-size:12px;color:#A08070;margin-bottom:22px;">A categoria some da lista e do site. Os itens cadastrados nela permanecem no catálogo.</p>
-    <div style="display:flex;gap:10px;justify-content:center;">
-      <button id="catDelNo"  style="padding:10px 22px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Não, cancelar</button>
-      <button id="catDelYes" style="padding:10px 22px;border:none;border-radius:8px;background:#b83232;color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Sim, excluir</button>
-    </div>
-  </div>`;
-  document.body.appendChild(wrap);
-  wrap.querySelector('#catDelNo').onclick  = () => wrap.remove();
-  wrap.querySelector('#catDelYes').onclick = () => {
-    wrap.remove();
-    CATS_LIST = CATS_LIST.filter(c => c.key !== key);
-    markDirty();
-    renderCatSelect();
-    renderCatFilters();
-    renderEditCategoryList();
-    renderAdminList();
-    renderProducts(lastCatFilter);
-  };
-}
+// renderCatFilters/renderCatSelect e os modais de categoria (Nova/Editar/Excluir)
+// agora vêm de js/catalog-admin.js (compartilhado com looks.html).
 
 function fpStatus(st, btn) {
   document.querySelectorAll('#statusFilters .fpill').forEach(b => b.classList.remove('on'));
@@ -1745,7 +1693,9 @@ function renderLogin() {
 
 function tryLogin() {
   if (document.getElementById('pw').value === ADMIN_PASS) {
-    loggedIn = true; sessionStorage.setItem('mfb_auth_ts', Date.now()); renderPanel();
+    loggedIn = true; sessionStorage.setItem('mfb_auth_ts', Date.now());
+    sessionStorage.setItem('mfbAdminPassword', ADMIN_PASS);
+    renderPanel();
   } else {
     document.getElementById('lerr').textContent = 'Senha incorreta. Tente novamente.';
   }
@@ -1769,22 +1719,37 @@ function renderPanel() {
     </div>
     <div class="frow">
       <div class="fg"><label class="flabel">Disponibilidade</label>
-        <select class="fi" id="na">
+        <select class="fi" id="na" style="display:none;">
           <option value="available">Disponível</option>
           <option value="sold_out">Esgotado</option>
           <option value="coming_soon">Em Breve</option>
         </select>
+        <button type="button" class="fi csel-trigger" id="naBtn"
+          onclick="event.preventDefault(); openSelectPopup(this, [{value:'available',label:'Disponível'},{value:'sold_out',label:'Esgotado'},{value:'coming_soon',label:'Em Breve'}], document.getElementById('na').value, function(k){ document.getElementById('na').value = k; document.getElementById('naBtnLabel').textContent = ({available:'Disponível',sold_out:'Esgotado',coming_soon:'Em Breve'})[k]; });">
+          <span id="naBtnLabel">Disponível</span>
+          <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
       <div class="fg"><label class="flabel">Badge "Novo"</label>
-        <select class="fi" id="nin">
+        <select class="fi" id="nin" style="display:none;">
           <option value="true">Sim</option>
           <option value="false">Não</option>
         </select>
+        <button type="button" class="fi csel-trigger" id="ninBtn"
+          onclick="event.preventDefault(); openSelectPopup(this, [{value:'true',label:'Sim'},{value:'false',label:'Não'}], document.getElementById('nin').value, function(k){ document.getElementById('nin').value = k; document.getElementById('ninBtnLabel').textContent = k==='true'?'Sim':'Não'; });">
+          <span id="ninBtnLabel">Sim</span>
+          <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
     </div>
     <div class="frow">
       <div class="fg full"><label class="flabel">Categoria</label>
-        <select class="fi" id="nc"></select>
+        <select class="fi" id="nc" style="display:none;"></select>
+        <button type="button" class="fi csel-trigger" id="ncBtn"
+          onclick="event.preventDefault(); openCatPopup(this, document.getElementById('nc').value, function(k){ document.getElementById('nc').value = k; renderCatSelect(); });">
+          <span id="ncBtnLabel">Selecione</span>
+          <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-bottom:8px;">
@@ -2054,11 +2019,20 @@ function applyLooksButtonVisibility() {
       btn.id = 'bijusHeroBtn';
       btn.href = 'looks.html';
       btn.style.cssText = 'position:absolute;right:7%;top:50%;transform:translateY(-50%);z-index:5;display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:999px;border:1.5px solid #B8896F;color:#24343C;font-family:"Cormorant Garamond",serif;font-size:15px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;background:#F6F1EC;box-shadow:0 6px 22px rgba(36,52,60,.18);transition:box-shadow .3s, transform .3s, background .3s;';
-      btn.innerHTML = 'My Favorite Looks <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+      btn.innerHTML = '<img src="webp/logo-my-favorite-looks-mini.webp" alt="" class="looks-btn-logo">My Favorite Looks <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
       btn.onmouseover = () => { btn.style.background = '#EADFD7'; btn.style.boxShadow = '0 8px 26px rgba(36,52,60,.26)'; btn.style.transform = 'translateY(-50%) translateY(-2px)'; };
       btn.onmouseout  = () => { btn.style.background = '#F6F1EC'; btn.style.boxShadow = '0 6px 22px rgba(36,52,60,.18)'; btn.style.transform = 'translateY(-50%)'; };
       const hero = document.getElementById('hero');
       if (hero) hero.appendChild(btn);
+      positionLooksBtnMobile(btn, hero);
+      window.addEventListener('resize', () => {
+        positionLooksBtnMobile(btn, hero);
+        clearTimeout(btn._posSettleTimer);
+        btn._posSettleTimer = setTimeout(() => positionLooksBtnMobile(btn, hero), 450);
+      });
+      window.addEventListener('load', () => positionLooksBtnMobile(btn, hero));
+    } else {
+      positionLooksBtnMobile(btn, document.getElementById('hero'));
     }
   } else {
     if (btn) btn.remove();
@@ -2075,7 +2049,30 @@ function applyLooksButtonVisibility() {
   }
 }
 
-const MATCH_BTN_POS_KEY = 'mfb_match_btn_pos_v2_bags';
+// Posiciona o botão "My Favorite Looks" logo abaixo da logo, apenas na versão mobile.
+// Em telas > 768px o CSS/inline style padrão (pill lateral) é mantido intacto.
+function positionLooksBtnMobile(btn, hero) {
+  if (!btn || !hero) return;
+  if (window.innerWidth > 768) {
+    btn.style.top = ''; btn.style.left = ''; btn.style.transform = '';
+    return;
+  }
+  const logo = document.querySelector('.nav-logo');
+  const heroRect = hero.getBoundingClientRect();
+  if (logo) {
+    const logoRect = logo.getBoundingClientRect();
+    const topPx  = (logoRect.bottom - heroRect.top) + 10;
+    const leftPx = logoRect.left - heroRect.left;
+    btn.style.top = topPx + 'px';
+    btn.style.left = leftPx + 'px';
+  } else {
+    btn.style.top = '80px';
+    btn.style.left = '20px';
+  }
+  btn.style.transform = 'none';
+}
+
+const MATCH_BTN_POS_KEY = 'mfb_match_btn_pos_v2';
 
 function applyMatchButtonVisibility() {
   let btn = document.getElementById('matchHeroBtn');
@@ -2087,7 +2084,7 @@ function applyMatchButtonVisibility() {
       btn.id = 'matchHeroBtn';
       btn.href = 'match.html?from=bags';
       btn.setAttribute('aria-label', 'Abrir My Favorite Match');
-      btn.innerHTML = `<img src="webp/logo-my-favorite-match-mini.webp" alt="My Favorite Match" width="92" height="92">
+      btn.innerHTML = `<span class="mhb-visual"><img src="webp/logo-my-favorite-match-mini.webp" alt="My Favorite Match" width="92" height="92"></span>
         <span class="mhb-tip">My Favorite Match</span>`;
       hero.appendChild(btn);
       positionMatchBtn(btn, hero);
@@ -2202,7 +2199,7 @@ function renderAdminList() {
       <div class="alist-name" style="width:340px;min-width:340px;flex-shrink:0;box-sizing:border-box;"></div>
       <div class="alist-btns alist-btns-hdr" style="overflow-x:auto;flex:1;min-width:0;-ms-overflow-style:none;scrollbar-width:none;display:flex;align-items:center;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 14px 6px 6px;width:100%;min-width:max-content;">
-          <div style="width:94px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:116px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <input type="checkbox" id="chkAllAvail" ${allAvail?'checked':''}
               title="${STATUS_BADGE[allAvail ? 'available' : (bulkStatusCursor || 'available')]} (clique para alternar: Disponível → Esgotado → Em Breve → Oculto)"
               onclick="event.preventDefault(); bulkCycleStatus();"
@@ -2223,6 +2220,7 @@ function renderAdminList() {
               onchange="bulkToggle('isNew',this.checked)"
               style="${chkStyle}background:${allNew?'#8B4A3C':'#B34545'};border-color:${allNew?'#8B4A3C':'#B34545'};">
           </div>
+          <div style="width:118px;flex-shrink:0;"></div>
           <div style="width:72px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <input type="checkbox" id="chkAllDel" title="Excluir todos os itens"
               onclick="bulkDeleteAll(this);return false;"
@@ -2247,9 +2245,9 @@ function renderAdminList() {
            -ms-overflow-style:none;scrollbar-width:none;display:flex;align-items:center;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 14px 10px 6px;width:100%;min-width:max-content;">
           <button onclick="togAvail(${p.id})" title="Clique para alternar o status"
-            style="height:29px;min-width:94px;padding:0 6px;flex-shrink:0;cursor:pointer;transition:all .3s;
-                   font-size:clamp(12px,2.4vw,13px);letter-spacing:.1em;font-family:'Jost',sans-serif;font-weight:600;
-                   white-space:nowrap;box-sizing:border-box;
+            style="height:29px;width:116px;padding:0 6px;flex-shrink:0;cursor:pointer;transition:all .3s;
+                   font-size:clamp(11px,2.2vw,12px);letter-spacing:.1em;font-family:'Jost',sans-serif;font-weight:600;
+                   white-space:nowrap;box-sizing:border-box;display:flex;align-items:center;justify-content:center;
                    ${statusBtnCss(p.status)}">
             ${STATUS_LABEL[p.status]}
           </button>
@@ -2269,10 +2267,12 @@ function renderAdminList() {
                    border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};
                    background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};
                    color:${p.isNew ? '#2196a8' : '#C0B4AB'};">${p.isNew ? 'NOVO ✓' : 'NOVO'}</button>
-          <select class="fi" onchange="changeItemCat(${p.id}, this.value)" title="Categoria"
-            style="font-size:12px;padding:0 6px;width:118px;height:38px;flex-shrink:0;border:1px solid var(--line);background:var(--white);color:var(--text);">
-            ${CATS_LIST.map(c => `<option value="${c.key}" ${p.cat===c.key?'selected':''}>${c.label}</option>`).join('')}
-          </select>
+          <button type="button" class="fi csel-trigger" title="Categoria"
+            style="font-size:12px;padding:0 8px 0 10px;width:118px;height:38px;flex-shrink:0;border:1px solid var(--line);background-color:var(--white);color:var(--text);"
+            onclick="event.preventDefault(); const _btn=this; openCatPopup(this, '${p.cat}', function(k){ changeItemCat(${p.id}, k); _btn.querySelector('span').textContent = catLabel(k); });">
+            <span>${catLabel(p.cat)}</span>
+            <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
           <button class="aabtn del" onclick="confirmDel(${p.id})"
             style="width:72px;height:38px;padding:0;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;border-color:#b83232;color:#b83232;">Remover</button>
@@ -2498,7 +2498,7 @@ function bulkSetStatus(status) {
     const btn = document.querySelector(`button[onclick="togAvail(${p.id})"]`);
     if (btn) {
       btn.textContent = STATUS_LABEL[p.status];
-      btn.style.cssText = `height:29px;min-width:94px;padding:0 6px;flex-shrink:0;cursor:pointer;transition:all .3s;font-size:clamp(12px,2.4vw,13px);letter-spacing:.1em;font-family:'Jost',sans-serif;font-weight:600;white-space:nowrap;box-sizing:border-box;${statusBtnCss(p.status)}`;
+      btn.style.cssText = `height:29px;width:116px;padding:0 6px;flex-shrink:0;cursor:pointer;transition:all .3s;font-size:clamp(11px,2.2vw,12px);letter-spacing:.1em;font-family:'Jost',sans-serif;font-weight:600;white-space:nowrap;box-sizing:border-box;display:flex;align-items:center;justify-content:center;${statusBtnCss(p.status)}`;
     }
   });
   syncAllChk();
@@ -2747,6 +2747,7 @@ function confirmDel(id) {
 function delProd(id) {
   products = products.filter(x => x.id !== id);
   markDirty(); renderProducts('all'); renderAdminList(); renderOverviewTab();
+  sbDeleteBag(id).catch(e => console.error('Falha ao excluir no banco:', e));
 }
 
 function togNew(id) {
@@ -2814,18 +2815,25 @@ let favTimer = null;
 
 function renderFavCarousel() {
   const favs = products.filter(p => p.favorite && p.status === 'available');
+  const section = document.getElementById('favoritos');
   const wrap  = document.getElementById('favBannerWrap');
   const empty = document.getElementById('favEmpty');
   if (!wrap) return;
 
+  const insta = document.getElementById('instagram');
+
   if (favs.length === 0) {
+    if (section) section.style.display = 'none';
     wrap.style.display  = 'none';
-    if (empty) empty.style.display = 'block';
+    if (empty) empty.style.display = 'none';
+    if (insta) insta.classList.add('insta-tight');
     clearInterval(favTimer);
     return;
   }
+  if (section) section.style.display = 'block';
   wrap.style.display  = 'block';
   if (empty) empty.style.display = 'none';
+  if (insta) insta.classList.remove('insta-tight');
 
   favIdx = 0;
   showFavSlide(favs);
@@ -2972,11 +2980,17 @@ function closeReview() {
   document.body.style.overflow = '';
 }
 
-function confirmSave() {
+async function confirmSave() {
   adminDirty = false;
   closeReview();
   renderProducts('all');
   renderFavCarousel();
+  try {
+    await Promise.all(products.map(p => sbUpsertBag(p)));
+  } catch (e) {
+    console.error('Falha ao salvar no banco:', e);
+    alert('As mudanças foram aplicadas na tela, mas houve um erro ao salvar no banco de dados: ' + e.message + '\nTente salvar novamente.');
+  }
   _origCloseA(); // close admin panel
   const msg = document.createElement('div');
   msg.textContent = '✓ Configurações salvas com sucesso!';
