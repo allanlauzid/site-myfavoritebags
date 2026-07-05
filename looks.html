@@ -484,7 +484,19 @@ button { font-family:'Jost',sans-serif; }
 .pcard-float .new-b, .pcard-float .pcard-action { display:none !important; }
 
 .pcard-float { position:relative; cursor:grab; user-select:none; touch-action:pan-y; }
-.pcard-float.armed .bag-photo { filter:drop-shadow(0 14px 22px rgba(59,37,26,.20)) drop-shadow(0 0 0 3px rgba(182,139,115,.35)); }
+/* Puxador de arraste no mobile: uma região pequena na base da imagem —
+   só tocando ali (não em qualquer parte da foto) é que o item se move,
+   igual ao botão do My Favorite Match. No desktop (mouse) não aparece,
+   porque lá dá pra arrastar segurando em qualquer parte do item. */
+.pcard-float .drag-handle {
+  position:absolute; left:50%; bottom:10px; transform:translateX(-50%);
+  width:64px; height:24px; border-radius:20px; z-index:4;
+  background:rgba(101,60,43,.14);
+  touch-action:none;
+}
+@media (hover:hover) and (pointer:fine) {
+  .pcard-float .drag-handle { display:none; }
+}
 .pcard-float.dragging { cursor:grabbing; z-index:5; }
 .pcard-float:not(.dragging) .pcard-img { transition:transform .55s var(--ease); }
 .pcard-float.dragging .pcard-img { transition:none; }
@@ -1703,6 +1715,7 @@ function renderProducts(filter = 'all') {
           <div class="pcard-action">
             <button onclick="openBagModal(${p.id})" class="slide-btn" style="border:none;cursor:pointer;">Ver Detalhes</button>
           </div>
+          <span class="drag-handle" aria-hidden="true"></span>
         </div>
       </div>
       <div class="pcard-info">
@@ -1759,26 +1772,17 @@ function initViewShake(scope) {
 function initFloatingDrag(scope) {
   scope.querySelectorAll('.pcard-float').forEach(el => {
     let startX = 0, startY = 0, moved = false, wasMoved = false, activePointerId = null;
-    // No toque, o arraste só é liberado depois de um toque duplo ("armar"),
-    // pra não conflitar com o toque simples (que faz o shake / abre o modal).
-    // Um segundo toque duplo "solta" o item, que volta pra posição original.
-    let armed = false, suppressNextClick = false;
-    let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
-
-    function checkDoubleTap(x, y) {
-      const now = Date.now();
-      const isDouble = (now - lastTapTime < 350) && (Math.hypot(x - lastTapX, y - lastTapY) < 30);
-      lastTapTime = isDouble ? 0 : now; // evita um 3º toque disparar de novo
-      lastTapX = x; lastTapY = y;
-      return isDouble;
-    }
+    // No toque, só arrasta de verdade se o dedo encostou no "puxador" — uma
+    // região pequena na base da imagem. Tocar em qualquer outra parte do
+    // item só faz o shake / abre o modal, igual antes. No mouse, continua
+    // podendo segurar em qualquer parte do item (como já era).
+    let dragAllowedForThisTouch = false;
 
     el.addEventListener('pointerdown', e => {
       if (e.button !== undefined && e.button !== 0) return; // só botão esquerdo do mouse
       activePointerId = e.pointerId;
       startX = e.clientX; startY = e.clientY;
       moved = false;
-      try { el.setPointerCapture(activePointerId); } catch (err) {}
 
       if (e.pointerType === 'touch') {
         // No toque, o shake dispara assim que encosta no item, mesmo que em
@@ -1788,27 +1792,19 @@ function initFloatingDrag(scope) {
           void v.offsetWidth;
           v.classList.add('tap-shake');
         });
-
-        if (checkDoubleTap(e.clientX, e.clientY)) {
-          armed = !armed;
-          el.classList.toggle('armed', armed);
-          suppressNextClick = true;
-          // Só bloqueia o scroll da página quando o item está armado pra
-          // arrastar de verdade — no resto do tempo o dedo pode rolar
-          // normalmente por cima do item (o shake não trava o scroll).
-          el.style.touchAction = armed ? 'none' : '';
-          if (!armed) {
-            // 2º toque duplo: solta e volta pra posição original
-            el.classList.remove('dragging');
-            el.style.transform = '';
-          }
-        }
+        dragAllowedForThisTouch = !!e.target.closest('.drag-handle');
+        // Só bloqueia o scroll da página quando o toque começou no puxador.
+        el.style.touchAction = dragAllowedForThisTouch ? 'none' : '';
+      } else {
+        dragAllowedForThisTouch = true;
       }
+
+      try { el.setPointerCapture(activePointerId); } catch (err) {}
     });
 
     el.addEventListener('pointermove', e => {
       if (activePointerId === null || e.pointerId !== activePointerId) return;
-      if (e.pointerType === 'touch' && !armed) return; // no toque, só arrasta depois de "armar"
+      if (!dragAllowedForThisTouch) return;
       const dx = e.clientX - startX, dy = e.clientY - startY;
       if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
         moved = true;
@@ -1821,14 +1817,9 @@ function initFloatingDrag(scope) {
       if (activePointerId === null || (e && e.pointerId !== activePointerId)) return;
       try { el.releasePointerCapture(activePointerId); } catch (err) {}
       activePointerId = null;
-      if (e && e.pointerType === 'touch' && armed) {
-        // continua "armado": o item fica onde está até o próximo toque
-        // duplo, que aí sim solta e volta pra posição original.
-        wasMoved = moved;
-        return;
-      }
       el.classList.remove('dragging');
       el.style.transform = ''; // sempre volta pra posição original
+      if (e && e.pointerType === 'touch') el.style.touchAction = '';
       wasMoved = moved;
     }
     el.addEventListener('pointerup', release);
@@ -1836,7 +1827,6 @@ function initFloatingDrag(scope) {
     el.addEventListener('lostpointercapture', release);
 
     el.addEventListener('click', e => {
-      if (suppressNextClick) { suppressNextClick = false; e.preventDefault(); e.stopPropagation(); return; }
       if (wasMoved) { e.preventDefault(); e.stopPropagation(); wasMoved = false; return; }
       openBagModal(Number(el.dataset.dragId));
     });
