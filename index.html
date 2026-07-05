@@ -419,6 +419,66 @@ button { font-family:'Jost',sans-serif; }
 .pwa:hover { background:var(--rose-deep); border-color:var(--rose-deep); }
 .pwa svg { flex-shrink:0; }
 
+/* ─── DUPLAS DE PRODUTOS — bolsa flutuante + fundo alternado por par ────────── */
+.pgrid { display:flex; flex-direction:column; gap:6px; }
+.prow {
+  display:grid; grid-template-columns:1fr 1fr; gap:28px 18px;
+  padding:36px 22px; border-radius:18px; margin-bottom:6px;
+  transition:background .4s;
+}
+.prow-a { background:linear-gradient(135deg, rgba(182,139,115,.13) 0%, rgba(231,226,217,.3) 100%); }
+.prow-b { background:linear-gradient(135deg, rgba(231,226,217,.5) 0%, rgba(182,139,115,.05) 100%); }
+
+.pcard { display:flex; flex-direction:column; }
+.pcard-info { min-width:0; }
+
+/* Item flutuante sem moldura/fundo — só a foto (já sem fundo, via remove.bg) */
+.pcard-float .pcard-img {
+  background:transparent !important; border:none !important;
+}
+.pcard-float .bag-photo { object-fit:contain !important; }
+
+.pcard-float { position:relative; cursor:grab; user-select:none; }
+.pcard-float.dragging { cursor:grabbing; z-index:5; }
+.pcard-float:not(.dragging) .pcard-img { transition:transform .55s var(--ease); }
+.pcard-float.dragging .pcard-img { transition:none; }
+
+@media (prefers-reduced-motion:no-preference) {
+  .pcard-float:not(.dragging) .pcard-img { animation:bagFloat 5.5s ease-in-out infinite; }
+  .prow > .pcard:nth-child(2) .pcard-float:not(.dragging) .pcard-img { animation-delay:-2.75s; }
+  .pcard-visual > img, .pcard-visual > svg { animation:itemShake 10s ease-in-out infinite; animation-delay:var(--shake-delay, 0s); }
+}
+@keyframes bagFloat {
+  0%, 100% { transform:translateY(0); }
+  50%      { transform:translateY(-14px); }
+}
+@keyframes itemShake {
+  0%, 90%, 100% { transform:rotate(0deg); }
+  91% { transform:rotate(-4deg); }
+  92% { transform:rotate(4deg); }
+  93% { transform:rotate(-3deg); }
+  94% { transform:rotate(3deg); }
+  95% { transform:rotate(-1.5deg); }
+  96%, 100% { transform:rotate(0deg); }
+}
+
+/* Desktop: cards grandes, bolsa flutuante ao lado da descrição fixa.
+   Item da coluna esquerda: descrição fica à ESQUERDA (row-reverse).
+   Item da coluna direita: descrição fica à DIREITA (row normal). */
+@media (min-width:901px) {
+  .prow { padding:64px 44px; }
+  .pcard { flex-direction:row; align-items:center; gap:36px; }
+  .prow > .pcard:nth-child(1) { flex-direction:row-reverse; }
+  .pcard-float { flex:0 0 56%; }
+  .pcard-img { aspect-ratio:1/1; margin-bottom:0; }
+  .pcard-info { flex:1 1 auto; }
+}
+
+/* Mobile/tablet: bolsa flutuante em cima, descrição embaixo (como já era) */
+@media (max-width:900px) {
+  .pcard-float { width:100%; }
+}
+
 /* ─── STATS STRIP ─────────────────────────────────────────────────────────── */
 .stats {
   background: var(--bg2);
@@ -1575,39 +1635,91 @@ function renderProducts(filter = 'all') {
   list = filter === 'all' ? list : list.filter(p => p.cat === filter);
   if (statusFilter !== 'all') list = list.filter(p => p.status === statusFilter);
 
-  grid.innerHTML = list.map(p => {
+  const cardHtml = (p) => {
     const isAvail = p.status === 'available';
     const ic  = isAvail ? ROSE      : '#C0B4AB';
-    const bg  = isAvail ? '#FFFFFF' : BG2;
     const ovText = p.status === 'sold_out' ? 'Esgotado' : p.status === 'coming_soon' ? 'Em Breve' : '';
+    const shakeDelay = ((list.indexOf(p) % 5) * 2) + 's';
 
     return `
     <div class="pcard ${isAvail ? '' : 'out'}" data-id="${p.id}">
-      <div class="pcard-img" style="background:${bg}">
-        <div class="pcard-visual" style="padding:0;cursor:pointer;" onclick="openBagModal(${p.id})">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;transition:transform .75s var(--ease);" class="bag-photo">` : bagSVG(p.cat, ic)}</div>
-        ${!isAvail ? `<div class="sold-ov"><div class="sold-badge">${ovText}</div></div>` : ''}
-        ${p.isNew && isAvail ? `<div class="new-b">Novo</div>` : ''}
-        ${isAvail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
-        <div class="pcard-action">
-          <button onclick="openBagModal(${p.id})" class="slide-btn" style="border:none;cursor:pointer;">Ver Detalhes</button>
+      <div class="pcard-float" data-drag-id="${p.id}">
+        <div class="pcard-img">
+          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo">` : bagSVG(p.cat, ic)}</div>
+          ${!isAvail ? `<div class="sold-ov"><div class="sold-badge">${ovText}</div></div>` : ''}
+          ${p.isNew && isAvail ? `<div class="new-b">Novo</div>` : ''}
+          ${isAvail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
+          <div class="pcard-action">
+            <button onclick="openBagModal(${p.id})" class="slide-btn" style="border:none;cursor:pointer;">Ver Detalhes</button>
+          </div>
         </div>
       </div>
-      <div class="pname">${p.name}</div>
-      <div class="pmeta">
-        <span class="pcat">${CATS[p.cat]}</span>
-        ${isAvail ? `<span class="pprice">
-          ${p.promo
-            ? `<span style="text-decoration:line-through;color:#B5544A;font-size:14px;margin-right:6px;">${p.promo.old}</span><span style="color:var(--rose-dark);">${p.promo.new}</span>`
-            : p.price}
-        </span>` : ''}
+      <div class="pcard-info">
+        <div class="pname">${p.name}</div>
+        <div class="pmeta">
+          <span class="pcat">${CATS[p.cat]}</span>
+          ${isAvail ? `<span class="pprice">
+            ${p.promo
+              ? `<span style="text-decoration:line-through;color:#B5544A;font-size:14px;margin-right:6px;">${p.promo.old}</span><span style="color:var(--rose-dark);">${p.promo.new}</span>`
+              : p.price}
+          </span>` : ''}
+        </div>
+        <a href="${waMsg(p.name, p.status)}" target="_blank" class="pwa">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          ${p.status === 'available' ? 'Comprar via WhatsApp' : p.status === 'sold_out' ? 'Perguntar Disponibilidade' : 'Perguntar Previsão'}
+        </a>
       </div>
-      <a href="${waMsg(p.name, p.status)}" target="_blank" class="pwa">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-        ${p.status === 'available' ? 'Comprar via WhatsApp' : p.status === 'sold_out' ? 'Perguntar Disponibilidade' : 'Perguntar Previsão'}
-      </a>
     </div>`;
-  }).join('');
+  };
+
+  const rows = [];
+  for (let i = 0; i < list.length; i += 2) {
+    const pair = [list[i], list[i + 1]].filter(Boolean);
+    rows.push(`<div class="prow ${(i / 2) % 2 === 0 ? 'prow-a' : 'prow-b'}">${pair.map(cardHtml).join('')}</div>`);
+  }
+  grid.innerHTML = rows.join('');
+  initFloatingDrag(grid);
 }
+
+// ─── BOLSAS FLUTUANTES — arrastáveis, voltam sozinhas pra posição original ──
+let _dragActive = null;
+function initFloatingDrag(scope) {
+  scope.querySelectorAll('.pcard-float').forEach(el => {
+    el.addEventListener('mousedown', e => { _dragStart(el, e.clientX, e.clientY); e.preventDefault(); });
+    el.addEventListener('touchstart', e => { const t = e.touches[0]; _dragStart(el, t.clientX, t.clientY); }, { passive: true });
+    el.addEventListener('touchmove', e => { const t = e.touches[0]; _dragMove(t.clientX, t.clientY); }, { passive: true });
+    el.addEventListener('touchend', _dragEnd);
+    el.addEventListener('click', e => {
+      if (_dragActive && _dragActive.el === el && _dragActive.wasMoved) {
+        e.preventDefault(); e.stopPropagation();
+        _dragActive.wasMoved = false;
+        return;
+      }
+      openBagModal(Number(el.dataset.dragId));
+    });
+  });
+}
+function _dragStart(el, x, y) { _dragActive = { el, startX: x, startY: y, moved: false, wasMoved: false }; }
+function _dragMove(x, y) {
+  if (!_dragActive) return;
+  const { el, startX, startY } = _dragActive;
+  const dx = x - startX, dy = y - startY;
+  if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+    _dragActive.moved = true;
+    el.classList.add('dragging');
+  }
+  if (_dragActive.moved) el.style.transform = `translate(${dx * .7}px, ${dy * .7}px)`;
+}
+function _dragEnd() {
+  if (!_dragActive) return;
+  const { el, moved } = _dragActive;
+  el.classList.remove('dragging');
+  el.style.transform = '';
+  _dragActive.wasMoved = moved;
+  _dragActive = moved ? _dragActive : null;
+}
+document.addEventListener('mousemove', e => { if (_dragActive) _dragMove(e.clientX, e.clientY); });
+document.addEventListener('mouseup', _dragEnd);
 
 let lastCatFilter = 'all';
 function fp(cat, btn) {
@@ -1756,6 +1868,44 @@ function renderPanel() {
       <button class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="openNewCategoryModal()">+ Nova Categoria</button>
       <button class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="openEditCategoryModal()">Editar Categoria</button>
     </div>
+
+    <div class="fg full" style="margin-bottom:18px;">
+      <label class="flabel">Foto da Bolsa</label>
+      <input type="file" id="npFile" accept="image/*" style="display:none;" onchange="onNewProdFileChosen(this)">
+      <div id="npPhotoBox" style="border:1.5px dashed var(--line);border-radius:8px;padding:18px;text-align:center;">
+        <div id="npPhotoEmpty">
+          <button type="button" class="fb" style="margin-top:0;" onclick="document.getElementById('npFile').click()">Escolher foto</button>
+          <p style="font-size:11.5px;color:var(--modal-muted,#A08070);margin-top:8px;">O fundo é removido automaticamente (remove.bg) — você confere antes de salvar.</p>
+        </div>
+        <div id="npPhotoWorking" style="display:none;font-size:12.5px;color:var(--rose-dark);">Removendo o fundo, aguarde…</div>
+        <div id="npPhotoPreviewWrap" style="display:none;">
+          <div style="display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+            <div>
+              <p style="font-size:11px;letter-spacing:.1em;color:var(--modal-muted,#A08070);margin-bottom:6px;">ORIGINAL</p>
+              <img id="npPhotoOriginal" style="width:120px;height:120px;object-fit:contain;background:#eee;border-radius:6px;">
+            </div>
+            <div>
+              <p style="font-size:11px;letter-spacing:.1em;color:var(--modal-muted,#A08070);margin-bottom:6px;">FUNDO REMOVIDO</p>
+              <img id="npPhotoResult" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:center;">
+            <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="document.getElementById('npFile').click()">Tentar outra foto</button>
+            <button type="button" class="fb" style="margin-top:0;" onclick="confirmNewProdPhoto()">Usar esta foto</button>
+          </div>
+        </div>
+        <div id="npPhotoError" style="display:none;font-size:12px;color:#b83232;">
+          <p id="npPhotoErrorMsg" style="margin-bottom:10px;"></p>
+          <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="useOriginalPhotoNoRemoveBg()">Usar foto original (sem remover fundo)</button>
+        </div>
+        <div id="npPhotoConfirmed" style="display:none;">
+          <img id="npPhotoFinal" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;margin-bottom:8px;">
+          <p style="font-size:12px;color:#1a7a3e;font-weight:600;">✓ Foto pronta para salvar</p>
+          <button type="button" class="fb" style="margin-top:8px;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="document.getElementById('npFile').click()">Trocar foto</button>
+        </div>
+      </div>
+    </div>
+
     <button class="fb" onclick="addProd()">+ Adicionar ao Catálogo</button>
     <p id="addMsg" style="font-size:12px;margin-top:10px;"></p>
   </div>
@@ -2555,6 +2705,79 @@ function handleBannerUpload(idx, input) {
   reader.readAsDataURL(file);
 }
 
+// ── Foto nova (Adicionar Bolsa) — upload -> remove.bg -> converte p/ webp -> confirmar
+// Se a remoção de fundo falhar, o admin pode usar a foto original mesmo assim
+// (também convertida pra webp, só sem o fundo removido).
+let newProdRawFile = null;
+let newProdRemovedBgDataUrl = null;
+let newProdFinalImg = null;
+let newProdFileName = null;
+
+function _npShow(section) {
+  ['npPhotoEmpty','npPhotoWorking','npPhotoPreviewWrap','npPhotoError','npPhotoConfirmed']
+    .forEach(id => document.getElementById(id).style.display = (id === section) ? 'block' : 'none');
+}
+
+async function onNewProdFileChosen(input) {
+  const file = input.files[0];
+  if (!file) return;
+  newProdRawFile = file;
+  newProdFileName = file.name;
+  newProdFinalImg = null;
+  _npShow('npPhotoWorking');
+  try {
+    const originalUrl = URL.createObjectURL(file);
+    const removedBg = await sbRemoveBackground(file);
+    newProdRemovedBgDataUrl = removedBg;
+    document.getElementById('npPhotoOriginal').src = originalUrl;
+    document.getElementById('npPhotoResult').src = removedBg;
+    _npShow('npPhotoPreviewWrap');
+  } catch (e) {
+    document.getElementById('npPhotoErrorMsg').textContent = 'Não foi possível remover o fundo: ' + e.message;
+    _npShow('npPhotoError');
+  }
+}
+
+async function _npSaveFinal(dataUrlToConvert) {
+  const msg = document.getElementById('addMsg');
+  _npShow('npPhotoWorking');
+  document.getElementById('npPhotoWorking').textContent = 'Convertendo pra WebP e salvando…';
+  try {
+    const webp = await convertToWebp(dataUrlToConvert);
+    const baseName = (newProdFileName || 'bolsa').replace(/\.[^.]+$/, '');
+    const url = await sbUploadImage(webp, baseName + '.webp');
+    newProdFinalImg = url;
+    document.getElementById('npPhotoFinal').src = url;
+    _npShow('npPhotoConfirmed');
+  } catch (e) {
+    msg.style.color = '#7A1E1E';
+    msg.textContent = 'Erro ao salvar a foto: ' + e.message;
+    _npShow('npPhotoPreviewWrap');
+  } finally {
+    document.getElementById('npPhotoWorking').textContent = 'Removendo o fundo, aguarde…';
+  }
+}
+
+async function confirmNewProdPhoto() {
+  await _npSaveFinal(newProdRemovedBgDataUrl);
+}
+
+// Fallback: remove.bg falhou, mas o admin quer usar a foto do jeito que é
+// (ainda assim convertida pra webp antes de ir pro Storage).
+async function useOriginalPhotoNoRemoveBg() {
+  if (!newProdRawFile) return;
+  await _npSaveFinal(newProdRawFile);
+}
+
+function resetNewProdPhoto() {
+  newProdRawFile = null;
+  newProdRemovedBgDataUrl = null;
+  newProdFinalImg = null;
+  newProdFileName = null;
+  document.getElementById('npFile').value = '';
+  _npShow('npPhotoEmpty');
+}
+
 function addProd() {
   const name  = document.getElementById('nn').value.trim();
   const price = document.getElementById('np').value.trim();
@@ -2568,16 +2791,18 @@ function addProd() {
     id: Date.now(), name, cat: document.getElementById('nc').value,
     price, status: document.getElementById('na').value,
     isNew: document.getElementById('nin').value === 'true',
-    favorite: false
+    favorite: false,
+    img: newProdFinalImg || null,
   });
   markDirty();
   renderProducts('all');
   document.querySelectorAll('.fpill').forEach(b => b.classList.remove('on'));
   document.querySelector('.fpill').classList.add('on');
   msg.style.color = '#1a7a3e';
-  msg.textContent = `"${name}" adicionada com sucesso!`;
+  msg.textContent = `"${name}" adicionada com sucesso! Clique em "Revisar e Salvar" para publicar.`;
   document.getElementById('nn').value = '';
   document.getElementById('np').value = '';
+  resetNewProdPhoto();
 }
 
 function openPriceModal(id) {

@@ -120,3 +120,39 @@ async function sbRemoveBackground(file) {
   if (!res.ok || json.error) throw new Error(json.error || 'Falha ao remover o fundo');
   return json.image; // data:image/png;base64,...
 }
+
+// Envia uma imagem (data URL base64, já aprovada pelo admin) pro Storage do
+// Supabase e devolve a URL pública definitiva pra salvar em bags.img/looks.img.
+async function sbUploadImage(base64DataUrl, filename) {
+  const data = await sbAdminWrite('bags', 'upload_image', { base64: base64DataUrl, filename });
+  return data.url;
+}
+
+// ── Conversão para WebP — roda no navegador, sem precisar de servidor ──────
+// Usada tanto no resultado do remove.bg quanto em fotos que ficam do jeito
+// que foram enviadas (fundo não removido). Aceita PNG, JPG/JPEG (ou qualquer
+// imagem que o navegador consiga decodificar) e devolve uma data URL .webp.
+async function convertToWebp(source, quality = 0.9) {
+  const dataUrl = (source instanceof File || source instanceof Blob)
+    ? await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(source);
+      })
+    : source;
+
+  const img = await new Promise((resolve, reject) => {
+    const im = new Image();
+    im.onload = () => resolve(im);
+    im.onerror = reject;
+    im.src = dataUrl;
+  });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  return canvas.toDataURL('image/webp', quality);
+}
