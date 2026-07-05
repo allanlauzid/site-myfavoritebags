@@ -58,4 +58,8 @@
       t.x += (tx - t.x) * 0.13;
       t.y += (ty - t.y) * 0.13;
       t.el.style.transform = `translate(${t.x}px, ${t.y}px) translate(-50%,-50%)`;
-      tx = t.x; ty
+      tx = t.x; ty = t.y;
+    });
+    requestAnimationFrame(loop);
+  })();
+})();
