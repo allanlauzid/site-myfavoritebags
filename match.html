@@ -715,6 +715,7 @@ button:focus-visible {
 
 <script src="data/products-bags.js"></script>
 <script src="data/products-looks.js"></script>
+<script src="js/supabase-client.js"></script>
 <script>
 // ─── DADOS ──────────────────────────────────────────────────────────────────
 // Fonte única compartilhada com index.html (Bags) e looks.html (Looks).
@@ -731,18 +732,41 @@ function inferOccasion(p, brand) {
   }
   return 'dia-a-dia';
 }
-const BAGS_ITEMS  = (window.MFB_BAGS  || []).filter(p => p.status !== 'hidden').map(p => ({
-  name:p.name, cat:'Bolsa', catLabel: {tote:'Tote Bag',shoulder:'Shoulder',clutch:'Clutch',mini:'Mini Bag'}[p.cat] || p.cat,
-  price:p.price, status:p.status || 'available', brand:'bags', img:p.img,
-  isNew: !!p.isNew, tags: Array.isArray(p.tags) ? p.tags : [], occasion: inferOccasion(p,'bags'),
-}));
-const LOOKS_ITEMS = (window.MFB_LOOKS || []).filter(p => p.status !== 'hidden').map(p => ({
-  name:p.name, catLabel: {colar:'Colar',brinco:'Brinco',pulseira:'Pulseira',anel:'Anel'}[p.cat] || p.cat,
-  cat: {colar:'Colar',brinco:'Brinco',pulseira:'Pulseira',anel:'Anel'}[p.cat] || p.cat,
-  price:p.price, status:p.status || 'available', brand:'looks',
-  isNew: !!p.isNew, tags: Array.isArray(p.tags) ? p.tags : [], occasion: inferOccasion(p,'looks'),
-}));
-const ALL_ITEMS = [...BAGS_ITEMS, ...LOOKS_ITEMS].map((it,i)=>({ ...it, id:i }));
+function buildBagsItems() {
+  return (window.MFB_BAGS  || []).filter(p => p.status !== 'hidden').map(p => ({
+    name:p.name, cat:'Bolsa', catLabel: {tote:'Tote Bag',shoulder:'Shoulder',clutch:'Clutch',mini:'Mini Bag'}[p.cat] || p.cat,
+    price:p.price, status:p.status || 'available', brand:'bags', img:p.img,
+    isNew: !!p.isNew, tags: Array.isArray(p.tags) ? p.tags : [], occasion: inferOccasion(p,'bags'),
+  }));
+}
+function buildLooksItems() {
+  return (window.MFB_LOOKS || []).filter(p => p.status !== 'hidden').map(p => ({
+    name:p.name, catLabel: {colar:'Colar',brinco:'Brinco',pulseira:'Pulseira',anel:'Anel'}[p.cat] || p.cat,
+    cat: {colar:'Colar',brinco:'Brinco',pulseira:'Pulseira',anel:'Anel'}[p.cat] || p.cat,
+    price:p.price, status:p.status || 'available', brand:'looks',
+    isNew: !!p.isNew, tags: Array.isArray(p.tags) ? p.tags : [], occasion: inferOccasion(p,'looks'),
+  }));
+}
+let BAGS_ITEMS  = buildBagsItems();
+let LOOKS_ITEMS = buildLooksItems();
+let ALL_ITEMS = [...BAGS_ITEMS, ...LOOKS_ITEMS].map((it,i)=>({ ...it, id:i }));
+
+// Busca os dados atuais no banco (Supabase) assim que a página abre, pra não
+// ficar mostrando bolsas/peças antigas que já foram removidas/editadas no
+// admin. Se o banco falhar, continua usando os dados locais (fallback).
+async function refreshMatchItemsFromDB() {
+  try {
+    const [dbBags, dbLooks] = await Promise.all([sbFetchBags(), sbFetchLooks()]);
+    if (dbBags && dbBags.length) window.MFB_BAGS = dbBags;
+    if (dbLooks && dbLooks.length) window.MFB_LOOKS = dbLooks;
+    BAGS_ITEMS  = buildBagsItems();
+    LOOKS_ITEMS = buildLooksItems();
+    ALL_ITEMS = [...BAGS_ITEMS, ...LOOKS_ITEMS].map((it,i)=>({ ...it, id:i }));
+  } catch (e) {
+    console.warn('Não foi possível atualizar itens do Match a partir do banco, usando dados locais.', e);
+  }
+}
+refreshMatchItemsFromDB();
 
 const BRAND_LABEL = { bags:'My Favorite Bags', looks:'My Favorite Looks' };
 const STATUS_LABEL_PT = { available:'Disponível', sold_out:'Esgotado', coming_soon:'Em Breve' };

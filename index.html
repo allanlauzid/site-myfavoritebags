@@ -2202,7 +2202,9 @@ const SITE_STATE_KEY = { looks: 'mfb_looks_state', match: 'mfb_match_state' };
 const SITE_LABEL      = { looks: 'My Favorite Looks', match: 'My Favorite Match' };
 
 function getSiteState(site) {
-  return localStorage.getItem(SITE_STATE_KEY[site]) || 'locked';
+  // Padrão: My Favorite Looks e My Favorite Match ficam visíveis por padrão
+  // (só mudam se o admin alterar manualmente no painel central).
+  return localStorage.getItem(SITE_STATE_KEY[site]) || 'visible';
 }
 function setSiteState(site, state) {
   localStorage.setItem(SITE_STATE_KEY[site], state);
