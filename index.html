@@ -2440,7 +2440,18 @@ function makeMatchBtnDraggable(btn, hero) {
     }
   }
   function onClick(e) {
-    if (moved) { e.preventDefault(); moved = false; }
+    if (moved) { e.preventDefault(); moved = false; return; }
+    // Ao clicar de verdade (sem ter arrastado), tenta ativar o modo tela
+    // cheia ANTES de navegar para o My Favorite Match — precisa ser
+    // disparado direto no gesto do clique, senão o navegador bloqueia.
+    e.preventDefault();
+    const url = btn.href;
+    const go = () => { location.href = url; };
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().then(go).catch(go);
+    } else {
+      go();
+    }
   }
 
   btn.addEventListener('mousedown', e => { onDown(e.clientX, e.clientY); e.preventDefault(); });
