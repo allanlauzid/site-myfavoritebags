@@ -469,7 +469,7 @@ body{
 /* ─── TELA "ATIVAR TELA CHEIA" — aparece antes do tutorial se o navegador ─── */
 /* não conseguiu (ou não pôde) entrar em fullscreen ao clicar no botão do   */
 /* Match, na página anterior (Bags/Looks).                                 */
-.m-fs { position:absolute; inset:0; z-index:9; display:none; cursor:pointer; }
+.m-fs { position:absolute; inset:0; z-index:7; display:none; cursor:pointer; }
 .m-fs.open { display:block; }
 .m-fs-backdrop {
   position:absolute; inset:0;
@@ -901,19 +901,21 @@ function startSwiping() {
   document.getElementById('mStage').style.display = 'block';
   document.getElementById('mActions').style.display = 'flex';
   render();
+  // Se a tela ainda não está em tela cheia, monta a telinha pedindo pra
+  // ativar o modo tela cheia JÁ ATRÁS da tela de configuração (mesma lógica
+  // do card, acima) — assim, quando a config for "removida", ela revela
+  // direto essa tela na frente do card, sem o card aparecer sozinho antes.
+  const needsFsPrompt = !isFullscreenActive();
+  if (needsFsPrompt) document.getElementById('mFs').classList.add('open');
   const cfg = document.getElementById('mConfig');
   cfg.classList.add('wiping');
   setTimeout(() => {
     cfg.classList.remove('wiping');
     cfg.classList.add('hidden');
-    // Se o navegador já está em tela cheia (ativada no clique do botão, na
-    // página anterior), pula direto pro tutorial. Senão, mostra a telinha
-    // pedindo pra tocar no ícone de tela cheia antes de seguir.
-    if (isFullscreenActive()) {
-      startTutorial();
-    } else {
-      document.getElementById('mFs').classList.add('open');
-    }
+    // Se já estava em tela cheia, pula direto pro tutorial. Senão, a telinha
+    // de tela cheia (já revelada acima) segue na tela até o usuário tocar
+    // no ícone (confirmFullscreenPrompt fecha ela e chama startTutorial).
+    if (!needsFsPrompt) startTutorial();
   }, 550);
 }
 
