@@ -487,7 +487,10 @@ body{
   text-align:center; max-width:240px; text-wrap:balance;
   text-shadow:0 2px 10px rgba(0,0,0,.6);
 }
-.m-fs-arrow { width:34px; }
+.m-fs-arrow {
+ width:34px;
+ transform:translateX(60px);
+}
 .m-fs-arrow img { display:block; width:100%; height:auto; pointer-events:none; }
 .m-fs-icon-btn {
   background:none; border:none; padding:0; cursor:pointer;
@@ -495,6 +498,7 @@ body{
   animation:fsBreathe 1.8s ease-in-out infinite;
 }
 .m-fs-icon-btn img { display:block; width:100%; height:100%; pointer-events:none; }
+.frame.m-fs-fading { transition:opacity .28s ease; opacity:0; }
 @keyframes fsFloat {
   0%,100% { transform:translate(-50%,-50%) translateY(0); }
   50%     { transform:translate(-50%,-50%) translateY(-10px); }
@@ -924,17 +928,26 @@ function isFullscreenActive() {
   return !!(document.fullscreenElement || document.webkitFullscreenElement);
 }
 function confirmFullscreenPrompt() {
+  const frame = document.querySelector('.frame');
   const finish = () => {
     document.getElementById('mFs').classList.remove('open');
+    // Reaparece suavemente depois que o navegador já concluiu a troca de
+    // tela cheia (evita o "pulo" brusco do redimensionamento nativo).
+    requestAnimationFrame(() => frame.classList.remove('m-fs-fading'));
     startTutorial();
   };
   const el = document.documentElement;
   const req = el.requestFullscreen || el.webkitRequestFullscreen;
-  if (req) {
-    req.call(el).then(finish).catch(finish);
-  } else {
-    finish();
-  }
+  // Escurece rapidamente ANTES de pedir a tela cheia, pra disfarçar o salto
+  // de redimensionamento que o navegador faz nesse momento.
+  frame.classList.add('m-fs-fading');
+  setTimeout(() => {
+    if (req) {
+      req.call(el).then(finish).catch(finish);
+    } else {
+      finish();
+    }
+  }, 220);
 }
 
 // ─── TUTORIAL (coach marks) ─────────────────────────────────────────────────
