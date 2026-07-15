@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="no-js">
 <head>
+<script>document.documentElement.classList.replace('no-js','js');setTimeout(()=>{if(!document.documentElement.classList.contains('reveal-ready'))document.querySelectorAll('.reveal').forEach(el=>el.classList.add('vis'));},2500);</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Favorite Bags — Recife</title>
@@ -324,7 +325,7 @@ button { font-family:'Jost',sans-serif; }
   font-size:12px; letter-spacing:.2em; text-transform:uppercase;
   padding:9px 22px; background:transparent; cursor:pointer;
   color:var(--text-muted); border:1px solid var(--line);
-  transition:all .3s; font-family:'Jost',sans-serif; font-weight:400;
+  transition:background-color .3s, border-color .3s, color .3s, box-shadow .3s, scale .15s; font-family:'Jost',sans-serif; font-weight:400;
 }
 .fpill:hover { border-color:var(--rose-dark); color:var(--text); }
 .fpill.on { background:var(--rose-deep); color:#fff; border-color:var(--rose-deep); }
@@ -744,7 +745,7 @@ footer {
   font-size:12px; letter-spacing:.2em; text-transform:uppercase;
   padding:12px 16px; background:none; border:none;
   color:var(--text-muted); cursor:pointer; font-family:'Jost',sans-serif;
-  border-bottom:2px solid transparent; margin-bottom:-1px; transition:all .3s;
+  border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .3s, border-color .3s, background-color .3s, scale .15s;
   white-space:nowrap;
 }
 .atab.on { color:var(--text); border-bottom-color:var(--rose-dark); }
@@ -823,7 +824,7 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   font-size:12px; letter-spacing:.14em; text-transform:uppercase;
   padding:7px 14px; border:1px solid var(--line);
   background:transparent; color:var(--text-muted); cursor:pointer;
-  font-family:'Jost',sans-serif; transition:all .3s;
+  font-family:'Jost',sans-serif; transition:background-color .3s, border-color .3s, color .3s, scale .15s;
 }
 .aabtn:hover { background:var(--rose-dark); color:#fff; border-color:var(--rose-dark); }
 .aabtn.del { border-color:#b83232 !important; color:#b83232 !important; }
@@ -1330,8 +1331,10 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 }
 
 </style>
+<link rel="stylesheet" href="css/admin-image-manager.css">
+<link rel="stylesheet" href="css/interface-polish.css">
 </head>
-<body>
+<body class="page-bags">
 
 <!-- Cursor -->
 <div class="cursor" id="cur"></div>
@@ -1453,8 +1456,8 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   <div class="reveal reveal-d2" style="max-width:700px;margin:0 auto;position:relative;">
     <div id="favBannerWrap" style="display:none;">
       <div id="favBanner"></div>
-      <button onclick="favSlide(-1)" style="position:absolute;left:-20px;top:40%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:20px;z-index:2;display:flex;align-items:center;justify-content:center;">&#8249;</button>
-      <button onclick="favSlide(1)"  style="position:absolute;right:-20px;top:40%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:20px;z-index:2;display:flex;align-items:center;justify-content:center;">&#8250;</button>
+      <button class="fav-nav-arrow" aria-label="Favorito anterior" onclick="favSlide(-1)" style="position:absolute;left:-22px;top:40%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:50%;width:44px;height:44px;cursor:pointer;font-size:20px;z-index:2;display:flex;align-items:center;justify-content:center;">&#8249;</button>
+      <button class="fav-nav-arrow" aria-label="Próximo favorito" onclick="favSlide(1)"  style="position:absolute;right:-22px;top:40%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:50%;width:44px;height:44px;cursor:pointer;font-size:20px;z-index:2;display:flex;align-items:center;justify-content:center;">&#8250;</button>
     </div>
     <p id="favEmpty" style="text-align:center;color:var(--text-muted);font-size:13px;display:none;">Nenhuma bolsa marcada como favorita ainda.</p>
   </div>
@@ -1492,7 +1495,8 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
     <p class="cat-desc">Atualizado frequentemente com&nbsp;peças&nbsp;selecionadas.<br>Fale com a gente via WhatsApp.</p>
   </div>
 
-  <div class="filters reveal reveal-d2" id="catFilters">
+  <div class="catalog-filter-stack reveal reveal-d2">
+  <div class="filters" id="catFilters">
     <button class="fpill on" onclick="fp('all',this)">Todas</button>
     <button class="fpill"    onclick="fp('tote',this)">Tote Bags</button>
     <button class="fpill"    onclick="fp('shoulder',this)">Shoulder</button>
@@ -1500,11 +1504,13 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
     <button class="fpill"    onclick="fp('mini',this)">Mini Bags</button>
   </div>
 
-  <div class="filters reveal reveal-d2" id="statusFilters" style="margin-top:-10px;">
-    <button class="fpill on" onclick="fpStatus('all',this)">Todos os Status</button>
-    <button class="fpill"    onclick="fpStatus('available',this)">Disponível</button>
-    <button class="fpill"    onclick="fpStatus('sold_out',this)">Esgotado</button>
-    <button class="fpill"    onclick="fpStatus('coming_soon',this)">Em Breve</button>
+  <div class="filters" id="statusFilters">
+    <button class="fpill on" aria-pressed="true" onclick="fpStatus('all',this)">Todos os Status</button>
+    <button class="fpill" aria-pressed="false" onclick="fpStatus('available',this)">Disponível</button>
+    <button class="fpill" aria-pressed="false" onclick="fpStatus('sold_out',this)">Esgotado</button>
+    <button class="fpill" aria-pressed="false" onclick="fpStatus('coming_soon',this)">Em Breve</button>
+  </div>
+  <p class="catalog-result-count" id="catalogResultCount" role="status" aria-live="polite"></p>
   </div>
 
   <div class="pgrid" id="pgrid"></div>
@@ -1629,7 +1635,7 @@ async function loadProductsFromDB() {
 loadProductsFromDB();
 
 // ─── STATUS (4 estados) ───────────────────────────────────────────────────────
-// STATUS_LABEL/STATUS_BADGE/STATUS_COLOR/statusBtnCss/nextStatus/catLabel/
+// STATUS_LABEL/STATUS_BADGE/nextStatus/catLabel/
 // slugifyCat/CATS agora vêm de js/catalog-admin.js (compartilhado com looks.html).
 
 // ─── CATEGORIAS (editáveis pelo admin) ─────────────────────────────────────────
@@ -1736,6 +1742,8 @@ function renderProducts(filter = 'all') {
     rows.push(`<div class="prow ${(i / 2) % 2 === 0 ? 'prow-a' : 'prow-b'}">${pair.map(cardHtml).join('')}</div>`);
   }
   grid.innerHTML = rows.join('');
+  const count = document.getElementById('catalogResultCount');
+  if (count) count.textContent = `${list.length} ${list.length === 1 ? 'bolsa encontrada' : 'bolsas encontradas'}`;
   initFloatingDrag(grid);
   initViewShake(grid);
 }
@@ -1846,8 +1854,9 @@ window.addEventListener('pointerup', () => {
 
 let lastCatFilter = 'all';
 function fp(cat, btn) {
-  document.querySelectorAll('#catFilters .fpill').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('#catFilters .fpill').forEach(b => { b.classList.remove('on'); b.setAttribute('aria-pressed','false'); });
   btn.classList.add('on');
+  btn.setAttribute('aria-pressed','true');
   lastCatFilter = cat;
   renderProducts(cat);
 }
@@ -1858,8 +1867,9 @@ function fp(cat, btn) {
 // agora vêm de js/catalog-admin.js (compartilhado com looks.html).
 
 function fpStatus(st, btn) {
-  document.querySelectorAll('#statusFilters .fpill').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('#statusFilters .fpill').forEach(b => { b.classList.remove('on'); b.setAttribute('aria-pressed','false'); });
   btn.classList.add('on');
+  btn.setAttribute('aria-pressed','true');
   statusFilter = st;
   renderProducts(lastCatFilter);
 }
@@ -1885,6 +1895,7 @@ const ro = new IntersectionObserver(es =>
   { threshold: .1 }
 );
 document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+document.documentElement.classList.add('reveal-ready');
 
 // ─── ADMIN ────────────────────────────────────────────────────────────────────
 let loggedIn = (function(){
@@ -1937,6 +1948,7 @@ function tryLogin() {
 }
 
 function renderPanel() {
+  beginCatalogEditSession();
   document.getElementById('adminTabs').style.display = 'flex';
   // Garantir que a tab visual sempre começa em Visão Geral
   document.querySelectorAll('#adminTabs .atab').forEach(t => t.classList.remove('on'));
@@ -2483,34 +2495,44 @@ function renderAdminList() {
   const chkStyle = 'width:16px;height:16px;cursor:pointer;appearance:none;-webkit-appearance:none;border:1.5px solid #653C2B;border-radius:3px;flex-shrink:0;transition:background .2s,border-color .2s;';
 
   const header = `
-    <div style="display:flex;align-items:stretch;border-bottom:2px solid var(--rose);background:var(--bg);">
-      <div class="alist-name" style="width:340px;min-width:340px;flex-shrink:0;box-sizing:border-box;"></div>
+    <div class="alist-sticky-head" style="display:flex;align-items:stretch;border-bottom:2px solid var(--rose);background:var(--bg);">
+      <div class="alist-name alist-name-label" style="width:280px;min-width:280px;flex-shrink:0;box-sizing:border-box;">Item e imagem</div>
       <div class="alist-btns alist-btns-hdr" style="overflow-x:auto;flex:1;min-width:0;-ms-overflow-style:none;scrollbar-width:none;display:flex;align-items:center;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 14px 6px 6px;width:100%;min-width:max-content;">
-          <div style="width:116px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:116px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="alist-col-label">Status</span>
             <input type="checkbox" id="chkAllAvail" ${allAvail?'checked':''}
+              aria-label="Alterar o status de todos os itens"
               title="${STATUS_BADGE[allAvail ? 'available' : (bulkStatusCursor || 'available')]} (clique para alternar: Disponível → Esgotado → Em Breve → Oculto)"
               onclick="event.preventDefault(); bulkCycleStatus();"
               style="${chkStyle}background:#B34545;border-color:#B34545;">
           </div>
-          <div style="width:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:38px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="alist-col-label">Promo</span>
             <input type="checkbox" id="chkAllPromo" title="Gerenciar promoções em massa"
+              aria-label="Gerenciar promoções de todos os itens"
               onclick="openBulkPromoModal(this);return false;"
               style="${chkStyle}background:#B34545;border-color:#B34545;">
           </div>
-          <div style="width:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:38px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="alist-col-label">Favorito</span>
             <input type="checkbox" id="chkAllFav" ${allFav?'checked':''} title="Selecionar todos como favorito"
+              aria-label="Marcar ou desmarcar todos como favoritos"
               onchange="bulkToggle('favorite',this.checked)"
               style="${chkStyle}background:${allFav?'#8B4A3C':'#F3EFE9'};border-color:${allFav?'#8B4A3C':'#653C2B'};">
           </div>
-          <div style="width:64px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:64px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="alist-col-label">Novo</span>
             <input type="checkbox" id="chkAllNew" ${allNew?'checked':''} title="Selecionar todos como Novo"
+              aria-label="Adicionar ou remover o selo Novo de todos os itens"
               onchange="bulkToggle('isNew',this.checked)"
               style="${chkStyle}background:${allNew?'#8B4A3C':'#B34545'};border-color:${allNew?'#8B4A3C':'#B34545'};">
           </div>
-          <div style="width:118px;flex-shrink:0;"></div>
-          <div style="width:72px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:118px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span class="alist-col-label">Categoria</span></div>
+          <div style="width:72px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="alist-col-label">Excluir</span>
             <input type="checkbox" id="chkAllDel" title="Excluir todos os itens"
+              aria-label="Excluir todos os itens"
               onclick="bulkDeleteAll(this);return false;"
               style="${chkStyle}background:#B34545;border-color:#B34545;">
           </div>
@@ -2521,22 +2543,20 @@ function renderAdminList() {
   const rows = products.map((p, i) => {
     const bg = i % 2 === 0 ? 'rgba(243,239,233,.55)' : 'rgba(182,139,115,.06)';
     return `
-    <div style="display:flex;align-items:stretch;background:${bg};border-bottom:1px solid var(--line);">
-      <div class="alist-name" id="aname-${p.id}"
-        style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--text);
-               line-height:1.25;overflow:hidden;white-space:nowrap;
-               text-overflow:ellipsis;flex-shrink:0;
-               width:340px;min-width:340px;
-               padding:10px 8px 10px 12px;box-sizing:border-box;align-self:center;"
-        title="${p.name}">${p.name}</div>
+    <div class="admin-catalog-row" style="display:flex;align-items:stretch;background:${bg};border-bottom:1px solid var(--line);">
+      <div class="alist-name alist-name-cell" id="aname-${p.id}"
+        style="width:280px;min-width:280px;flex-shrink:0;box-sizing:border-box;align-self:center;">
+        <span class="alist-name-text" title="${p.name}">${p.name}</span>
+        <button type="button" class="admin-image-btn" onclick="openProductImageManager(${p.id})"
+          title="Ver e gerenciar a imagem de ${p.name}" aria-label="Ver e gerenciar a imagem de ${p.name}">
+          <span class="admin-purse-icon" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="admin-mobile-more" aria-expanded="false" onclick="toggleCatalogRowActions(this)">Mais ações</button>
+      </div>
       <div class="alist-btns" style="overflow-x:auto;flex:1;min-width:0;
            -ms-overflow-style:none;scrollbar-width:none;display:flex;align-items:center;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 14px 10px 6px;width:100%;min-width:max-content;">
-          <button onclick="togAvail(${p.id})" title="Clique para alternar o status"
-            style="height:29px;width:116px;padding:0 6px;flex-shrink:0;cursor:pointer;transition:all .3s;
-                   font-size:clamp(11px,2.2vw,12px);letter-spacing:.1em;font-family:'Jost',sans-serif;font-weight:600;
-                   white-space:nowrap;box-sizing:border-box;display:flex;align-items:center;justify-content:center;
-                   ${statusBtnCss(p.status)}">
+          <button class="catalog-status-btn status-${p.status}" onclick="togAvail(${p.id})" title="Clique para alternar o status">
             ${STATUS_LABEL[p.status]}
           </button>
           <button class="aabtn" onclick="openPriceModal(${p.id})"
@@ -2574,7 +2594,7 @@ function renderAdminList() {
   // Scroll: sincroniza todas as linhas (incluindo header) + reduz/restaura nome
   const allBtnsEls = alist.querySelectorAll('.alist-btns');
   const allNamesEls = alist.querySelectorAll('.alist-name');
-  const FULL = 340, HALF = 170;
+  const FULL = 280, HALF = 210;
 
   function applyNameWidth(sl) {
     const collapsed = sl > 4;
@@ -2786,7 +2806,7 @@ function bulkSetStatus(status) {
     const btn = document.querySelector(`button[onclick="togAvail(${p.id})"]`);
     if (btn) {
       btn.textContent = STATUS_LABEL[p.status];
-      btn.style.cssText = `height:29px;width:116px;padding:0 6px;flex-shrink:0;cursor:pointer;transition:all .3s;font-size:clamp(11px,2.2vw,12px);letter-spacing:.1em;font-family:'Jost',sans-serif;font-weight:600;white-space:nowrap;box-sizing:border-box;display:flex;align-items:center;justify-content:center;${statusBtnCss(p.status)}`;
+      btn.className = `catalog-status-btn status-${p.status}`;
     }
   });
   syncAllChk();
@@ -2879,13 +2899,11 @@ async function onNewProdFileChosen(input) {
 async function _npSaveFinal(dataUrlToConvert) {
   const msg = document.getElementById('addMsg');
   _npShow('npPhotoWorking');
-  document.getElementById('npPhotoWorking').textContent = 'Convertendo pra WebP e salvando…';
+  document.getElementById('npPhotoWorking').textContent = 'Convertendo para WebP e preparando a prévia…';
   try {
     const webp = await convertToWebp(dataUrlToConvert);
-    const baseName = (newProdFileName || 'bolsa').replace(/\.[^.]+$/, '');
-    const url = await sbUploadImage(webp, baseName + '.webp');
-    newProdFinalImg = url;
-    document.getElementById('npPhotoFinal').src = url;
+    newProdFinalImg = webp;
+    document.getElementById('npPhotoFinal').src = webp;
     _npShow('npPhotoConfirmed');
   } catch (e) {
     msg.style.color = '#7A1E1E';
@@ -2925,13 +2943,18 @@ function addProd() {
     msg.textContent = 'Preencha o nome e o preço.';
     return;
   }
-  products.unshift({
+  const newProduct = {
     id: Date.now(), name, cat: document.getElementById('nc').value,
     price, status: document.getElementById('na').value,
     isNew: document.getElementById('nin').value === 'true',
     favorite: false,
     img: newProdFinalImg || null,
-  });
+  };
+  products.unshift(newProduct);
+  if (newProdFinalImg) {
+    const baseName = (newProdFileName || 'bolsa').replace(/\.[^.]+$/, '');
+    stageCatalogProductImage(newProduct, newProdFinalImg, `${baseName}-${newProduct.id}.webp`);
+  }
   markDirty();
   renderProducts('all');
   document.querySelectorAll('.fpill').forEach(b => b.classList.remove('on'));
@@ -3150,7 +3173,7 @@ function updateAdminRow(id) {
   const availBtn = document.querySelector(`button[onclick="togAvail(${id})"]`);
   if (availBtn) {
     availBtn.textContent = STATUS_LABEL[p.status];
-    availBtn.style.cssText = `height:29px;min-width:94px;padding:0 6px;flex-shrink:0;cursor:pointer;transition:all .3s;font-size:clamp(12px,2.4vw,13px);letter-spacing:.1em;font-family:'Jost',sans-serif;font-weight:600;white-space:nowrap;box-sizing:border-box;${statusBtnCss(p.status)}`;
+    availBtn.className = `catalog-status-btn status-${p.status}`;
     availBtn.title = 'Clique para alternar o status';
   }
 
@@ -3345,16 +3368,19 @@ function closeReview() {
 }
 
 async function confirmSave() {
-  adminDirty = false;
   closeReview();
-  renderProducts('all');
-  renderFavCarousel();
   try {
+    await finalizePendingProductImages();
     await Promise.all(products.map(p => sbUpsertBag(p)));
+    adminDirty = false;
+    commitCatalogEditSession();
   } catch (e) {
     console.error('Falha ao salvar no banco:', e);
     alert('As mudanças foram aplicadas na tela, mas houve um erro ao salvar no banco de dados: ' + e.message + '\nTente salvar novamente.');
+    return;
   }
+  renderProducts('all');
+  renderFavCarousel();
   _origCloseA(); // close admin panel
   const msg = document.createElement('div');
   msg.textContent = '✓ Configurações salvas com sucesso!';
@@ -3383,9 +3409,10 @@ closeA = function() {
       </div>
     </div>`;
     document.body.appendChild(wrap);
-    document.getElementById('btnDiscardExit').onclick = () => { adminDirty=false; wrap.remove(); _origCloseA(); };
+    document.getElementById('btnDiscardExit').onclick = () => { discardCatalogEditSession(); adminDirty=false; wrap.remove(); _origCloseA(); };
     document.getElementById('btnSaveExit').onclick    = () => { wrap.remove(); openReview(); };
   } else {
+    commitCatalogEditSession();
     _origCloseA();
   }
 };

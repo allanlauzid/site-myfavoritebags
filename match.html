@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="no-js">
 <head>
+<script>document.documentElement.classList.replace('no-js','js');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>My Favorite Match — Recife</title>
@@ -93,7 +94,7 @@ body{
   font-size:12px; letter-spacing:.14em; text-transform:uppercase; line-height:1.4;
   padding:7px 14px; border-radius:20px; cursor:pointer;
   background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14);
-  color:rgba(255,255,255,.75); font-family:'Jost',sans-serif; transition:all .3s;
+  color:rgba(255,255,255,.75); font-family:'Jost',sans-serif; transition:background-color .3s,border-color .3s,color .3s,box-shadow .3s,scale .15s;
 }
 .mf-pill.on { background:var(--rose-dark); border-color:var(--rose-dark); color:#fff; }
 
@@ -154,7 +155,7 @@ body{
 .m-chip {
   font-size:clamp(.8rem,2.8vw,.9rem); padding:.55rem 1rem; border-radius:20px; cursor:pointer; line-height:1.4;
   background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.16);
-  color:rgba(255,255,255,.85); font-family:'Jost',sans-serif; transition:all .25s;
+  color:rgba(255,255,255,.85); font-family:'Jost',sans-serif; transition:background-color .25s,border-color .25s,color .25s,box-shadow .25s,scale .15s;
 }
 .m-chip.on{ background:var(--rose-dark); border-color:var(--rose-dark); color:#fff; }
 .m-config-start {
@@ -163,7 +164,7 @@ body{
   letter-spacing:.08em; text-transform:uppercase; font-size:clamp(.75rem,3vw,.85rem);
   padding:clamp(.85rem,3.6vw,1.05rem); min-height:48px;
 }
-.m-config-start:active{ transform:scale(.98); }
+.m-config-start:active{ transform:scale(.96); }
 .m-config-nav {
   position:relative;
   z-index:1;
@@ -326,7 +327,7 @@ body{
   background:rgba(255,255,255,.06);
   color:#fff;
 }
-.m-abtn:active{ transform:scale(.88); }
+.m-abtn:active{ transform:scale(.96); }
 .m-abtn svg { display:block; }
 
 .m-undo  { width:46px; height:46px; border:1.5px solid var(--orange); color:var(--orange); }
@@ -658,8 +659,9 @@ button:focus-visible {
   .m-ov-btn { padding:.65rem; margin-bottom:.5rem; }
 }
 </style>
+<link rel="stylesheet" href="css/interface-polish.css">
 </head>
-<body>
+<body class="page-match">
 
 <!-- Cursor -->
 <div class="cursor" id="cur"></div>
@@ -681,18 +683,18 @@ button:focus-visible {
       <div class="m-config-group">
         <span class="m-config-label">Catálogo</span>
         <div class="m-chip-row" id="mFilters">
-          <button class="m-chip" data-f="all" onclick="setFilter('all')">Todos</button>
-          <button class="m-chip" data-f="bags" onclick="setFilter('bags')">Só Bags</button>
-          <button class="m-chip" data-f="looks" onclick="setFilter('looks')">Só Looks</button>
+          <button class="m-chip" data-f="all" aria-pressed="false" onclick="setFilter('all')">Todos</button>
+          <button class="m-chip" data-f="bags" aria-pressed="false" onclick="setFilter('bags')">Só Bags</button>
+          <button class="m-chip" data-f="looks" aria-pressed="false" onclick="setFilter('looks')">Só Looks</button>
         </div>
       </div>
       <div class="m-config-group">
         <span class="m-config-label">Ocasião</span>
         <div class="m-chip-row" id="mOccasions">
-          <button class="m-chip" data-o="all" onclick="setOccasion('all')">Só olhando</button>
-          <button class="m-chip" data-o="dia-a-dia" onclick="setOccasion('dia-a-dia')">Dia a dia</button>
-          <button class="m-chip" data-o="ocasiao-especial" onclick="setOccasion('ocasiao-especial')">Ocasião especial</button>
-          <button class="m-chip" data-o="presente" onclick="setOccasion('presente')">Presente</button>
+          <button class="m-chip" data-o="all" aria-pressed="false" onclick="setOccasion('all')">Só olhando</button>
+          <button class="m-chip" data-o="dia-a-dia" aria-pressed="false" onclick="setOccasion('dia-a-dia')">Dia a dia</button>
+          <button class="m-chip" data-o="ocasiao-especial" aria-pressed="false" onclick="setOccasion('ocasiao-especial')">Ocasião especial</button>
+          <button class="m-chip" data-o="presente" aria-pressed="false" onclick="setOccasion('presente')">Presente</button>
         </div>
       </div>
       <button class="m-config-start" onclick="startSwiping()">Começar</button>
@@ -862,11 +864,19 @@ function filteredItems() {
 
 function setFilter(f) {
   filter = f;
-  document.querySelectorAll('#mFilters .m-chip').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+  document.querySelectorAll('#mFilters .m-chip').forEach(b => {
+    const selected = b.dataset.f === f;
+    b.classList.toggle('on', selected);
+    b.setAttribute('aria-pressed', String(selected));
+  });
 }
 function setOccasion(o) {
   occasion = o;
-  document.querySelectorAll('#mOccasions .m-chip').forEach(b => b.classList.toggle('on', b.dataset.o === o));
+  document.querySelectorAll('#mOccasions .m-chip').forEach(b => {
+    const selected = b.dataset.o === o;
+    b.classList.toggle('on', selected);
+    b.setAttribute('aria-pressed', String(selected));
+  });
 }
 
 function shuffle(arr) {

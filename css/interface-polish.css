@@ -1,0 +1,189 @@
+/* Polimento compartilhado entre My Favorite Bags, Looks e Match. */
+html {
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+:root { --polish-section-space:clamp(72px, 8vw, 112px); }
+.page-bags .catalog,
+.page-bags .insta,
+.page-bags .about,
+.page-looks .catalog,
+.page-looks .insta,
+.page-looks .about { padding-block:var(--polish-section-space); }
+.no-js .reveal {
+  opacity:1 !important;
+  transform:none !important;
+  filter:none !important;
+}
+
+h1, h2, h3, .hero-title, .section-title, .about-title, .pname,
+.m-config-title, .m-card-name, .m-ov-t { text-wrap:balance; }
+
+p, li, figcaption, .cat-desc, .hero-sub, .about-body, .login-s,
+.pim-status, .m-config-sub, .m-empty p, .m-ov-s { text-wrap:pretty; }
+
+.pprice, .astatus, #modalPrice, #reviewBody strong, .catalog-result-count {
+  font-variant-numeric:tabular-nums;
+}
+
+/* Molduras de produto e prévias; logos e elementos decorativos ficam intactos. */
+.pcard-visual > img,
+#modalPhoto,
+#npPhotoOriginal,
+#npPhotoResult,
+#npPhotoFinal,
+.athumb img {
+  outline:1px solid rgba(0,0,0,.1);
+  outline-offset:-1px;
+}
+.pcard-visual > img { object-fit:contain !important; }
+#modalPhoto { object-fit:contain !important; background:var(--bg2); }
+
+/* Filtros permanecem legíveis durante catálogos longos. */
+.catalog-filter-stack {
+  position:sticky;
+  top:72px;
+  z-index:8;
+  margin-bottom:30px;
+  padding:12px 0 10px;
+  background:linear-gradient(to bottom, var(--bg) 78%, rgba(243,239,233,0));
+  backdrop-filter:blur(10px);
+}
+.page-looks .catalog-filter-stack {
+  background:linear-gradient(to bottom, var(--bg) 78%, rgba(250,247,241,0));
+}
+.catalog-filter-stack .filters { margin-bottom:8px; }
+.catalog-filter-stack .filters:last-of-type { margin-bottom:0; }
+.catalog-result-count {
+  margin-top:10px;
+  color:var(--text-muted);
+  font-size:12px;
+  letter-spacing:.08em;
+}
+.fpill {
+  min-height:44px;
+  transition-property:background-color, border-color, color, box-shadow, scale !important;
+  transition-duration:180ms !important;
+  transition-timing-function:ease-out !important;
+}
+.fpill:active, .pwa:active, .slide-btn:active, .nav-cross-btn:active,
+.m-chip:active, .m-config-navbtn:active, .m-config-start:active,
+.m-icon-btn:active, .m-abtn:active { scale:.96; }
+.fav-nav-arrow {
+  min-width:44px;
+  min-height:44px;
+  transition-property:background-color, box-shadow, scale;
+  transition-duration:160ms;
+}
+.fav-nav-arrow:active { scale:.96; }
+.page-match .m-config-start:active,
+.page-match .m-abtn:active { transform:none !important; scale:.96; }
+
+/* Contraste reforçado sem depender apenas da cor. */
+.sold-badge {
+  color:#5b2923 !important;
+  background:rgba(255,255,255,.94) !important;
+  box-shadow:0 0 0 1px rgba(91,41,35,.35), 0 2px 8px rgba(0,0,0,.09);
+  font-weight:600;
+}
+.page-looks .sold-badge { color:#4d3a13 !important; box-shadow:0 0 0 1px rgba(77,58,19,.36), 0 2px 8px rgba(0,0,0,.09); }
+
+/* Última linha com item único mantém a escala das linhas completas. */
+@media(min-width:769px) {
+  .prow:last-child > .pcard:only-child {
+    flex:0 1 calc(50% - 18px);
+    margin-inline:auto;
+  }
+}
+
+/* Link cruzado e demais ações móveis com área de toque segura. */
+.page-bags .nav-cross-btn,
+.page-bags .looks-float-btn,
+.page-bags #bijusHeroBtn,
+.page-bags [href="looks.html"].insta-link {
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Match: grupos mais claros e todos os alvos com no mínimo 44px. */
+.page-match .m-icon-btn,
+.page-match .m-chip,
+.page-match .m-config-navbtn,
+.page-match .mf-pill {
+  min-width:44px;
+  min-height:44px;
+}
+.page-match .m-chip,
+.page-match .mf-pill {
+  transition-property:background-color, border-color, color, box-shadow, scale !important;
+  transition-duration:180ms !important;
+  transition-timing-function:ease-out !important;
+}
+.page-match .m-config-navbtn {
+  min-height:44px;
+  min-width:min(100%, 190px);
+  justify-content:center;
+  padding-left:18px;
+  padding-right:16px; /* lado do ícone 2px menor, alinhamento óptico */
+  transition-property:background-color, box-shadow, color, scale;
+}
+.page-match .m-config-body > div:first-child,
+.page-match .m-config-group {
+  padding:14px 16px;
+  border-radius:16px;
+  background:rgba(255,255,255,.035);
+  box-shadow:0 0 0 1px rgba(255,255,255,.07);
+}
+.page-match .m-config-body { gap:12px; }
+.page-match .m-config-sub { margin-top:5px; }
+
+/* Ritmo consistente entre cabeçalho, filtros e conteúdo. */
+.cat-head { margin-bottom:clamp(28px, 4vw, 46px); }
+.catalog-filter-stack + .pgrid { margin-top:0; }
+
+@media(max-width:600px) {
+  .catalog-filter-stack {
+    top:58px;
+    margin-inline:calc(var(--page-gutter, 1rem) * -1);
+    padding-inline:var(--page-gutter, 1rem);
+    background:var(--bg);
+    box-shadow:0 10px 18px -16px rgba(0,0,0,.3);
+  }
+  .catalog-filter-stack .filters { gap:7px; }
+  .catalog-filter-stack .filters {
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    scrollbar-width:none;
+  }
+  .catalog-filter-stack .filters::-webkit-scrollbar { display:none; }
+  .catalog-filter-stack .fpill {
+    flex:0 0 auto !important;
+    min-width:max-content;
+    padding-inline:16px;
+  }
+  .catalog-result-count { text-align:center; }
+  .prow:last-child > .pcard:only-child { flex:1 1 100%; margin:0; }
+  .page-match .m-config { padding:1rem; }
+  .page-match .m-config-body > div:first-child,
+  .page-match .m-config-group { padding:12px 13px; border-radius:14px; }
+  .page-match .m-config-nav { gap:8px; }
+  .page-match .m-config-navbtn { width:min(100%, 250px); }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto !important; }
+  *, *::before, *::after {
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+  .reveal, .reveal.vis {
+    opacity:1 !important;
+    transform:none !important;
+    filter:none !important;
+  }
+}

@@ -16,16 +16,6 @@
 // ─── STATUS DO CATÁLOGO (Disponível / Esgotado / Em Breve / Oculto) ─────────
 const STATUS_LABEL = { available:'DISPONÍVEL', sold_out:'ESGOTADO', coming_soon:'EM BREVE', hidden:'OCULTO' };
 const STATUS_BADGE = { available:'Disponível', sold_out:'Esgotado', coming_soon:'Em Breve', hidden:'Oculto' };
-const STATUS_COLOR = {
-  available:   { bg:'rgba(37,211,102,.1)',  border:'rgba(37,211,102,.4)', text:'#1a7a3e' },
-  sold_out:    { bg:'rgba(184,50,50,.1)',   border:'rgba(184,50,50,.4)',  text:'#b83232' },
-  coming_soon: { bg:'rgba(201,122,61,.12)', border:'rgba(201,122,61,.45)', text:'#C97A3D' },
-  hidden:      { bg:'rgba(120,120,120,.14)', border:'rgba(120,120,120,.45)', text:'#6B6B6B' },
-};
-function statusBtnCss(st) {
-  const c = STATUS_COLOR[st] || STATUS_COLOR.available;
-  return `background:${c.bg};border:1px solid ${c.border};color:${c.text};`;
-}
 function nextStatus(st) {
   return st === 'available' ? 'sold_out' : st === 'sold_out' ? 'coming_soon' : st === 'coming_soon' ? 'hidden' : 'available';
 }
@@ -51,8 +41,8 @@ function renderCatFilters() {
   const wrap = document.getElementById('catFilters');
   if (!wrap) return;
   if (!CATS_LIST.some(c => c.key === lastCatFilter)) lastCatFilter = 'all';
-  wrap.innerHTML = `<button class="fpill${lastCatFilter==='all'?' on':''}" onclick="fp('all',this)">Todas</button>` +
-    CATS_LIST.map(c => `<button class="fpill${lastCatFilter===c.key?' on':''}" onclick="fp('${c.key}',this)">${c.label}</button>`).join('');
+  wrap.innerHTML = `<button class="fpill${lastCatFilter==='all'?' on':''}" aria-pressed="${lastCatFilter==='all'}" onclick="fp('all',this)">Todas</button>` +
+    CATS_LIST.map(c => `<button class="fpill${lastCatFilter===c.key?' on':''}" aria-pressed="${lastCatFilter===c.key}" onclick="fp('${c.key}',this)">${c.label}</button>`).join('');
   renderProducts(lastCatFilter);
 }
 function renderCatSelect() {
@@ -229,3 +219,385 @@ function deleteCategory(key) {
     renderProducts(lastCatFilter);
   };
 }
+
+// ─── GERENCIADOR DE IMAGEM DO CATÁLOGO ──────────────────────────────────────
+// Compartilhado entre Bags e Looks. Permite visualizar, trocar, excluir e
+// recortar em formato quadrado a imagem que aparece nos cards do catálogo.
+let _pimState = null;
+let _catalogEditSnapshot = null;
+const _pendingCatalogImages = new Map();
+
+function _catalogClone(value) {
+  return typeof structuredClone === 'function'
+    ? structuredClone(value)
+    : JSON.parse(JSON.stringify(value));
+}
+
+function beginCatalogEditSession() {
+  if (typeof products === 'undefined' || _catalogEditSnapshot) return;
+  _catalogEditSnapshot = _catalogClone(products);
+}
+
+function discardCatalogEditSession() {
+  if (_catalogEditSnapshot && typeof products !== 'undefined') {
+    products.splice(0, products.length, ..._catalogClone(_catalogEditSnapshot));
+  }
+  _pendingCatalogImages.clear();
+  _catalogEditSnapshot = null;
+  if (typeof renderProducts === 'function') renderProducts('all');
+  if (typeof renderFavCarousel === 'function') renderFavCarousel();
+  if (typeof renderOverviewTab === 'function') renderOverviewTab();
+}
+
+function commitCatalogEditSession() {
+  _pendingCatalogImages.clear();
+  _catalogEditSnapshot = null;
+}
+
+function stageCatalogProductImage(product, dataUrl, filename) {
+  const current = _pendingCatalogImages.get(product.id) || {};
+  _pendingCatalogImages.set(product.id, {
+    dataUrl,
+    filename:filename || current.filename || `catalogo-${product.id}-${Date.now()}.webp`,
+    uploadedUrl:null,
+  });
+  product.img = dataUrl || '';
+}
+
+async function finalizePendingProductImages() {
+  for (const [id, pending] of _pendingCatalogImages.entries()) {
+    const product = _pimProduct(id);
+    if (!product || !pending.dataUrl) continue;
+    if (!pending.uploadedUrl) {
+      pending.uploadedUrl = await sbUploadImage(pending.dataUrl, pending.filename);
+    }
+    product.img = pending.uploadedUrl;
+  }
+}
+
+function toggleCatalogRowActions(button) {
+  const row = button.closest('.admin-catalog-row');
+  if (!row) return;
+  const open = row.classList.toggle('actions-open');
+  button.setAttribute('aria-expanded', String(open));
+  button.textContent = open ? 'Ocultar ações' : 'Mais ações';
+}
+
+function _pimEscape(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, char => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'
+  })[char]);
+}
+
+function _pimProduct(id) {
+  return typeof products !== 'undefined' && Array.isArray(products)
+    ? products.find(item => item.id === id)
+    : null;
+}
+
+function _pimSetStatus(message, isError = false) {
+  const status = document.getElementById('pimStatus');
+  if (!status) return;
+  status.textContent = message || '';
+  status.style.color = isError ? 'var(--modal-error)' : 'var(--text-muted)';
+}
+
+function _pimSetBusy(busy) {
+  const dialog = document.querySelector('.pim-dialog');
+  if (!dialog) return;
+  dialog.querySelectorAll('button, input').forEach(control => {
+    control.disabled = busy;
+  });
+  dialog.setAttribute('aria-busy', busy ? 'true' : 'false');
+}
+
+function _pimRefreshCatalog() {
+  if (typeof markDirty === 'function') markDirty();
+  if (typeof renderProducts === 'function') {
+    renderProducts(typeof lastCatFilter !== 'undefined' ? lastCatFilter : 'all');
+  }
+  if (typeof renderFavCarousel === 'function') renderFavCarousel();
+  if (typeof renderOverviewTab === 'function') renderOverviewTab();
+}
+
+function _pimRenderImage() {
+  if (!_pimState) return;
+  const product = _pimProduct(_pimState.id);
+  const image = document.getElementById('pimImage');
+  const empty = document.getElementById('pimEmpty');
+  const edit = document.getElementById('pimEdit');
+  const remove = document.getElementById('pimDelete');
+  if (!product || !image || !empty) return;
+
+  const hasImage = Boolean(product.img);
+  image.style.display = hasImage ? 'block' : 'none';
+  empty.classList.toggle('show', !hasImage);
+  edit.disabled = !hasImage;
+  remove.disabled = !hasImage;
+  image.className = 'pim-image';
+  image.style.cssText = '';
+  image.draggable = false;
+  if (hasImage) {
+    image.crossOrigin = 'anonymous';
+    image.src = product.img;
+    image.alt = `Imagem de ${product.name}`;
+  } else {
+    image.removeAttribute('src');
+    image.alt = '';
+  }
+}
+
+function openProductImageManager(id) {
+  const product = _pimProduct(id);
+  if (!product) return;
+  closeProductImageManager(true);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'productImageManager';
+  overlay.className = 'pim-overlay';
+  overlay.setAttribute('role', 'presentation');
+  overlay.innerHTML = `
+    <section class="pim-dialog" role="dialog" aria-modal="true" aria-labelledby="pimTitle">
+      <header class="pim-head">
+        <h2 class="pim-title" id="pimTitle">Imagem de ${_pimEscape(product.name)}</h2>
+        <button type="button" class="pim-close" onclick="closeProductImageManager()" aria-label="Fechar">✕</button>
+      </header>
+      <div class="pim-stage" id="pimStage">
+        <img class="pim-image" id="pimImage" alt="">
+        <div class="pim-empty" id="pimEmpty">Este item está sem imagem. Use “Fazer upload” para adicionar uma foto.</div>
+        <div class="pim-crop-grid" aria-hidden="true"></div>
+      </div>
+      <div class="pim-controls">
+        <label class="pim-zoom" id="pimZoomWrap" for="pimZoom">
+          <span>Zoom</span>
+          <input id="pimZoom" type="range" min="1" max="3" value="1" step="0.01" aria-label="Zoom do recorte">
+        </label>
+        <div class="pim-actions" id="pimMainActions">
+          <button type="button" class="pim-btn" id="pimEdit" onclick="startProductImageCrop()">Editar</button>
+          <button type="button" class="pim-btn danger" id="pimDelete" onclick="openProductImageDeleteConfirm(this)">Excluir</button>
+          <button type="button" class="pim-btn primary" onclick="document.getElementById('pimUpload').click()">Fazer upload</button>
+        </div>
+        <div class="pim-actions crop-actions" id="pimCropActions" hidden>
+          <button type="button" class="pim-btn" onclick="cancelProductImageCrop()">Cancelar</button>
+          <button type="button" class="pim-btn primary" onclick="saveProductImageCrop()">Salvar recorte</button>
+        </div>
+        <input id="pimUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        <p class="pim-status" id="pimStatus" role="status" aria-live="polite"></p>
+      </div>
+    </section>`;
+
+  document.body.appendChild(overlay);
+  _pimState = { id, crop:false, zoom:1, x:0, y:0, pointerId:null, lastX:0, lastY:0, keyHandler:null };
+  _pimRenderImage();
+
+  overlay.addEventListener('mousedown', event => {
+    if (event.target === overlay) closeProductImageManager();
+  });
+  document.getElementById('pimUpload').addEventListener('change', event => {
+    const file = event.target.files && event.target.files[0];
+    if (file) uploadProductImage(file);
+    event.target.value = '';
+  });
+  _pimState.keyHandler = event => {
+    if (event.key === 'Escape') {
+      if (_pimState && _pimState.crop) cancelProductImageCrop();
+      else closeProductImageManager();
+    }
+  };
+  document.addEventListener('keydown', _pimState.keyHandler);
+  requestAnimationFrame(() => {
+    overlay.classList.add('open');
+    overlay.querySelector('.pim-close').focus();
+  });
+}
+
+function closeProductImageManager(immediate = false) {
+  const overlay = document.getElementById('productImageManager');
+  if (_pimState && _pimState.keyHandler) document.removeEventListener('keydown', _pimState.keyHandler);
+  _pimState = null;
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  if (immediate) overlay.remove();
+  else setTimeout(() => overlay.remove(), 180);
+}
+
+async function uploadProductImage(file) {
+  if (!_pimState) return;
+  const product = _pimProduct(_pimState.id);
+  if (!product) return;
+  _pimSetBusy(true);
+  _pimSetStatus('Preparando a nova imagem…');
+  try {
+    const webp = await convertToWebp(file, .9);
+    const filename = `catalogo-${product.id}-${Date.now()}.webp`;
+    stageCatalogProductImage(product, webp, filename);
+    _pimRefreshCatalog();
+    _pimRenderImage();
+    _pimSetStatus('Nova imagem pronta. Ela será enviada somente ao confirmar e salvar o painel.');
+  } catch (error) {
+    _pimSetStatus(`Não foi possível enviar a imagem: ${error.message}`, true);
+  } finally {
+    _pimSetBusy(false);
+  }
+}
+
+function openProductImageDeleteConfirm(trigger) {
+  if (!_pimState) return;
+  const product = _pimProduct(_pimState.id);
+  if (!product || !product.img) return;
+  const wrap = document.createElement('div');
+  wrap.id = 'pimDeleteConfirm';
+  wrap.className = 'pim-confirm-overlay';
+  wrap.innerHTML = `
+    <section class="pim-confirm" role="alertdialog" aria-modal="true" aria-labelledby="pimConfirmTitle" aria-describedby="pimConfirmText">
+      <h3 id="pimConfirmTitle">Excluir esta imagem?</h3>
+      <p id="pimConfirmText">“${_pimEscape(product.name)}” continuará no catálogo, mas ficará sem foto.</p>
+      <div class="pim-confirm-actions">
+        <button type="button" class="pim-btn" id="pimConfirmCancel">Cancelar</button>
+        <button type="button" class="pim-btn danger" id="pimConfirmDelete">Excluir imagem</button>
+      </div>
+    </section>`;
+  document.body.appendChild(wrap);
+  const cancel = wrap.querySelector('#pimConfirmCancel');
+  const confirm = wrap.querySelector('#pimConfirmDelete');
+  const close = () => {
+    document.removeEventListener('keydown', onKey);
+    wrap.remove();
+    if (trigger) trigger.focus();
+  };
+  const onKey = event => {
+    if (event.key === 'Escape') close();
+    if (event.key === 'Tab') {
+      const target = document.activeElement === confirm && !event.shiftKey ? cancel : confirm;
+      event.preventDefault(); target.focus();
+    }
+  };
+  cancel.onclick = close;
+  confirm.onclick = () => { close(); deleteProductImage(); };
+  wrap.addEventListener('mousedown', event => { if (event.target === wrap) close(); });
+  document.addEventListener('keydown', onKey);
+  cancel.focus();
+}
+
+function deleteProductImage() {
+  if (!_pimState) return;
+  const product = _pimProduct(_pimState.id);
+  if (!product || !product.img) return;
+  stageCatalogProductImage(product, null);
+  product.img = '';
+  _pimRefreshCatalog();
+  _pimRenderImage();
+  _pimSetStatus('Imagem removida da prévia. A exclusão será confirmada ao salvar o painel.');
+}
+
+function _pimClampCrop() {
+  if (!_pimState || !_pimState.crop) return;
+  const stage = document.getElementById('pimStage');
+  const image = document.getElementById('pimImage');
+  const size = stage.clientWidth;
+  const base = Math.max(size / image.naturalWidth, size / image.naturalHeight);
+  const total = base * _pimState.zoom;
+  const maxX = Math.max(0, (image.naturalWidth * total - size) / 2);
+  const maxY = Math.max(0, (image.naturalHeight * total - size) / 2);
+  _pimState.x = Math.max(-maxX, Math.min(maxX, _pimState.x));
+  _pimState.y = Math.max(-maxY, Math.min(maxY, _pimState.y));
+  image.style.left = '50%';
+  image.style.top = '50%';
+  image.style.width = `${image.naturalWidth}px`;
+  image.style.height = `${image.naturalHeight}px`;
+  image.style.transform = `translate(calc(-50% + ${_pimState.x}px), calc(-50% + ${_pimState.y}px)) scale(${total})`;
+}
+
+function startProductImageCrop() {
+  if (!_pimState) return;
+  const image = document.getElementById('pimImage');
+  if (!image || !image.src) return;
+  const begin = () => {
+    _pimState.crop = true;
+    _pimState.zoom = 1;
+    _pimState.x = 0;
+    _pimState.y = 0;
+    document.getElementById('pimStage').classList.add('cropping');
+    document.getElementById('pimZoomWrap').classList.add('show');
+    document.getElementById('pimMainActions').hidden = true;
+    document.getElementById('pimCropActions').hidden = false;
+    const zoom = document.getElementById('pimZoom');
+    zoom.value = '1';
+    zoom.oninput = () => {
+      _pimState.zoom = Number(zoom.value);
+      _pimClampCrop();
+    };
+    _pimClampCrop();
+    _pimSetStatus('Arraste a imagem e ajuste o zoom para definir o recorte quadrado.');
+  };
+  if (image.complete && image.naturalWidth) begin();
+  else image.addEventListener('load', begin, { once:true });
+}
+
+function cancelProductImageCrop() {
+  if (!_pimState) return;
+  _pimState.crop = false;
+  const stage = document.getElementById('pimStage');
+  const image = document.getElementById('pimImage');
+  stage.classList.remove('cropping');
+  document.getElementById('pimZoomWrap').classList.remove('show');
+  document.getElementById('pimMainActions').hidden = false;
+  document.getElementById('pimCropActions').hidden = true;
+  image.style.cssText = '';
+  image.className = 'pim-image';
+  _pimSetStatus('');
+}
+
+async function saveProductImageCrop() {
+  if (!_pimState || !_pimState.crop) return;
+  const product = _pimProduct(_pimState.id);
+  const image = document.getElementById('pimImage');
+  const stage = document.getElementById('pimStage');
+  if (!product || !image || !image.naturalWidth) return;
+  _pimSetBusy(true);
+  _pimSetStatus('Salvando o recorte…');
+  try {
+    const size = stage.clientWidth;
+    const base = Math.max(size / image.naturalWidth, size / image.naturalHeight);
+    const total = base * _pimState.zoom;
+    const sourceSize = size / total;
+    const sourceX = image.naturalWidth / 2 - (size / 2 + _pimState.x) / total;
+    const sourceY = image.naturalHeight / 2 - (size / 2 + _pimState.y) / total;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 1200;
+    const context = canvas.getContext('2d');
+    context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, 0, 0, 1200, 1200);
+    const webp = canvas.toDataURL('image/webp', .9);
+    stageCatalogProductImage(product, webp, `catalogo-${product.id}-crop-${Date.now()}.webp`);
+    _pimRefreshCatalog();
+    cancelProductImageCrop();
+    _pimRenderImage();
+    _pimSetStatus('Recorte pronto. Ele será enviado somente ao confirmar e salvar o painel.');
+  } catch (error) {
+    _pimSetStatus(`Não foi possível salvar o recorte: ${error.message}`, true);
+  } finally {
+    _pimSetBusy(false);
+  }
+}
+
+document.addEventListener('pointerdown', event => {
+  if (!_pimState || !_pimState.crop || event.target.id !== 'pimImage') return;
+  _pimState.pointerId = event.pointerId;
+  _pimState.lastX = event.clientX;
+  _pimState.lastY = event.clientY;
+  event.target.setPointerCapture(event.pointerId);
+});
+
+document.addEventListener('pointermove', event => {
+  if (!_pimState || !_pimState.crop || _pimState.pointerId !== event.pointerId) return;
+  _pimState.x += event.clientX - _pimState.lastX;
+  _pimState.y += event.clientY - _pimState.lastY;
+  _pimState.lastX = event.clientX;
+  _pimState.lastY = event.clientY;
+  _pimClampCrop();
+});
+
+document.addEventListener('pointerup', event => {
+  if (_pimState && _pimState.pointerId === event.pointerId) _pimState.pointerId = null;
+});
