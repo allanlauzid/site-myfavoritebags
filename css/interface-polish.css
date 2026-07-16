@@ -90,8 +90,14 @@ p, li, figcaption, .cat-desc, .hero-sub, .about-body, .login-s,
 
 /* Última linha com item único mantém a escala das linhas completas. */
 @media(min-width:769px) {
+  /* .prow é grid (grid-template-columns:1fr 1fr), então propriedades de
+     flex (flex-basis/grow/shrink) não têm efeito aqui — são ignoradas em
+     itens de grid, deixando o card órfão sem largura definida e sujeito a
+     colapsar pro min-content (texto quebrando letra a letra). Usar grid-column
+     + width dá uma largura explícita e resolve isso de forma inequívoca. */
   .prow:last-child > .pcard:only-child {
-    flex:0 1 calc(50% - 18px);
+    grid-column:1 / -1;
+    width:calc(50% - 18px);
     margin-inline:auto;
   }
 }
@@ -165,7 +171,7 @@ p, li, figcaption, .cat-desc, .hero-sub, .about-body, .login-s,
     padding-inline:16px;
   }
   .catalog-result-count { text-align:center; }
-  .prow:last-child > .pcard:only-child { flex:1 1 100%; margin:0; }
+  .prow:last-child > .pcard:only-child { grid-column:1 / -1; width:100%; margin:0; }
   .page-match .m-config { padding:1rem; }
   .page-match .m-config-body > div:first-child,
   .page-match .m-config-group { padding:12px 13px; border-radius:14px; }

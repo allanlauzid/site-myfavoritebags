@@ -1,1 +1,7 @@
 project_id = "xlyqytdnfpzyxmifcthp"
+
+[functions.admin-write]
+verify_jwt = false
+
+[functions.remove-bg]
+verify_jwt = false

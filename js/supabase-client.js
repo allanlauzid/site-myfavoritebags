@@ -121,16 +121,52 @@ async function sbSetSetting(key, value) {
 // Retorna uma data URL (base64) com o fundo já removido. Nada é persistido
 // aqui; o admin decide se salva o resultado ou tenta de novo.
 async function sbRemoveBackground(file) {
+  const uploadFile = await prepareRemoveBgUpload(file);
   const form = new FormData();
-  form.append('image', file);
+  form.append('image', uploadFile);
   const res = await fetch(`${FN_URL}/remove-bg`, {
     method: 'POST',
     headers: { 'x-admin-password': getAdminPassword() },
     body: form,
   });
-  const json = await res.json();
-  if (!res.ok || json.error) throw new Error(json.error || 'Falha ao remover o fundo');
-  return json.image; // data:image/png;base64,...
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    throw new Error(json.detail || json.error || 'Falha ao remover o fundo');
+  }
+  const blob = await res.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+// Reduz arquivos muito grandes antes de enviá-los ao remove.bg. Isso evita
+// timeout da Edge Function sem alterar a proporção da foto.
+async function prepareRemoveBgUpload(file, maxSide = 1000) {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+      image.src = objectUrl;
+    });
+    const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(
+      value => value ? resolve(value) : reject(new Error('Falha ao preparar a imagem.')),
+      'image/webp', .88
+    ));
+    const name = (file.name || 'produto').replace(/\.[^.]+$/, '') + '-remove-bg.webp';
+    return new File([blob], name, { type:'image/webp' });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
 }
 
 // Envia uma imagem (data URL base64, já aprovada pelo admin) pro Storage do
@@ -138,6 +174,19 @@ async function sbRemoveBackground(file) {
 async function sbUploadImage(base64DataUrl, filename) {
   const data = await sbAdminWrite('bags', 'upload_image', { base64: base64DataUrl, filename });
   return data.url;
+}
+
+// ── Galeria de imagens (Storage) — upload com nome exato, listar, apagar ───
+async function sbUploadGalleryImage(base64DataUrl, filename) {
+  const data = await sbAdminWrite(null, 'upload_image', { base64: base64DataUrl, filename, exactName: true });
+  return data; // { url, path }
+}
+async function sbListGalleryImages() {
+  const data = await sbAdminWrite(null, 'list_images', {});
+  return data || [];
+}
+async function sbDeleteGalleryImage(path) {
+  return sbAdminWrite(null, 'delete_image', { path });
 }
 
 // ── Conversão para WebP — roda no navegador, sem precisar de servidor ──────

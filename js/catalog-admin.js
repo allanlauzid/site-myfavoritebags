@@ -328,6 +328,7 @@ function _pimRenderImage() {
   const empty = document.getElementById('pimEmpty');
   const edit = document.getElementById('pimEdit');
   const remove = document.getElementById('pimDelete');
+  const removeBg = document.getElementById('pimRemoveBg');
   if (!product || !image || !empty) return;
 
   const hasImage = Boolean(product.img);
@@ -335,6 +336,7 @@ function _pimRenderImage() {
   empty.classList.toggle('show', !hasImage);
   edit.disabled = !hasImage;
   remove.disabled = !hasImage;
+  if (removeBg) removeBg.disabled = !hasImage;
   image.className = 'pim-image';
   image.style.cssText = '';
   image.draggable = false;
@@ -375,6 +377,7 @@ function openProductImageManager(id) {
         </label>
         <div class="pim-actions" id="pimMainActions">
           <button type="button" class="pim-btn" id="pimEdit" onclick="startProductImageCrop()">Editar</button>
+          <button type="button" class="pim-btn remove-bg" id="pimRemoveBg" onclick="removeProductImageBackground()">Remover fundo</button>
           <button type="button" class="pim-btn danger" id="pimDelete" onclick="openProductImageDeleteConfirm(this)">Excluir</button>
           <button type="button" class="pim-btn primary" onclick="document.getElementById('pimUpload').click()">Fazer upload</button>
         </div>
@@ -437,6 +440,30 @@ async function uploadProductImage(file) {
     _pimSetStatus('Nova imagem pronta. Ela será enviada somente ao confirmar e salvar o painel.');
   } catch (error) {
     _pimSetStatus(`Não foi possível enviar a imagem: ${error.message}`, true);
+  } finally {
+    _pimSetBusy(false);
+  }
+}
+
+async function removeProductImageBackground() {
+  if (!_pimState) return;
+  const product = _pimProduct(_pimState.id);
+  if (!product || !product.img) return;
+  _pimSetBusy(true);
+  _pimSetStatus('Removendo o fundo da imagem…');
+  try {
+    const response = await fetch(product.img);
+    if (!response.ok) throw new Error('Não foi possível carregar a imagem atual.');
+    const blob = await response.blob();
+    const file = new File([blob], `bolsa-${product.id}.${blob.type.includes('png') ? 'png' : 'webp'}`, { type:blob.type || 'image/webp' });
+    const removed = await sbRemoveBackground(file);
+    const webp = await convertToWebp(removed, .9);
+    stageCatalogProductImage(product, webp, `catalogo-${product.id}-sem-fundo-${Date.now()}.webp`);
+    _pimRefreshCatalog();
+    _pimRenderImage();
+    _pimSetStatus('Fundo removido. Revise a imagem e confirme o salvamento do painel.');
+  } catch (error) {
+    _pimSetStatus(`Não foi possível remover o fundo: ${error.message}`, true);
   } finally {
     _pimSetBusy(false);
   }

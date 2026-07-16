@@ -48,7 +48,7 @@
 /* ─── RESET ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
-body { font-family:'Jost',sans-serif; background:var(--bg); color:var(--text-body); overflow-x:hidden; }
+body { font-family:'Jost',sans-serif; background:var(--bg); color:var(--text-body); overflow-x:hidden; position:relative; }
 a { text-decoration:none; color:inherit; }
 button { font-family:'Jost',sans-serif; }
 
@@ -702,13 +702,16 @@ footer {
 .admin-ov.open { display:flex; }
 .admin-ov.visible { opacity:1; }
 .admin-panel {
-  background:var(--bg); width:900px;
-  max-width:96vw; height:82vh; max-height:760px;
+  background:var(--bg); width:60vw;
+  max-width:96vw; min-width:900px; height:85vh; max-height:92vh;
   display:flex; flex-direction:column;
   overflow:hidden;
   transform:translateY(18px) scale(.97);
   transition:transform .35s cubic-bezier(.22,.68,0,1.2), opacity .35s ease;
   opacity:0;
+}
+@media(max-width:1000px){
+  .admin-panel { width:96vw; min-width:0; }
 }
 .admin-ov.visible .admin-panel { transform:translateY(0) scale(1); opacity:1; }
 .admin-hd {
@@ -725,6 +728,13 @@ footer {
   font-size:20px; cursor:pointer; transition:color .3s;
 }
 .admin-x:hover { color:#fff; }
+.admin-gallery-btn {
+  display:flex; align-items:center; justify-content:center;
+  background:none; border:none; color:#fff;
+  width:38px; height:38px; padding:0;
+  cursor:pointer; transition:opacity .25s, transform .2s; opacity:.85;
+}
+.admin-gallery-btn:hover { opacity:1; transform:scale(1.08); }
 .admin-bd {
   padding:28px 38px 40px; overflow-y:auto; flex:1;
   scrollbar-width:thin; scrollbar-color:var(--rose-dark) transparent;
@@ -750,6 +760,53 @@ footer {
 }
 .atab.on { color:var(--text); border-bottom-color:var(--rose-dark); }
 
+.upload-dropzone {
+  border:2px dashed var(--rose); border-radius:16px; padding:64px 24px;
+  text-align:center; cursor:pointer; background:rgba(182,139,115,.05);
+  transition:background .25s, border-color .25s;
+}
+.upload-dropzone:hover, .upload-dropzone.drag-over {
+  background:rgba(182,139,115,.13); border-color:var(--rose-dark);
+}
+.upload-dropzone-title { font-size:16px; color:var(--text); margin-bottom:6px; }
+.upload-dropzone-sub { font-size:12px; color:var(--text-muted); }
+.manage-toolbar { display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+.manage-search {
+  display:flex; align-items:center; gap:8px; flex:1; min-width:200px;
+  border:1px solid var(--line); border-radius:999px; padding:9px 16px; background:#fff;
+}
+.manage-search img { width:14px; height:14px; opacity:.6; flex-shrink:0; }
+.manage-search input { border:none; outline:none; flex:1; font-size:13px; font-family:'Jost',sans-serif; background:transparent; }
+.gal-filter-group { display:flex; gap:6px; flex-wrap:wrap; }
+.gal-chip {
+  font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  padding:8px 14px; border-radius:999px; border:1px solid var(--line);
+  background:transparent; color:var(--text-muted); cursor:pointer;
+  font-family:'Jost',sans-serif; transition:background .2s,color .2s,border-color .2s;
+  white-space:nowrap;
+}
+.gal-chip.on, .gal-chip:hover { background:var(--rose-dark); border-color:var(--rose-dark); color:#fff; }
+.gal-card { display:flex; flex-direction:column; gap:6px; }
+.gal-card-img {
+  position:relative; aspect-ratio:1/1; border-radius:10px; overflow:hidden;
+  background:repeating-conic-gradient(#eee 0% 25%, #fff 0% 50%) 50% / 16px 16px;
+  cursor:zoom-in; border:1px solid var(--line);
+}
+.gal-card-img img { width:100%; height:100%; object-fit:contain; }
+.gal-badge {
+  position:absolute; top:6px; left:6px; background:var(--rose-dark); color:#fff;
+  font-size:9.5px; letter-spacing:.06em; text-transform:uppercase;
+  padding:3px 8px; border-radius:999px;
+}
+.gal-card-name { font-size:10.5px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gal-card-actions { display:flex; gap:6px; justify-content:center; }
+.gal-card-actions button {
+  width:30px; height:30px; border-radius:8px; border:1px solid var(--line);
+  background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:border-color .2s, background .2s;
+}
+.gal-card-actions button:hover { border-color:var(--rose-dark); background:rgba(139,74,60,.06); }
+.gal-card-actions button img { width:15px; height:15px; object-fit:contain; }
 .apane { display:none; }
 #favBanner img { transition: opacity 0.5s ease; }
 .fav-slide-fade { animation: favFade 0.5s ease; }
@@ -839,6 +896,9 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   color:var(--text); letter-spacing:.1em; margin-bottom:6px;
 }
 .login-s { font-size:12px; color:var(--text-muted); letter-spacing:.1em; margin-bottom:24px; }
+.login-links { display:flex; flex-direction:column; gap:10px; align-items:center; margin-top:18px; }
+.login-links a { font-size:12px; color:var(--rose-dark); text-decoration:underline; text-underline-offset:2px; }
+.login-links a:hover { color:var(--rose-deep); }
 .lerr { font-size:12px; color:#7A1E1E; margin-top:8px; }
 
 /* ─── ANIMATIONS ──────────────────────────────────────────────────────────── */
@@ -1333,6 +1393,132 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 </style>
 <link rel="stylesheet" href="css/admin-image-manager.css">
 <link rel="stylesheet" href="css/interface-polish.css">
+<!-- ─── SELO KUPIM DIGITAL ──────────────────────────────────────────────── -->
+<style>
+  #kupim-badge-wrap{
+    position:absolute;
+    bottom:100px; /* acima do botão flutuante do WhatsApp (.wa-float) */
+    right:0;
+    z-index:9999;
+    height:64px;
+  }
+  #kupim-badge{
+    position:absolute;
+    top:0;
+    right:0;
+    height:100%;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    background:#0f1d31;
+    opacity:0;
+    cursor:pointer;
+    white-space:nowrap;
+    box-sizing:border-box;
+    clip-path: inset(0 0 0 calc(100% - 44px) round 32px);
+    transition:
+      clip-path 1.5s cubic-bezier(0.22,1,0.36,1),
+      opacity 0.6s ease,
+      box-shadow 0.6s ease;
+    /* o site zera transition-duration globalmente sob prefers-reduced-motion
+       (css/interface-polish.css); o selo mantém sua animação própria mesmo
+       assim — é só um flourish decorativo de marca, não conteúdo funcional. */
+    transition-duration:1.5s, 0.6s, 0.6s !important;
+    box-shadow:0 4px 14px rgba(0,0,0,0);
+  }
+  #kupim-badge-wrap:hover #kupim-badge,
+  #kupim-badge-wrap:focus-within #kupim-badge,
+  #kupim-badge-wrap.is-open #kupim-badge{
+    opacity:0.9;
+    clip-path: inset(0 0 0 0 round 32px 0 0 32px);
+    box-shadow:0 6px 24px rgba(0,0,0,0.35);
+  }
+  #kupim-badge .k-logo-spacer{
+    flex:0 0 44px;
+    width:44px;
+    height:44px;
+  }
+  .k-logo-wrap{
+    position:absolute;
+    top:0;
+    right:0;
+    width:44px;
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    z-index:2;
+    opacity:0.3;
+    transform:translateX(0) scale(1);
+    transition:
+      transform 1.5s cubic-bezier(0.22,1,0.36,1),
+      opacity 0.6s ease;
+    transition-duration:1.5s, 0.6s !important;
+  }
+  #kupim-badge-wrap:hover .k-logo-wrap,
+  #kupim-badge-wrap:focus-within .k-logo-wrap,
+  #kupim-badge-wrap.is-open .k-logo-wrap{
+    opacity:1.0;
+    transform:translateX(calc(-1 * var(--k-shift, 596px))) scale(3);
+  }
+  @keyframes k-hue-wave{
+    0%   { filter:hue-rotate(0deg)   saturate(1); }
+    18%  { filter:hue-rotate(14deg)  saturate(1); }
+    36%  { filter:hue-rotate(0deg)   saturate(1); }
+    54%  { filter:hue-rotate(14deg)  saturate(1); }
+    70%  { filter:hue-rotate(0deg)   saturate(1); }
+    78%  { filter:hue-rotate(100deg) saturate(2.6); }
+    84%  { filter:hue-rotate(160deg) saturate(2.8); }
+    90%  { filter:hue-rotate(160deg) saturate(2.8); }
+    96%  { filter:hue-rotate(60deg)  saturate(1.6); }
+    100% { filter:hue-rotate(0deg)   saturate(1); }
+  }
+  .k-logo-wrap svg{
+    width:20px;
+    height:auto;
+    fill:#eff3f8;
+    display:block;
+    animation: k-hue-wave 8s ease-in-out infinite;
+    animation-duration:8s !important;
+  }
+  .k-logo-wrap stop{
+    transition: stop-color 0.4s ease;
+    transition-duration:0.4s !important;
+  }
+  #kupim-badge .badge-text{
+    flex:0 0 auto;
+    width:max-content;
+    max-width:500px;
+    padding-left:2px;
+    padding-right:35px;
+    font-size:1.0rem;
+    line-height:1.6;
+    color:#eff3f8;
+    opacity:0.92;
+    white-space:normal;
+    text-align:right;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  #kupim-badge .badge-text b{
+    font-weight:600;
+    opacity:1;
+  }
+  @media (max-width:480px){
+    #kupim-badge{
+      max-width:min(88vw,420px);
+    }
+    #kupim-badge .badge-text{
+      font-size:0.78rem;
+    }
+  }
+  @media (max-width:600px){
+    #kupim-badge-wrap{
+      bottom:80px; /* wa-float encolhe (48px) e sobe pra bottom:20px no mobile */
+    }
+  }
+</style>
 </head>
 <body class="page-bags">
 
@@ -1366,23 +1552,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   <div id="slides">
     <div class="hero-slide active" style="background:#2A1F18;">
       <div class="hs-tex"></div>
-      <div id="heroSlideImg-0" style="position:absolute;inset:0;background-image:url('webp/nova-bolsa-01-luma-preta.webp');background-size:cover;background-position:center;opacity:0.28;"></div>
     </div>
-    <div class="hero-slide" style="background:#2A1F18;">
-      <div class="hs-tex"></div>
-      <div id="heroSlideImg-1" style="position:absolute;inset:0;background-image:url('webp/nova-bolsa-02-bia-preta.webp');background-size:cover;background-position:center;opacity:0.28;"></div>
-    </div>
-    <div class="hero-slide" style="background:#2A1F18;">
-      <div class="hs-tex"></div>
-      <div id="heroSlideImg-2" style="position:absolute;inset:0;background-image:url('webp/nova-bolsa-03-duda-caramelo.webp');background-size:cover;background-position:center;opacity:0.28;"></div>
-    </div>
-    <div class="hero-slide" style="background:#2A1F18;">
-      <div class="hs-tex"></div>
-      <div id="heroSlideImg-3" style="position:absolute;inset:0;background-image:url('webp/nova-bolsa-04-nina-preta.webp');background-size:cover;background-position:center;opacity:0.28;"></div>
-    </div>
-    <div class="hero-slide" style="background:#2A1F18;"><div class="hs-tex"></div><div id="heroSlideImg-4" style="position:absolute;inset:0;background-image:url('webp/nova-bolsa-05-lola-marrom.webp');background-size:cover;background-position:center;opacity:0.28;"></div></div>
-    <div class="hero-slide" style="background:#2A1F18;"><div class="hs-tex"></div><div id="heroSlideImg-5" style="position:absolute;inset:0;background-image:url('webp/nova-bolsa-06-caca-caramelo.webp');background-size:cover;background-position:center;opacity:0.28;"></div></div>
-    <div class="hero-slide" style="background:#2A1F18;"><div class="hs-tex"></div><div id="heroSlideImg-6" style="position:absolute;inset:0;background-image:url('webp/nova-bolsa-07-mila-preta.webp');background-size:cover;background-position:center;opacity:0.28;"></div></div>
   </div>
   <div class="hero-veil"></div>
   <div class="hero-fade-bottom"></div>
@@ -1420,14 +1590,8 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
     <p class="hero-sub">Peças selecionadas com curadoria especial para mulheres que expressam estilo com autenticidade.</p>
   </div>
 
-  <div class="h-dots" id="hdots">
-    <div class="h-dot on"  onclick="gS(0)"></div>
-    <div class="h-dot"     onclick="gS(1)"></div>
-    <div class="h-dot"     onclick="gS(2)"></div>
-    <div class="h-dot"     onclick="gS(3)"></div>
-    <div class="h-dot"     onclick="gS(4)"></div>
-    <div class="h-dot"     onclick="gS(5)"></div>
-    <div class="h-dot"     onclick="gS(6)"></div>
+  <div class="h-dots" id="hdots" style="display:none;">
+    <div class="h-dot on" onclick="gS(0)"></div>
   </div>
   <div class="h-scroll">
     <div class="h-scroll-line"></div>
@@ -1594,10 +1758,16 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   <div class="admin-panel">
     <div class="admin-hd">
       <span class="admin-hd-t">Painel Administrativo</span>
-      <button class="admin-x" onclick="closeA()">✕</button>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="admin-gallery-btn" id="adminGalleryBtn" onclick="openGalleryModal()" title="Galeria de imagens" aria-label="Galeria de imagens" style="display:none;">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11a2 2 0 0 1 2 2v11"/><rect x="3" y="7" width="15" height="15" rx="2.4"/><path d="M7.5 14.2c.8-1 1.6-1.6 2.4-1.6.7 0 1.2.5 1.9 1.3.9-1.4 1.7-2.1 2.6-2.1 1 0 1.8.9 3.1 2.8"/><circle cx="8.7" cy="10.8" r="1"/></svg>
+        </button>
+        <button class="admin-x" onclick="closeA()">✕</button>
+      </div>
     </div>
     <div class="admin-tabs" id="adminTabs" style="display:none;">
-      <button class="atab on" onclick="swTab('overview',this)">Visão Geral</button>
+      <button class="atab on" onclick="swTab('upload',this)">Upload</button>
+      <button class="atab"    onclick="swTab('overview',this)">Visão Geral</button>
       <button class="atab"    onclick="swTab('add',this)">Adicionar Bolsa</button>
       <button class="atab"    onclick="swTab('manage',this)">Gerenciar Catálogo</button>
       <button class="atab"    onclick="swTab('crud',this)">CRUD Bolsas</button>
@@ -1619,7 +1789,8 @@ const ROSE_DEEP = '#653C2B';
 const BG        = '#F3EFE9';
 const BG2       = '#E7E2D9';
 const LINE      = 'rgba(182,139,115,.18)';
-const HERO_SLIDES = ['webp/nova-bolsa-01-luma-preta.webp','webp/nova-bolsa-02-bia-preta.webp','webp/nova-bolsa-03-duda-caramelo.webp','webp/nova-bolsa-04-nina-preta.webp','webp/nova-bolsa-05-lola-marrom.webp','webp/nova-bolsa-06-caca-caramelo.webp','webp/nova-bolsa-07-mila-preta.webp'];
+// Banner sem fotos de produto (catálogo removido) — carrossel desativado.
+const HERO_SLIDES = [];
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
 // Fonte de verdade: banco de dados (Supabase). data/products-bags.js fica só
@@ -1895,7 +2066,7 @@ function gS(n) {
   document.querySelectorAll('.hero-slide')[cur].classList.add('active');
   document.querySelectorAll('.h-dot')[cur].classList.add('on');
 }
-setInterval(() => gS((cur + 1) % HERO_SLIDES.length), 5000);
+if (HERO_SLIDES.length > 1) setInterval(() => gS((cur + 1) % HERO_SLIDES.length), 5000);
 
 // ─── NAV ──────────────────────────────────────────────────────────────────────
 window.addEventListener('scroll', () =>
@@ -1914,7 +2085,7 @@ let loggedIn = (function(){
   const t = sessionStorage.getItem('mfb_auth_ts');
   return t && (Date.now() - parseInt(t)) < 600000;
 })();
-const ADMIN_PASS = 'mfb2025';
+const ADMIN_PASS = 'mfb2026';
 let bulkStatusCursor = 'available'; // próximo status a aplicar em massa (botão cíclico do cabeçalho)
 
 function openA() {
@@ -1937,37 +2108,184 @@ function closeA() {
   setTimeout(() => ov.classList.remove('open'), 350);
 }
 
+// ═══ LOGIN — senha (principal) ou autenticador (alternativa), nunca os dois
+// juntos — e um caminho de recuperação via e-mail pra Kupim Digital ═════════
+let _loginView = 'password'; // 'password' | 'forgot' | 'altmenu' | 'totp'
+
 function renderLogin() {
   document.getElementById('adminTabs').style.display = 'none';
-  document.getElementById('adminBd').innerHTML = `
-  <div class="login-wrap">
-    <div class="login-t">Acesso Restrito</div>
-    <p class="login-s">Painel · My Favorite Bags</p>
-    <input class="fi" type="password" id="pw" placeholder="Senha de acesso"/>
-    <button class="fb" onclick="tryLogin()">Entrar</button>
-    <p class="lerr" id="lerr"></p>
-  </div>`;
+  const galBtn = document.getElementById('adminGalleryBtn');
+  if (galBtn) galBtn.style.display = 'none';
+  _loginView = 'password';
+  renderLoginView();
 }
 
-function tryLogin() {
-  if (document.getElementById('pw').value === ADMIN_PASS) {
+function setLoginView(v) { _loginView = v; renderLoginView(); }
+
+function renderLoginView() {
+  const body = document.getElementById('adminBd');
+  if (_loginView === 'password') {
+    body.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-t">Acesso Restrito</div>
+      <p class="login-s">Painel · My Favorite Bags</p>
+      <input class="fi" type="password" id="pw" placeholder="Senha de acesso"/>
+      <button class="fb" onclick="tryLoginPassword()" id="loginBtn">Entrar</button>
+      <p class="lerr" id="lerr"></p>
+      <div class="login-links">
+        <a href="#" onclick="event.preventDefault(); setLoginView('forgot')">Esqueci a senha</a>
+        <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acesso de outra forma</a>
+      </div>
+    </div>`;
+  } else if (_loginView === 'forgot') {
+    body.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-t">Esqueci a senha</div>
+      <p class="login-s">Fale com a Kupim Digital pra recuperar o acesso ao painel.</p>
+      <button class="fb" onclick="openContactKupimModal()">Falar com Kupim Digital</button>
+      <div class="login-links">
+        <a href="#" onclick="event.preventDefault(); setLoginView('password')">Voltar para acesso com senha</a>
+      </div>
+    </div>`;
+  } else if (_loginView === 'altmenu') {
+    body.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-t">Acesso de outra forma</div>
+      <p class="login-s">Escolha como prefere continuar.</p>
+      <div class="login-links" style="margin-bottom:18px;">
+        <a href="#" onclick="event.preventDefault(); setLoginView('totp')">Tentar pelo autenticador</a>
+      </div>
+      <button class="fb" onclick="openContactKupimModal()">Fala com Kupim Digital</button>
+      <div class="login-links">
+        <a href="#" onclick="event.preventDefault(); setLoginView('password')">Voltar para acesso com senha</a>
+      </div>
+    </div>`;
+  } else if (_loginView === 'totp') {
+    body.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-t">Código do Autenticador</div>
+      <p class="login-s">Digite o código de 6 dígitos do app autenticador (Google Authenticator, Authy…).</p>
+      <input class="fi" type="text" inputmode="numeric" maxlength="6" id="pwTotp" placeholder="000000"/>
+      <button class="fb" onclick="tryLoginTotp()" id="loginBtn">Entrar</button>
+      <p class="lerr" id="lerr"></p>
+      <div class="login-links">
+        <a href="#" onclick="event.preventDefault(); setLoginView('password')">Voltar para acesso com senha</a>
+        <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acesso de outra forma</a>
+      </div>
+    </div>`;
+  }
+}
+
+async function _doLoginRequest(extra) {
+  const res = await fetch(`${FN_URL}/admin-write`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ action: 'login', ...extra }),
+  });
+  const json = await res.json();
+  if (!res.ok || json.error) throw new Error(json.error || 'Falha no login');
+}
+
+async function tryLoginPassword() {
+  const pw = document.getElementById('pw').value;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  try {
+    await _doLoginRequest({ password: pw });
     loggedIn = true; sessionStorage.setItem('mfb_auth_ts', Date.now());
+    sessionStorage.setItem('mfbAdminPassword', pw);
+    renderPanel();
+  } catch (e) {
+    document.getElementById('lerr').textContent = 'Senha incorreta. Tente novamente.';
+  } finally {
+    const b = document.getElementById('loginBtn');
+    if (b) { b.disabled = false; b.textContent = 'Entrar'; }
+  }
+}
+
+async function tryLoginTotp() {
+  const code = document.getElementById('pwTotp').value;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  try {
+    await _doLoginRequest({ totp: code });
+    loggedIn = true; sessionStorage.setItem('mfb_auth_ts', Date.now());
+    // Login por autenticador não passa pela senha — guarda a senha real do
+    // painel mesmo assim, porque as demais chamadas (salvar, apagar etc.)
+    // continuam exigindo-a.
     sessionStorage.setItem('mfbAdminPassword', ADMIN_PASS);
     renderPanel();
-  } else {
-    document.getElementById('lerr').textContent = 'Senha incorreta. Tente novamente.';
+  } catch (e) {
+    document.getElementById('lerr').textContent = 'Código inválido ou expirado. Tente novamente.';
+  } finally {
+    const b = document.getElementById('loginBtn');
+    if (b) { b.disabled = false; b.textContent = 'Entrar'; }
   }
+}
+
+// ── "Falar com Kupim Digital" — monta um mailto: com assunto/corpo já
+// preenchidos; o próprio app de e-mail do usuário é quem envia. ────────────
+const KUPIM_CONTACT_EMAIL = 'allanlauzid@gmail.com';
+
+function openContactKupimModal() {
+  let ov = document.getElementById('kupimContactModal');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'kupimContactModal';
+    ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:9600;background:rgba(20,12,7,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;';
+    ov.innerHTML = `
+      <div style="background:var(--bg);width:min(440px,92vw);border-radius:14px;padding:32px;">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:6px;color:var(--text);">Falar com Kupim Digital</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">Escreva sua mensagem — vamos abrir seu app de e-mail com tudo preenchido, você só confirma o envio.</p>
+        <label class="flabel">Assunto</label>
+        <input class="fi" id="kupimSubject" placeholder="Ex: Esqueci a senha do painel" style="margin-bottom:14px;">
+        <label class="flabel">Mensagem</label>
+        <textarea class="fi" id="kupimBody" rows="5" placeholder="Conte o que aconteceu…" style="margin-bottom:20px;resize:vertical;width:100%;"></textarea>
+        <div style="display:flex;gap:10px;">
+          <button class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="closeContactKupimModal()">Cancelar</button>
+          <button class="fb" style="margin-top:0;" onclick="sendContactKupimEmail()">Gerar e-mail</button>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+  }
+  ov.style.display = 'flex';
+}
+function closeContactKupimModal() {
+  const ov = document.getElementById('kupimContactModal');
+  if (ov) ov.style.display = 'none';
+}
+function sendContactKupimEmail() {
+  const subject = document.getElementById('kupimSubject').value.trim() || 'Suporte — Painel My Favorite Bags';
+  const body = document.getElementById('kupimBody').value.trim();
+  const mailto = `mailto:${KUPIM_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+  closeContactKupimModal();
 }
 
 function renderPanel() {
   beginCatalogEditSession();
   document.getElementById('adminTabs').style.display = 'flex';
+  const galBtn = document.getElementById('adminGalleryBtn');
+  if (galBtn) galBtn.style.display = 'flex';
   // Garantir que a tab visual sempre começa em Visão Geral
   document.querySelectorAll('#adminTabs .atab').forEach(t => t.classList.remove('on'));
   const firstTab = document.querySelector('#adminTabs .atab');
   if (firstTab) firstTab.classList.add('on');
   document.getElementById('adminBd').innerHTML = `
-  <div class="apane on" id="tab-overview">
+  <div class="apane on" id="tab-upload">
+    <div id="uploadDropzone" class="upload-dropzone" onclick="document.getElementById('uploadFileInput').click()">
+      <input type="file" id="uploadFileInput" accept="image/png" multiple style="display:none;" onchange="handleGalleryUploadFiles(this.files)">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.55;margin-bottom:14px;"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      <p class="upload-dropzone-title">Guarde suas bolsas aqui (em PNG).</p>
+      <p class="upload-dropzone-sub">Arraste e solte a imagem aqui, ou clique para escolher no computador</p>
+    </div>
+    <p id="uploadStatus" style="text-align:center;font-size:12.5px;color:var(--rose-dark);margin-top:14px;min-height:18px;"></p>
+    <div style="text-align:center;margin-top:22px;">
+      <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="openGalleryModal()">Abrir galeria</button>
+    </div>
+  </div>
+
+  <div class="apane" id="tab-overview">
     <div id="overviewBody"></div>
   </div>
 
@@ -2024,7 +2342,7 @@ function renderPanel() {
           <button type="button" class="fb" style="margin-top:0;" onclick="document.getElementById('npFile').click()">Escolher foto</button>
           <p style="font-size:11.5px;color:var(--modal-muted,#A08070);margin-top:8px;">O fundo é removido automaticamente (remove.bg) — você confere antes de salvar.</p>
         </div>
-        <div id="npPhotoWorking" style="display:none;font-size:12.5px;color:var(--rose-dark);">Removendo o fundo, aguarde…</div>
+        <div id="npPhotoWorking" style="display:none;font-size:12.5px;color:var(--rose-dark);">Preparando a imagem, aguarde…</div>
         <div id="npPhotoPreviewWrap" style="display:none;">
           <div style="display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
             <div>
@@ -2048,6 +2366,7 @@ function renderPanel() {
         <div id="npPhotoConfirmed" style="display:none;">
           <img id="npPhotoFinal" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;margin-bottom:8px;">
           <p style="font-size:12px;color:#1a7a3e;font-weight:600;">✓ Foto pronta para salvar</p>
+          <button type="button" class="fb" style="margin-top:8px;" onclick="removeNewProdBackground()">Remover fundo</button>
           <button type="button" class="fb" style="margin-top:8px;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="document.getElementById('npFile').click()">Trocar foto</button>
         </div>
       </div>
@@ -2058,6 +2377,19 @@ function renderPanel() {
   </div>
 
   <div class="apane" id="tab-manage">
+    <div class="manage-toolbar">
+      <div class="manage-search">
+        <img src="webp/icons/icon-search.png" alt="" aria-hidden="true">
+        <input type="text" id="manageSearch" placeholder="Buscar bolsa pelo nome…" oninput="renderAdminList()">
+      </div>
+      <div class="gal-filter-group" id="manageStatusFilter">
+        <button class="gal-chip on" data-f="all"      onclick="setManageFilter('all')">Todas</button>
+        <button class="gal-chip"    data-f="new"       onclick="setManageFilter('new')">Novo</button>
+        <button class="gal-chip"    data-f="favorite"  onclick="setManageFilter('favorite')">Favorito</button>
+        <button class="gal-chip"    data-f="available" onclick="setManageFilter('available')">Disponível</button>
+        <button class="gal-chip"    data-f="sold_out"  onclick="setManageFilter('sold_out')">Esgotado</button>
+      </div>
+    </div>
     <div class="alist" id="alist"></div>
   </div>
 
@@ -2068,7 +2400,10 @@ function renderPanel() {
         <p>Envie a foto e preencha nome e preço. A bolsa entra disponível, favorita e com o selo NOVO.</p>
       </div>
       <div class="crud-create-grid">
-        <label class="crud-upload"><input id="crudNewImage" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewCrudNewImage(this)"><span id="crudUploadText">Escolher imagem</span><img id="crudNewPreview" alt="Prévia da nova bolsa"></label>
+        <div class="crud-image-tools">
+          <label class="crud-upload"><input id="crudNewImage" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewCrudNewImage(this)"><span id="crudUploadText">Escolher imagem</span><img id="crudNewPreview" alt="Prévia da nova bolsa"></label>
+          <button type="button" class="crud-remove-bg" id="crudRemoveBg" onclick="removeCrudNewBackground()" disabled>Remover fundo</button>
+        </div>
         <label><span>Nome</span><input class="fi" id="crudNewName" placeholder="Ex: Luma Preta"></label>
         <label><span>Preço</span><input class="fi" id="crudNewPrice" inputmode="numeric" placeholder="Ex: 149"></label>
         <label><span>Categoria</span><select class="fi" id="crudNewCat"><option value="tote">Tote Bag</option><option value="shoulder">Shoulder</option><option value="clutch">Clutch</option><option value="mini">Mini Bag</option></select></label>
@@ -2513,9 +2848,318 @@ function swTab(name, btn) {
   if (name === 'manage')   renderAdminList();
   if (name === 'crud')     renderCrudBags();
   if (name === 'overview') renderOverviewTab();
+  if (name === 'upload')   initUploadTab();
+}
+
+// ═══ ABA UPLOAD + GALERIA DE IMAGENS ════════════════════════════════════════
+// Fluxo: solta/escolhe PNG -> nome automático "Bolsa AAAA-MM-DD HH-MM-SS N"
+// (N reinicia por dia) -> sobe pro Storage -> abre a galeria.
+let _uploadDropzoneBound = false;
+
+function initUploadTab() {
+  const zone = document.getElementById('uploadDropzone');
+  if (!zone || _uploadDropzoneBound) return;
+  _uploadDropzoneBound = true;
+  ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => {
+    e.preventDefault(); zone.classList.add('drag-over');
+  }));
+  ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+  }));
+  zone.addEventListener('drop', e => {
+    if (e.dataTransfer?.files?.length) handleGalleryUploadFiles(e.dataTransfer.files);
+  });
+}
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+// Consulta a galeria pra saber quantas bolsas já foram enviadas HOJE (o
+// contador reinicia sozinho todo dia, porque é sempre recontado na hora).
+async function nextBagUploadNames(count) {
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
+  let startN = 1;
+  try {
+    const images = await sbListGalleryImages();
+    const todayPrefix = `Bolsa ${dateStr} `;
+    const used = images
+      .filter(img => img.name.startsWith(todayPrefix) && !img.name.includes(' - Cópia'))
+      .length;
+    startN = used + 1;
+  } catch (e) { /* segue com startN=1 se a galeria não puder ser lida */ }
+  const names = [];
+  for (let i = 0; i < count; i++) {
+    const t = new Date(now.getTime() + i * 1000); // evita colidir no mesmo segundo
+    const timeStr = `${pad2(t.getHours())}-${pad2(t.getMinutes())}-${pad2(t.getSeconds())}`;
+    names.push(`Bolsa ${dateStr} ${timeStr} ${startN + i}.png`);
+  }
+  return names;
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleGalleryUploadFiles(fileList) {
+  const files = Array.from(fileList || []).filter(f => f.type === 'image/png');
+  const status = document.getElementById('uploadStatus');
+  if (!files.length) {
+    if (status) status.textContent = 'Só é permitido enviar imagens no formato PNG.';
+    return;
+  }
+  if (status) status.textContent = `Enviando ${files.length} imagem${files.length > 1 ? 's' : ''}…`;
+  try {
+    const names = await nextBagUploadNames(files.length);
+    for (let i = 0; i < files.length; i++) {
+      const dataUrl = await fileToDataUrl(files[i]);
+      await sbUploadGalleryImage(dataUrl, names[i]);
+    }
+    if (status) status.textContent = `${files.length} imagem${files.length > 1 ? 's' : ''} guardada${files.length > 1 ? 's' : ''} na galeria.`;
+    document.getElementById('uploadFileInput').value = '';
+    openGalleryModal();
+  } catch (e) {
+    if (status) status.textContent = `Erro ao enviar: ${e.message}`;
+  }
+}
+
+// ── Galeria (modal) ─────────────────────────────────────────────────────────
+let _galleryImages = [];
+let _gallerySort = 'desc';        // 'desc' | 'asc' — por data de envio
+let _galleryFilter = 'all';       // 'all' | 'original' | 'nobg'
+let _galleryPickMode = null;      // quando != null, clicar numa foto associa ao produto (Fase 2)
+
+function isGalleryNoBg(name) { return / \(sem fundo\)\.png$/i.test(name); }
+function isGalleryCopy(name) { return / - Cópia \d+/i.test(name); }
+
+async function openGalleryModal() {
+  let ov = document.getElementById('galleryModal');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'galleryModal';
+    ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:9500;background:rgba(20,12,7,.78);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;';
+    ov.innerHTML = `
+      <div style="background:var(--bg);width:min(1100px,94vw);height:min(88vh,900px);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;">
+        <div style="padding:20px 26px;display:flex;align-items:center;justify-content:space-between;background:var(--rose-deep);flex-shrink:0;">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#fff;letter-spacing:.08em;">Galeria de Imagens</span>
+          <button onclick="closeGalleryModal()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;">✕</button>
+        </div>
+        <div style="padding:14px 26px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line);flex-shrink:0;">
+          <div class="gal-filter-group" id="galFilterOriginal">
+            <button class="gal-chip on" data-f="all" onclick="setGalleryFilter('all')">Todas</button>
+            <button class="gal-chip" data-f="original" onclick="setGalleryFilter('original')">Originais</button>
+            <button class="gal-chip" data-f="nobg" onclick="setGalleryFilter('nobg')">Sem fundo</button>
+          </div>
+          <div style="flex:1;"></div>
+          <button class="gal-chip" onclick="toggleGallerySort()" id="galSortBtn">Mais recentes primeiro</button>
+          <button type="button" class="fb" style="margin-top:0;" onclick="document.getElementById('uploadFileInput').click()">+ Enviar foto</button>
+        </div>
+        <div id="galleryGrid" style="flex:1;overflow-y:auto;padding:20px 26px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;"></div>
+      </div>`;
+    document.body.appendChild(ov);
+  }
+  ov.style.display = 'flex';
+  await refreshGalleryGrid();
+}
+function closeGalleryModal() {
+  const ov = document.getElementById('galleryModal');
+  if (ov) ov.style.display = 'none';
+}
+
+async function refreshGalleryGrid() {
+  const grid = document.getElementById('galleryGrid');
+  if (!grid) return;
+  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);font-size:13px;">Carregando…</p>';
+  try {
+    _galleryImages = await sbListGalleryImages();
+  } catch (e) {
+    grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#b83232;font-size:13px;">Erro ao carregar a galeria: ${e.message}</p>`;
+    return;
+  }
+  renderGalleryGrid();
+}
+
+function setGalleryFilter(f) {
+  _galleryFilter = f;
+  document.querySelectorAll('#galFilterOriginal .gal-chip').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+  renderGalleryGrid();
+}
+function toggleGallerySort() {
+  _gallerySort = _gallerySort === 'desc' ? 'asc' : 'desc';
+  document.getElementById('galSortBtn').textContent = _gallerySort === 'desc' ? 'Mais recentes primeiro' : 'Mais antigas primeiro';
+  renderGalleryGrid();
+}
+
+function renderGalleryGrid() {
+  const grid = document.getElementById('galleryGrid');
+  if (!grid) return;
+  let list = _galleryImages.slice();
+  if (_galleryFilter === 'original') list = list.filter(i => !isGalleryNoBg(i.name));
+  if (_galleryFilter === 'nobg') list = list.filter(i => isGalleryNoBg(i.name));
+  list.sort((a, b) => {
+    const da = new Date(a.created_at).getTime(), db = new Date(b.created_at).getTime();
+    return _gallerySort === 'desc' ? db - da : da - db;
+  });
+  if (!list.length) {
+    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);font-size:13px;">Nenhuma imagem por aqui ainda.</p>';
+    return;
+  }
+  grid.innerHTML = list.map(img => `
+    <div class="gal-card">
+      <div class="gal-card-img" onclick="openImageZoom('${_pimEscape(img.url)}')">
+        <img src="${_pimEscape(img.url)}" alt="${_pimEscape(img.name)}" loading="lazy">
+        ${isGalleryNoBg(img.name) ? '<span class="gal-badge">Sem fundo</span>' : ''}
+      </div>
+      <p class="gal-card-name" title="${_pimEscape(img.name)}">${_pimEscape(img.name)}</p>
+      <div class="gal-card-actions">
+        <button title="Editar (crop / remover fundo)" onclick="editGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')"><img src="webp/icons/icon-edit.png" alt=""></button>
+        <button title="Remover fundo" onclick="removeBgGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')">${GALLERY_SCISSORS_SVG}</button>
+        <button title="Baixar" onclick="downloadGalleryImage('${_pimEscape(img.url)}','${_pimEscape(img.name)}')"><img src="webp/icons/icon-download.png" alt=""></button>
+        <button title="Excluir" onclick="deleteGalleryImage('${_pimEscape(img.name)}')"><img src="webp/icons/icon-delete.png" alt=""></button>
+      </div>
+    </div>`).join('');
+}
+
+const GALLERY_SCISSORS_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8B4A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M8.5 7.5 20 20M8.5 16.5 20 4"/></svg>`;
+
+// Calcula o próximo nome de cópia pra um nome-base (crop/remover fundo nunca
+// sobrescrevem o arquivo original — sempre criam " - Cópia N").
+function nextCopyName(baseName, suffix) {
+  const stem = baseName.replace(/\.png$/i, '').replace(/ - Cópia \d+( \(sem fundo\))?$/i, '');
+  const existing = _galleryImages.filter(i => i.name.startsWith(stem + ' - Cópia'));
+  const n = existing.length + 1;
+  return `${stem} - Cópia ${n}${suffix ? ' ' + suffix : ''}.png`;
+}
+
+async function removeBgGalleryImage(name, url) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const file = new File([blob], name, { type: 'image/png' });
+    const resultDataUrl = await sbRemoveBackground(file);
+    const webp = await convertToWebp(resultDataUrl, 1); // mantém alpha
+    const newName = nextCopyName(name, '(sem fundo)');
+    await sbUploadGalleryImage(resultDataUrl, newName);
+    await refreshGalleryGrid();
+  } catch (e) {
+    alert('Não foi possível remover o fundo: ' + e.message);
+  }
+}
+
+function editGalleryImage(name, url) {
+  // Crop chega numa próxima etapa — por enquanto, o ícone de editar também
+  // oferece a remoção de fundo (mesmo resultado do ícone dedicado).
+  if (confirm('O recorte (crop) ainda está a caminho. Quer remover o fundo desta imagem agora?')) {
+    removeBgGalleryImage(name, url);
+  }
+}
+
+function downloadGalleryImage(url, name) {
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.target = '_blank';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+async function deleteGalleryImage(name) {
+  if (!confirm(`Apagar "${name}" da galeria? Essa ação não pode ser desfeita.`)) return;
+  try {
+    await sbDeleteGalleryImage(name);
+    await refreshGalleryGrid();
+  } catch (e) {
+    alert('Não foi possível apagar: ' + e.message);
+  }
+}
+
+// ── Zoom/pan simples pra qualquer imagem da galeria (mesmo gesto do modal
+// de produto: arrastar, roda do mouse e pinça no touch) ────────────────────
+function openImageZoom(url) {
+  let ov = document.getElementById('imgZoomOv');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'imgZoomOv';
+    ov.style.cssText = 'display:none;position:fixed;inset:0;z-index:9700;background:rgba(0,0,0,.9);align-items:center;justify-content:center;';
+    ov.innerHTML = `
+      <button onclick="closeImageZoom()" style="position:absolute;top:20px;right:26px;background:none;border:none;color:#fff;font-size:26px;cursor:pointer;z-index:2;">✕</button>
+      <div id="imgZoomWrap" style="width:90vw;height:90vh;overflow:hidden;position:relative;cursor:zoom-in;touch-action:none;">
+        <img id="imgZoomPhoto" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;will-change:transform;">
+      </div>`;
+    document.body.appendChild(ov);
+    initImageZoomGestures();
+  }
+  document.getElementById('imgZoomPhoto').src = url;
+  document.getElementById('imgZoomPhoto').dataset.scale = 1;
+  document.getElementById('imgZoomPhoto').dataset.tx = 0;
+  document.getElementById('imgZoomPhoto').dataset.ty = 0;
+  applyZoomTransform();
+  ov.style.display = 'flex';
+}
+function closeImageZoom() {
+  const ov = document.getElementById('imgZoomOv');
+  if (ov) ov.style.display = 'none';
+}
+function applyZoomTransform() {
+  const img = document.getElementById('imgZoomPhoto');
+  if (!img) return;
+  const { scale = 1, tx = 0, ty = 0 } = img.dataset;
+  img.style.transform = `translate(-50%,-50%) translate(${tx}px,${ty}px) scale(${scale})`;
+}
+function initImageZoomGestures() {
+  const wrap = document.getElementById('imgZoomWrap');
+  const img = document.getElementById('imgZoomPhoto');
+  let dragging = false, lastX = 0, lastY = 0;
+  wrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    let scale = parseFloat(img.dataset.scale || 1);
+    scale = Math.max(1, Math.min(5, scale + (e.deltaY < 0 ? .2 : -.2)));
+    img.dataset.scale = scale;
+    wrap.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
+    applyZoomTransform();
+  }, { passive: false });
+  wrap.addEventListener('dblclick', () => {
+    const scale = parseFloat(img.dataset.scale || 1) > 1 ? 1 : 2.2;
+    img.dataset.scale = scale; img.dataset.tx = 0; img.dataset.ty = 0;
+    applyZoomTransform();
+  });
+  wrap.addEventListener('mousedown', e => {
+    if (parseFloat(img.dataset.scale || 1) <= 1) return;
+    dragging = true; lastX = e.clientX; lastY = e.clientY; wrap.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    img.dataset.tx = parseFloat(img.dataset.tx || 0) + (e.clientX - lastX);
+    img.dataset.ty = parseFloat(img.dataset.ty || 0) + (e.clientY - lastY);
+    lastX = e.clientX; lastY = e.clientY;
+    applyZoomTransform();
+  });
+  window.addEventListener('mouseup', () => { dragging = false; wrap.style.cursor = parseFloat(img.dataset.scale || 1) > 1 ? 'grab' : 'zoom-in'; });
+  let lastDist = 0;
+  wrap.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) lastDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    else if (e.touches.length === 1) { dragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }
+  }, { passive: true });
+  wrap.addEventListener('touchmove', e => {
+    if (e.touches.length === 2) {
+      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      let scale = parseFloat(img.dataset.scale || 1) * (dist / lastDist);
+      scale = Math.max(1, Math.min(5, scale));
+      img.dataset.scale = scale; lastDist = dist;
+      applyZoomTransform();
+    } else if (dragging) {
+      img.dataset.tx = parseFloat(img.dataset.tx || 0) + (e.touches[0].clientX - lastX);
+      img.dataset.ty = parseFloat(img.dataset.ty || 0) + (e.touches[0].clientY - lastY);
+      lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+      applyZoomTransform();
+    }
+  }, { passive: true });
+  wrap.addEventListener('touchend', () => { dragging = false; });
 }
 
 let crudNewFile = null;
+let crudNewImageSource = null;
 
 function formatCrudPrice(value) {
   const digits = String(value || '').replace(/\D/g, '');
@@ -2524,12 +3168,38 @@ function formatCrudPrice(value) {
 
 function previewCrudNewImage(input) {
   crudNewFile = input.files && input.files[0] ? input.files[0] : null;
+  crudNewImageSource = crudNewFile;
   const preview = document.getElementById('crudNewPreview');
   const text = document.getElementById('crudUploadText');
   if (!crudNewFile || !preview) return;
   preview.src = URL.createObjectURL(crudNewFile);
   preview.style.display = 'block';
   if (text) text.textContent = 'Trocar imagem';
+  const removeButton = document.getElementById('crudRemoveBg');
+  if (removeButton) removeButton.disabled = false;
+  const message = document.getElementById('crudMessage');
+  if (message) message.textContent = 'Imagem carregada. Se desejar, clique em “Remover fundo”.';
+}
+
+async function removeCrudNewBackground() {
+  const button = document.getElementById('crudRemoveBg');
+  const message = document.getElementById('crudMessage');
+  const preview = document.getElementById('crudNewPreview');
+  if (!crudNewFile || !button) return;
+  button.disabled = true;
+  button.textContent = 'Removendo…';
+  if (message) message.textContent = 'Removendo o fundo da imagem…';
+  try {
+    crudNewImageSource = await sbRemoveBackground(crudNewFile);
+    if (preview) preview.src = crudNewImageSource;
+    if (message) message.textContent = 'Fundo removido. Confira a prévia antes de adicionar.';
+    button.textContent = 'Fundo removido';
+  } catch (error) {
+    crudNewImageSource = crudNewFile;
+    button.disabled = false;
+    button.textContent = 'Tentar remover novamente';
+    if (message) message.textContent = `Não foi possível remover o fundo: ${error.message}`;
+  }
 }
 
 function renderCrudBags() {
@@ -2582,7 +3252,7 @@ async function addCrudBag() {
       id: Date.now(), name, cat, price, status:'available', isNew:true,
       favorite:true, img:null, promo:null, tags:[], occasion:'dia-a-dia', order:products.length + 1
     };
-    const webp = await convertToWebp(crudNewFile, .9);
+    const webp = await convertToWebp(crudNewImageSource || crudNewFile, .9);
     product.img = webp;
     products.push(product);
     stageCatalogProductImage(product, webp, `catalogo-${product.id}.webp`);
@@ -2598,10 +3268,20 @@ async function addCrudBag() {
     document.getElementById('crudNewPreview').style.display = 'none';
     document.getElementById('crudUploadText').textContent = 'Escolher imagem';
     crudNewFile = null;
+    crudNewImageSource = null;
+    document.getElementById('crudRemoveBg').disabled = true;
+    document.getElementById('crudRemoveBg').textContent = 'Remover fundo';
     if (message) message.textContent = `“${name}” adicionada. Revise e salve para publicar.`;
   } catch (error) {
     if (message) message.textContent = `Não foi possível preparar a bolsa: ${error.message}`;
   }
+}
+
+let _manageFilter = 'all';
+function setManageFilter(f) {
+  _manageFilter = f;
+  document.querySelectorAll('#manageStatusFilter .gal-chip').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+  renderAdminList();
 }
 
 function renderAdminList() {
@@ -2660,7 +3340,14 @@ function renderAdminList() {
       </div>
     </div>`;
 
-  const rows = products.map((p, i) => {
+  const searchTerm = (document.getElementById('manageSearch')?.value || '').trim().toLowerCase();
+  let filteredProducts = products;
+  if (_manageFilter === 'new')       filteredProducts = filteredProducts.filter(p => p.isNew);
+  else if (_manageFilter === 'favorite') filteredProducts = filteredProducts.filter(p => p.favorite);
+  else if (_manageFilter !== 'all')  filteredProducts = filteredProducts.filter(p => p.status === _manageFilter);
+  if (searchTerm) filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+
+  const rows = filteredProducts.map((p, i) => {
     const bg = i % 2 === 0 ? 'rgba(243,239,233,.55)' : 'rgba(182,139,115,.06)';
     return `
     <div class="admin-catalog-row" style="display:flex;align-items:stretch;background:${bg};border-bottom:1px solid var(--line);">
@@ -2701,9 +3388,11 @@ function renderAdminList() {
             <span>${catLabel(p.cat)}</span>
             <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <button class="aabtn del" onclick="confirmDel(${p.id})"
-            style="width:72px;height:38px;padding:0;display:flex;align-items:center;
-                   justify-content:center;flex-shrink:0;border-color:#b83232;color:#b83232;">Remover</button>
+          <button class="aabtn del" onclick="confirmDel(${p.id})" title="Excluir ${_pimEscape(p.name)}" aria-label="Excluir ${_pimEscape(p.name)}"
+            style="width:44px;height:38px;padding:0;display:flex;align-items:center;
+                   justify-content:center;flex-shrink:0;border-color:#b83232;background:rgba(184,50,50,.06);">
+            <img src="webp/icons/icon-delete.png" alt="" style="width:16px;height:16px;filter:invert(20%) sepia(60%) saturate(2000%) hue-rotate(340deg) brightness(85%);">
+          </button>
         </div>
       </div>
     </div>`;
@@ -3002,17 +3691,26 @@ async function onNewProdFileChosen(input) {
   newProdRawFile = file;
   newProdFileName = file.name;
   newProdFinalImg = null;
+  await _npSaveFinal(file);
+  const msg = document.getElementById('addMsg');
+  msg.style.color = 'var(--rose-dark)';
+  msg.textContent = 'Imagem carregada. Se desejar, clique em “Remover fundo”.';
+}
+
+async function removeNewProdBackground() {
+  if (!newProdRawFile) return;
+  const msg = document.getElementById('addMsg');
   _npShow('npPhotoWorking');
+  document.getElementById('npPhotoWorking').textContent = 'Removendo o fundo, aguarde…';
   try {
-    const originalUrl = URL.createObjectURL(file);
-    const removedBg = await sbRemoveBackground(file);
-    newProdRemovedBgDataUrl = removedBg;
-    document.getElementById('npPhotoOriginal').src = originalUrl;
-    document.getElementById('npPhotoResult').src = removedBg;
-    _npShow('npPhotoPreviewWrap');
+    newProdRemovedBgDataUrl = await sbRemoveBackground(newProdRawFile);
+    await _npSaveFinal(newProdRemovedBgDataUrl);
+    msg.style.color = '#1a7a3e';
+    msg.textContent = 'Fundo removido. Confira a prévia antes de adicionar.';
   } catch (e) {
-    document.getElementById('npPhotoErrorMsg').textContent = 'Não foi possível remover o fundo: ' + e.message;
-    _npShow('npPhotoError');
+    msg.style.color = '#7A1E1E';
+    msg.textContent = 'Não foi possível remover o fundo: ' + e.message;
+    _npShow('npPhotoConfirmed');
   }
 }
 
@@ -3030,7 +3728,7 @@ async function _npSaveFinal(dataUrlToConvert) {
     msg.textContent = 'Erro ao salvar a foto: ' + e.message;
     _npShow('npPhotoPreviewWrap');
   } finally {
-    document.getElementById('npPhotoWorking').textContent = 'Removendo o fundo, aguarde…';
+    document.getElementById('npPhotoWorking').textContent = 'Preparando a imagem, aguarde…';
   }
 }
 
@@ -3677,5 +4375,71 @@ applyMatchButtonVisibility();
     </div>
   </div>
 </div>
+
+<!-- ============ SELO KUPIM DIGITAL ============ -->
+<div id="kupim-badge-wrap">
+  <a
+    id="kupim-badge"
+    href="https://www.linkedin.com/in/allanlauzid/"
+    target="_blank"
+    rel="noopener"
+    aria-label="Uma criação de Kupim Digital. Clique para falar conosco."
+  >
+    <span class="k-logo-spacer" aria-hidden="true"></span>
+    <span class="badge-text">© <span class="kupim-year">2026</span> <b>My Favorite Bags</b>. Todos os direitos reservados.<br>Uma criação de <b>Kupim Digital</b>.</span>
+  </a>
+  <span class="k-logo-wrap" aria-hidden="true">
+    <svg viewBox="0 0 80.339996 68.730003" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="k-fill-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop id="k-stop-1" offset="0%" stop-color="#eff3f8"/>
+          <stop id="k-stop-2" offset="100%" stop-color="#eff3f8"/>
+        </linearGradient>
+      </defs>
+      <path d="m 13.66,16.47 c 7.19,-0.43 14.44,-0.34 21.63,-0.04 -0.24,8.15 0,16.3 -0.14,24.45 C 44.4,32.62 53.53,24.22 62.99,16.19 71.94,16.35 80.9,16.03 89.85,16.38 83.67,21.31 78.35,27.2 72.22,32.19 68.1,35.71 64.48,39.82 60.09,43 71.83,56.41 82.59,70.68 93.98,84.4 91.4,85.16 88.68,84.79 86.03,84.85 79.75,84.76 73.47,85.02 67.2,84.71 59.87,75.36 52.54,66.01 44.97,56.86 c -3.63,2.59 -6.28,6.29 -9.84,9 0.14,6.27 -0.03,12.54 0.12,18.81 -7.19,0.24 -14.43,0.42 -21.61,-0.1 0.34,-22.69 0.3,-45.41 0.02,-68.1 z" transform="translate(-13.640002,-16.175853)" fill="url(#k-fill-gradient)"/>
+    </svg>
+  </span>
+</div>
+<!-- ============ FIM DO SELO ============ -->
+
+<script>
+  (function(){
+    var wrap = document.getElementById('kupim-badge-wrap');
+    var badge = document.getElementById('kupim-badge');
+
+    document.querySelectorAll('.kupim-year').forEach(function(el){
+      el.textContent = new Date().getFullYear();
+    });
+
+    function updateShift(){
+      var full = badge.scrollWidth;
+      wrap.style.setProperty('--k-shift', Math.max(full - 44, 0) + 'px');
+    }
+    updateShift();
+    window.addEventListener('load', updateShift);
+    window.addEventListener('resize', updateShift);
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(updateShift);
+    }
+    requestAnimationFrame(function(){ requestAnimationFrame(updateShift); });
+
+    var isTouch = matchMedia('(hover: none)').matches;
+    if(!isTouch) return;
+
+    badge.addEventListener('click', function(e){
+      if(!wrap.classList.contains('is-open')){
+        e.preventDefault();
+        wrap.classList.add('is-open');
+        document.addEventListener('click', function closeOnce(ev){
+          if(!wrap.contains(ev.target)){
+            wrap.classList.remove('is-open');
+            document.removeEventListener('click', closeOnce);
+          }
+        });
+      }
+    });
+  })();
+</script>
+
 </body>
 </html>

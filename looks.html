@@ -61,7 +61,7 @@
 /* ─── RESET ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
-body { font-family:'Jost',sans-serif; background:var(--bg); color:var(--text-body); overflow-x:hidden; }
+body { font-family:'Jost',sans-serif; background:var(--bg); color:var(--text-body); overflow-x:hidden; position:relative; }
 a { text-decoration:none; color:inherit; }
 button { font-family:'Jost',sans-serif; }
 
@@ -850,6 +850,9 @@ select.fi option:hover { background-color:#7E5F27; color:#FAF7F1; }
 }
 .login-s { font-size:13px; color:var(--text-muted); letter-spacing:.08em; margin-bottom:24px; }
 .lerr { font-size:12px; color:#7A1E1E; margin-top:8px; }
+.login-links { display:flex; flex-direction:column; gap:10px; align-items:center; margin-top:18px; }
+.login-links a { font-size:12px; color:var(--rose-dark); text-decoration:underline; text-underline-offset:2px; }
+.login-links a:hover { color:var(--rose-deep); }
 
 /* ─── ANIMATIONS ──────────────────────────────────────────────────────────── */
 @keyframes fadeUp  { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
@@ -1389,6 +1392,132 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 </style>
 <link rel="stylesheet" href="css/admin-image-manager.css">
 <link rel="stylesheet" href="css/interface-polish.css">
+<!-- ─── SELO KUPIM DIGITAL ──────────────────────────────────────────────── -->
+<style>
+  #kupim-badge-wrap{
+    position:absolute;
+    bottom:100px; /* acima do botão flutuante do WhatsApp (.wa-float) */
+    right:0;
+    z-index:9999;
+    height:64px;
+  }
+  #kupim-badge{
+    position:absolute;
+    top:0;
+    right:0;
+    height:100%;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    background:#0f1d31;
+    opacity:0;
+    cursor:pointer;
+    white-space:nowrap;
+    box-sizing:border-box;
+    clip-path: inset(0 0 0 calc(100% - 44px) round 32px);
+    transition:
+      clip-path 1.5s cubic-bezier(0.22,1,0.36,1),
+      opacity 0.6s ease,
+      box-shadow 0.6s ease;
+    /* o site zera transition-duration globalmente sob prefers-reduced-motion
+       (css/interface-polish.css); o selo mantém sua animação própria mesmo
+       assim — é só um flourish decorativo de marca, não conteúdo funcional. */
+    transition-duration:1.5s, 0.6s, 0.6s !important;
+    box-shadow:0 4px 14px rgba(0,0,0,0);
+  }
+  #kupim-badge-wrap:hover #kupim-badge,
+  #kupim-badge-wrap:focus-within #kupim-badge,
+  #kupim-badge-wrap.is-open #kupim-badge{
+    opacity:0.9;
+    clip-path: inset(0 0 0 0 round 32px 0 0 32px);
+    box-shadow:0 6px 24px rgba(0,0,0,0.35);
+  }
+  #kupim-badge .k-logo-spacer{
+    flex:0 0 44px;
+    width:44px;
+    height:44px;
+  }
+  .k-logo-wrap{
+    position:absolute;
+    top:0;
+    right:0;
+    width:44px;
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    z-index:2;
+    opacity:0.3;
+    transform:translateX(0) scale(1);
+    transition:
+      transform 1.5s cubic-bezier(0.22,1,0.36,1),
+      opacity 0.6s ease;
+    transition-duration:1.5s, 0.6s !important;
+  }
+  #kupim-badge-wrap:hover .k-logo-wrap,
+  #kupim-badge-wrap:focus-within .k-logo-wrap,
+  #kupim-badge-wrap.is-open .k-logo-wrap{
+    opacity:1.0;
+    transform:translateX(calc(-1 * var(--k-shift, 596px))) scale(3);
+  }
+  @keyframes k-hue-wave{
+    0%   { filter:hue-rotate(0deg)   saturate(1); }
+    18%  { filter:hue-rotate(14deg)  saturate(1); }
+    36%  { filter:hue-rotate(0deg)   saturate(1); }
+    54%  { filter:hue-rotate(14deg)  saturate(1); }
+    70%  { filter:hue-rotate(0deg)   saturate(1); }
+    78%  { filter:hue-rotate(100deg) saturate(2.6); }
+    84%  { filter:hue-rotate(160deg) saturate(2.8); }
+    90%  { filter:hue-rotate(160deg) saturate(2.8); }
+    96%  { filter:hue-rotate(60deg)  saturate(1.6); }
+    100% { filter:hue-rotate(0deg)   saturate(1); }
+  }
+  .k-logo-wrap svg{
+    width:20px;
+    height:auto;
+    fill:#eff3f8;
+    display:block;
+    animation: k-hue-wave 8s ease-in-out infinite;
+    animation-duration:8s !important;
+  }
+  .k-logo-wrap stop{
+    transition: stop-color 0.4s ease;
+    transition-duration:0.4s !important;
+  }
+  #kupim-badge .badge-text{
+    flex:0 0 auto;
+    width:max-content;
+    max-width:500px;
+    padding-left:2px;
+    padding-right:35px;
+    font-size:1.0rem;
+    line-height:1.6;
+    color:#eff3f8;
+    opacity:0.92;
+    white-space:normal;
+    text-align:right;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  #kupim-badge .badge-text b{
+    font-weight:600;
+    opacity:1;
+  }
+  @media (max-width:480px){
+    #kupim-badge{
+      max-width:min(88vw,420px);
+    }
+    #kupim-badge .badge-text{
+      font-size:0.78rem;
+    }
+  }
+  @media (max-width:600px){
+    #kupim-badge-wrap{
+      bottom:80px; /* wa-float encolhe (48px) e sobe pra bottom:20px no mobile */
+    }
+  }
+</style>
 </head>
 <body class="page-looks">
 
@@ -1422,19 +1551,6 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   <div id="slides">
     <div class="hero-slide active" style="background:#111827;">
       <div class="hs-tex"></div>
-      <div id="heroSlideImg-0" style="position:absolute;inset:0;background-image:url('webp/bolsa-02.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
-    </div>
-    <div class="hero-slide" style="background:#111827;">
-      <div class="hs-tex"></div>
-      <div id="heroSlideImg-1" style="position:absolute;inset:0;background-image:url('webp/bolsa-03.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
-    </div>
-    <div class="hero-slide" style="background:#111827;">
-      <div class="hs-tex"></div>
-      <div id="heroSlideImg-2" style="position:absolute;inset:0;background-image:url('webp/bolsa-04.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
-    </div>
-    <div class="hero-slide" style="background:#111827;">
-      <div class="hs-tex"></div>
-      <div id="heroSlideImg-3" style="position:absolute;inset:0;background-image:url('webp/bolsa-05.webp');background-size:cover;background-position:center;opacity:0.22;"></div>
     </div>
   </div>
   <div class="hero-veil"></div>
@@ -1473,11 +1589,8 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
     <p class="hero-sub">Acessórios selecionados com curadoria especial para compor o seu estilo com autenticidade.</p>
   </div>
 
-  <div class="h-dots" id="hdots">
+  <div class="h-dots" id="hdots" style="display:none;">
     <div class="h-dot on"  onclick="gS(0)"></div>
-    <div class="h-dot"     onclick="gS(1)"></div>
-    <div class="h-dot"     onclick="gS(2)"></div>
-    <div class="h-dot"     onclick="gS(3)"></div>
   </div>
   <div class="h-scroll">
     <div class="h-scroll-line"></div>
@@ -1632,7 +1745,8 @@ const ROSE_DEEP = '#262626';
 const BG        = '#FAF7F1';
 const BG2       = '#DCDAD3';
 const LINE      = 'rgba(156,122,52,.22)';
-const HERO_SLIDES = ['webp/bolsa-02.webp','webp/bolsa-03.webp','webp/bolsa-04.webp','webp/bolsa-05.webp'];
+// Banner sem fotos de produto (catálogo removido) — carrossel desativado.
+const HERO_SLIDES = [];
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
 // Fonte de verdade: banco de dados (Supabase). data/products-looks.js fica só
@@ -1897,7 +2011,7 @@ function gS(n) {
   document.querySelectorAll('.hero-slide')[cur].classList.add('active');
   document.querySelectorAll('.h-dot')[cur].classList.add('on');
 }
-setInterval(() => gS((cur + 1) % 4), 5000);
+// (carrossel de banner desativado — só 1 slide sem imagem)
 
 // ─── NAV ──────────────────────────────────────────────────────────────────────
 window.addEventListener('scroll', () =>
@@ -1916,7 +2030,7 @@ let loggedIn = (function(){
   const t = sessionStorage.getItem('mfl_auth_ts');
   return t && (Date.now() - parseInt(t)) < 600000;
 })();
-const ADMIN_PASS = 'mfl2025';
+const ADMIN_PASS = 'mfb2026';
 let bulkStatusCursor = 'available'; // próximo status a aplicar em massa (botão cíclico do cabeçalho)
 
 function openA() {
@@ -1939,26 +2053,151 @@ function closeA() {
   setTimeout(() => ov.classList.remove('open'), 350);
 }
 
+// ═══ LOGIN — senha (principal) ou autenticador (alternativa), nunca os dois
+// juntos — e um caminho de recuperação via e-mail pra Kupim Digital ═════════
+let _loginView = 'password'; // 'password' | 'forgot' | 'altmenu' | 'totp'
+
 function renderLogin() {
   document.getElementById('adminTabs').style.display = 'none';
-  document.getElementById('adminBd').innerHTML = `
-  <div class="login-wrap">
-    <div class="login-t">Acesso Restrito</div>
-    <p class="login-s">Painel · My Favorite Looks</p>
-    <input class="fi" type="password" id="pw" placeholder="Senha de acesso"/>
-    <button class="fb" onclick="tryLogin()">Entrar</button>
-    <p class="lerr" id="lerr"></p>
-  </div>`;
+  _loginView = 'password';
+  renderLoginView();
 }
 
-function tryLogin() {
-  if (document.getElementById('pw').value === ADMIN_PASS) {
+function setLoginView(v) { _loginView = v; renderLoginView(); }
+
+function renderLoginView() {
+  const body = document.getElementById('adminBd');
+  if (_loginView === 'password') {
+    body.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-t">Acesso Restrito</div>
+      <p class="login-s">Painel · My Favorite Looks</p>
+      <input class="fi" type="password" id="pw" placeholder="Senha de acesso"/>
+      <button class="fb" onclick="tryLoginPassword()" id="loginBtn">Entrar</button>
+      <p class="lerr" id="lerr"></p>
+      <div class="login-links">
+        <a href="#" onclick="event.preventDefault(); setLoginView('forgot')">Esqueci a senha</a>
+        <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acesso de outra forma</a>
+      </div>
+    </div>`;
+  } else if (_loginView === 'forgot') {
+    body.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-t">Esqueci a senha</div>
+      <p class="login-s">Fale com a Kupim Digital pra recuperar o acesso ao painel.</p>
+      <button class="fb" onclick="openContactKupimModal()">Falar com Kupim Digital</button>
+      <div class="login-links">
+        <a href="#" onclick="event.preventDefault(); setLoginView('password')">Voltar para acesso com senha</a>
+      </div>
+    </div>`;
+  } else if (_loginView === 'altmenu') {
+    body.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-t">Acesso de outra forma</div>
+      <p class="login-s">Escolha como prefere continuar.</p>
+      <div class="login-links" style="margin-bottom:18px;">
+        <a href="#" onclick="event.preventDefault(); setLoginView('totp')">Tentar pelo autenticador</a>
+      </div>
+      <button class="fb" onclick="openContactKupimModal()">Fala com Kupim Digital</button>
+      <div class="login-links">
+        <a href="#" onclick="event.preventDefault(); setLoginView('password')">Voltar para acesso com senha</a>
+      </div>
+    </div>`;
+  } else if (_loginView === 'totp') {
+    body.innerHTML = `
+    <div class="login-wrap">
+      <div class="login-t">Código do Autenticador</div>
+      <p class="login-s">Digite o código de 6 dígitos do app autenticador (Google Authenticator, Authy…).</p>
+      <input class="fi" type="text" inputmode="numeric" maxlength="6" id="pwTotp" placeholder="000000"/>
+      <button class="fb" onclick="tryLoginTotp()" id="loginBtn">Entrar</button>
+      <p class="lerr" id="lerr"></p>
+      <div class="login-links">
+        <a href="#" onclick="event.preventDefault(); setLoginView('password')">Voltar para acesso com senha</a>
+        <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acesso de outra forma</a>
+      </div>
+    </div>`;
+  }
+}
+
+async function _doLoginRequest(extra) {
+  const res = await fetch(`${FN_URL}/admin-write`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ action: 'login', ...extra }),
+  });
+  const json = await res.json();
+  if (!res.ok || json.error) throw new Error(json.error || 'Falha no login');
+}
+
+async function tryLoginPassword() {
+  const pw = document.getElementById('pw').value;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  try {
+    await _doLoginRequest({ password: pw });
+    loggedIn = true; sessionStorage.setItem('mfl_auth_ts', Date.now());
+    sessionStorage.setItem('mfbAdminPassword', pw);
+    renderPanel();
+  } catch (e) {
+    document.getElementById('lerr').textContent = 'Senha incorreta. Tente novamente.';
+  } finally {
+    const b = document.getElementById('loginBtn');
+    if (b) { b.disabled = false; b.textContent = 'Entrar'; }
+  }
+}
+
+async function tryLoginTotp() {
+  const code = document.getElementById('pwTotp').value;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  try {
+    await _doLoginRequest({ totp: code });
     loggedIn = true; sessionStorage.setItem('mfl_auth_ts', Date.now());
     sessionStorage.setItem('mfbAdminPassword', ADMIN_PASS);
     renderPanel();
-  } else {
-    document.getElementById('lerr').textContent = 'Senha incorreta. Tente novamente.';
+  } catch (e) {
+    document.getElementById('lerr').textContent = 'Código inválido ou expirado. Tente novamente.';
+  } finally {
+    const b = document.getElementById('loginBtn');
+    if (b) { b.disabled = false; b.textContent = 'Entrar'; }
   }
+}
+
+const KUPIM_CONTACT_EMAIL = 'allanlauzid@gmail.com';
+
+function openContactKupimModal() {
+  let ov = document.getElementById('kupimContactModal');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'kupimContactModal';
+    ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:9600;background:rgba(20,12,7,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;';
+    ov.innerHTML = `
+      <div style="background:var(--bg);width:min(440px,92vw);border-radius:14px;padding:32px;">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:6px;color:var(--text);">Falar com Kupim Digital</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">Escreva sua mensagem — vamos abrir seu app de e-mail com tudo preenchido, você só confirma o envio.</p>
+        <label class="flabel">Assunto</label>
+        <input class="fi" id="kupimSubject" placeholder="Ex: Esqueci a senha do painel" style="margin-bottom:14px;">
+        <label class="flabel">Mensagem</label>
+        <textarea class="fi" id="kupimBody" rows="5" placeholder="Conte o que aconteceu…" style="margin-bottom:20px;resize:vertical;width:100%;"></textarea>
+        <div style="display:flex;gap:10px;">
+          <button class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="closeContactKupimModal()">Cancelar</button>
+          <button class="fb" style="margin-top:0;" onclick="sendContactKupimEmail()">Gerar e-mail</button>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+  }
+  ov.style.display = 'flex';
+}
+function closeContactKupimModal() {
+  const ov = document.getElementById('kupimContactModal');
+  if (ov) ov.style.display = 'none';
+}
+function sendContactKupimEmail() {
+  const subject = document.getElementById('kupimSubject').value.trim() || 'Suporte — Painel My Favorite Looks';
+  const body = document.getElementById('kupimBody').value.trim();
+  const mailto = `mailto:${KUPIM_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+  closeContactKupimModal();
 }
 
 function renderPanel() {
@@ -2026,7 +2265,7 @@ function renderPanel() {
           <button type="button" class="fb" style="margin-top:0;" onclick="document.getElementById('npFile').click()">Escolher foto</button>
           <p style="font-size:11.5px;color:var(--modal-muted,#8C8B85);margin-top:8px;">O fundo é removido automaticamente (remove.bg) — você confere antes de salvar.</p>
         </div>
-        <div id="npPhotoWorking" style="display:none;font-size:12.5px;color:var(--rose-dark);">Removendo o fundo, aguarde…</div>
+        <div id="npPhotoWorking" style="display:none;font-size:12.5px;color:var(--rose-dark);">Preparando a imagem, aguarde…</div>
         <div id="npPhotoPreviewWrap" style="display:none;">
           <div style="display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
             <div>
@@ -2050,6 +2289,7 @@ function renderPanel() {
         <div id="npPhotoConfirmed" style="display:none;">
           <img id="npPhotoFinal" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;margin-bottom:8px;">
           <p style="font-size:12px;color:#1a7a3e;font-weight:600;">✓ Foto pronta para salvar</p>
+          <button type="button" class="fb" style="margin-top:8px;" onclick="removeNewProdBackground()">Remover fundo</button>
           <button type="button" class="fb" style="margin-top:8px;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="document.getElementById('npFile').click()">Trocar foto</button>
         </div>
       </div>
@@ -2603,17 +2843,26 @@ async function onNewProdFileChosen(input) {
   newProdRawFile = file;
   newProdFileName = file.name;
   newProdFinalImg = null;
+  await _npSaveFinal(file);
+  const msg = document.getElementById('addMsg');
+  msg.style.color = 'var(--rose-dark)';
+  msg.textContent = 'Imagem carregada. Se desejar, clique em “Remover fundo”.';
+}
+
+async function removeNewProdBackground() {
+  if (!newProdRawFile) return;
+  const msg = document.getElementById('addMsg');
   _npShow('npPhotoWorking');
+  document.getElementById('npPhotoWorking').textContent = 'Removendo o fundo, aguarde…';
   try {
-    const originalUrl = URL.createObjectURL(file);
-    const removedBg = await sbRemoveBackground(file);
-    newProdRemovedBgDataUrl = removedBg;
-    document.getElementById('npPhotoOriginal').src = originalUrl;
-    document.getElementById('npPhotoResult').src = removedBg;
-    _npShow('npPhotoPreviewWrap');
+    newProdRemovedBgDataUrl = await sbRemoveBackground(newProdRawFile);
+    await _npSaveFinal(newProdRemovedBgDataUrl);
+    msg.style.color = '#1a7a3e';
+    msg.textContent = 'Fundo removido. Confira a prévia antes de adicionar.';
   } catch (e) {
-    document.getElementById('npPhotoErrorMsg').textContent = 'Não foi possível remover o fundo: ' + e.message;
-    _npShow('npPhotoError');
+    msg.style.color = '#7A1E1E';
+    msg.textContent = 'Não foi possível remover o fundo: ' + e.message;
+    _npShow('npPhotoConfirmed');
   }
 }
 
@@ -2631,7 +2880,7 @@ async function _npSaveFinal(dataUrlToConvert) {
     msg.textContent = 'Erro ao salvar a foto: ' + e.message;
     _npShow('npPhotoPreviewWrap');
   } finally {
-    document.getElementById('npPhotoWorking').textContent = 'Removendo o fundo, aguarde…';
+    document.getElementById('npPhotoWorking').textContent = 'Preparando a imagem, aguarde…';
   }
 }
 
@@ -3227,6 +3476,71 @@ positionBagsBtnMobile();
     </div>
   </div>
 </div>
+
+<!-- ============ SELO KUPIM DIGITAL ============ -->
+<div id="kupim-badge-wrap">
+  <a
+    id="kupim-badge"
+    href="https://www.linkedin.com/in/allanlauzid/"
+    target="_blank"
+    rel="noopener"
+    aria-label="Uma criação de Kupim Digital. Clique para falar conosco."
+  >
+    <span class="k-logo-spacer" aria-hidden="true"></span>
+    <span class="badge-text">© <span class="kupim-year">2026</span> <b>My Favorite Bags</b>. Todos os direitos reservados.<br>Uma criação de <b>Kupim Digital</b>.</span>
+  </a>
+  <span class="k-logo-wrap" aria-hidden="true">
+    <svg viewBox="0 0 80.339996 68.730003" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="k-fill-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop id="k-stop-1" offset="0%" stop-color="#eff3f8"/>
+          <stop id="k-stop-2" offset="100%" stop-color="#eff3f8"/>
+        </linearGradient>
+      </defs>
+      <path d="m 13.66,16.47 c 7.19,-0.43 14.44,-0.34 21.63,-0.04 -0.24,8.15 0,16.3 -0.14,24.45 C 44.4,32.62 53.53,24.22 62.99,16.19 71.94,16.35 80.9,16.03 89.85,16.38 83.67,21.31 78.35,27.2 72.22,32.19 68.1,35.71 64.48,39.82 60.09,43 71.83,56.41 82.59,70.68 93.98,84.4 91.4,85.16 88.68,84.79 86.03,84.85 79.75,84.76 73.47,85.02 67.2,84.71 59.87,75.36 52.54,66.01 44.97,56.86 c -3.63,2.59 -6.28,6.29 -9.84,9 0.14,6.27 -0.03,12.54 0.12,18.81 -7.19,0.24 -14.43,0.42 -21.61,-0.1 0.34,-22.69 0.3,-45.41 0.02,-68.1 z" transform="translate(-13.640002,-16.175853)" fill="url(#k-fill-gradient)"/>
+    </svg>
+  </span>
+</div>
+<!-- ============ FIM DO SELO ============ -->
+
+<script>
+  (function(){
+    var wrap = document.getElementById('kupim-badge-wrap');
+    var badge = document.getElementById('kupim-badge');
+
+    document.querySelectorAll('.kupim-year').forEach(function(el){
+      el.textContent = new Date().getFullYear();
+    });
+
+    function updateShift(){
+      var full = badge.scrollWidth;
+      wrap.style.setProperty('--k-shift', Math.max(full - 44, 0) + 'px');
+    }
+    updateShift();
+    window.addEventListener('load', updateShift);
+    window.addEventListener('resize', updateShift);
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(updateShift);
+    }
+    requestAnimationFrame(function(){ requestAnimationFrame(updateShift); });
+
+    var isTouch = matchMedia('(hover: none)').matches;
+    if(!isTouch) return;
+
+    badge.addEventListener('click', function(e){
+      if(!wrap.classList.contains('is-open')){
+        e.preventDefault();
+        wrap.classList.add('is-open');
+        document.addEventListener('click', function closeOnce(ev){
+          if(!wrap.contains(ev.target)){
+            wrap.classList.remove('is-open');
+            document.removeEventListener('click', closeOnce);
+          }
+        });
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>

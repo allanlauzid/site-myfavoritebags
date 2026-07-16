@@ -104,8 +104,8 @@
   height:22px;
   display:block;
   background:currentColor;
-  -webkit-mask:url('../img/purse-xxl.png') center / contain no-repeat;
-  mask:url('../img/purse-xxl.png') center / contain no-repeat;
+  -webkit-mask:url('../img/icon-bag-mask.png') center / contain no-repeat;
+  mask:url('../img/icon-bag-mask.png') center / contain no-repeat;
 }
 
 .alist-btns > div { padding-right:8px !important; }
@@ -259,7 +259,7 @@
 }
 .pim-zoom.show { display:grid; }
 .pim-zoom input { width:100%; accent-color:#653C2B; }
-.pim-actions { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+.pim-actions { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; }
 .pim-actions.crop-actions { grid-template-columns:1fr 1fr; }
 .pim-actions[hidden] { display:none !important; }
 .pim-btn {
@@ -283,6 +283,7 @@
 }
 .pim-btn:hover { background:rgba(0,0,0,.09); }
 .pim-btn.primary { color:#fff; background:#653C2B; box-shadow:none; }
+.pim-btn.remove-bg { color:#653C2B; background:rgba(182,139,115,.14); box-shadow:0 0 0 1px rgba(101,60,43,.18); }
 .pim-btn.danger { color:#a52929; box-shadow:0 0 0 1px rgba(165,41,41,.3); }
 .pim-btn:disabled { opacity:.45; cursor:not-allowed; }
 .pim-status {
@@ -408,6 +409,9 @@
 .crud-upload input { position:absolute; opacity:0; pointer-events:none; }
 .crud-upload img { display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .crud-upload span { position:relative; z-index:1; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,.9); }
+.crud-image-tools { display:grid; gap:7px; }
+.crud-remove-bg { min-height:36px; padding:7px 9px; border:1px solid rgba(101,60,43,.28); border-radius:8px; background:rgba(182,139,115,.12); color:#653C2B; font:600 10px/1.2 'Jost',sans-serif; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
+.crud-remove-bg:disabled { opacity:.48; cursor:not-allowed; }
 .crud-message { min-height:18px; color:var(--rose-dark) !important; }
 .crud-add { justify-self:start; margin-top:0 !important; }
 .crud-list { display:grid; gap:10px; }
