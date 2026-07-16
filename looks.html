@@ -11,7 +11,7 @@
   // ?preview=1 permite que o admin edite/visualize a página mesmo bloqueada, sem publicar.
   const _isPreview = new URLSearchParams(location.search).get('preview') === '1';
   // Padrão: visível (só bloqueia se o admin marcar explicitamente como "locked")
-  if (!_isPreview && localStorage.getItem('mfb_looks_state') === 'locked') {
+  if (!_isPreview && (localStorage.getItem('mfb_looks_state') || 'locked') === 'locked') {
     location.replace('index.html');
   }
 </script>
@@ -1640,6 +1640,7 @@ const HERO_SLIDES = ['webp/bolsa-02.webp','webp/bolsa-03.webp','webp/bolsa-04.we
 let products = window.MFB_LOOKS;
 
 async function loadProductsFromDB() {
+  if (window.MFB_USE_REMOTE_CATALOG === false) return;
   try {
     const dbProducts = await sbFetchLooks();
     if (dbProducts && dbProducts.length) {

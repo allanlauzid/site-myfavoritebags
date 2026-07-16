@@ -68,4 +68,72 @@ serve(async (req) => {
         });
       }
       const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
-      return new Response(JSON.stringify({ data: { url: pub.pub
+      return new Response(JSON.stringify({ data: { url: pub.publicUrl } }), {
+        headers: { ...CORS_HEADERS, "content-type": "application/json" },
+      });
+    }
+
+    // Grava/atualiza uma linha em bags ou looks (payload já vem no formato
+    // snake_case da tabela — ver productToRow no front).
+    if (action === "upsert") {
+      const { data, error } = await supabase
+        .from(table)
+        .upsert(payload)
+        .select()
+        .single();
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: { ...CORS_HEADERS, "content-type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ data }), {
+        headers: { ...CORS_HEADERS, "content-type": "application/json" },
+      });
+    }
+
+    // Remove uma linha em bags ou looks a partir do id.
+    if (action === "delete") {
+      const { id } = payload;
+      const { error } = await supabase.from(table).delete().eq("id", id);
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: { ...CORS_HEADERS, "content-type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ data: { id } }), {
+        headers: { ...CORS_HEADERS, "content-type": "application/json" },
+      });
+    }
+
+    // Grava/atualiza uma configuração chave-valor em site_settings.
+    if (action === "set_setting") {
+      const { key, value } = payload;
+      const { data, error } = await supabase
+        .from("site_settings")
+        .upsert({ key, value })
+        .select()
+        .single();
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: { ...CORS_HEADERS, "content-type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ data }), {
+        headers: { ...CORS_HEADERS, "content-type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ error: "invalid action" }), {
+      status: 400,
+      headers: { ...CORS_HEADERS, "content-type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { ...CORS_HEADERS, "content-type": "application/json" },
+    });
+  }
+});

@@ -247,6 +247,7 @@ function discardCatalogEditSession() {
   if (typeof renderProducts === 'function') renderProducts('all');
   if (typeof renderFavCarousel === 'function') renderFavCarousel();
   if (typeof renderOverviewTab === 'function') renderOverviewTab();
+  if (typeof renderCrudBags === 'function') renderCrudBags();
 }
 
 function commitCatalogEditSession() {

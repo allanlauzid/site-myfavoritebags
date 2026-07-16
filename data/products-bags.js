@@ -1,15 +1,13 @@
-// ─── MY FAVORITE BAGS — fonte única de verdade dos produtos ──────────────────
-// Usado por: index.html, match.html
-// Schema: { id, name, cat, price, status:'available'|'sold_out'|'coming_soon', isNew, favorite, img, promo, tags?, occasion? }
+// MY FAVORITE BAGS — fonte única de verdade dos produtos.
+// Usado por index.html e match.html.
+window.MFB_CATALOG_VERSION = '2026-07-15';
+window.MFB_USE_REMOTE_CATALOG = false;
 window.MFB_BAGS = [
-  { id:1, name:'Matelassê Noir Chain', cat:'shoulder', price:'R$ 899', status:'available', isNew:true, favorite:true, img:'webp/bag-01.webp', tags:['Couro','Edição Limitada'], occasion:'ocasiao-especial' },
-  { id:2, name:'Tote Caramelo Signature', cat:'tote', price:'R$ 459', status:'available', isNew:false, favorite:false, img:'webp/bag-02.webp', tags:['Couro'], occasion:'dia-a-dia' },
-  { id:3, name:'Satchel Vermelha Alça Curta', cat:'mini', price:'R$ 649', status:'sold_out', isNew:false, favorite:false, img:'webp/bag-03.webp', tags:[], occasion:'ocasiao-especial' },
-  { id:4, name:'Bucket Camurça Areia', cat:'shoulder', price:'R$ 529', status:'available', isNew:true, favorite:false, img:'webp/bag-04.webp', tags:['Presente'], occasion:'presente' },
-  { id:5, name:'Croco Esmeralda Chain', cat:'shoulder', price:'R$ 799', status:'coming_soon', isNew:true, favorite:false, img:'webp/bag-05.webp', tags:['Edição Limitada'], occasion:'ocasiao-especial' },
-  { id:6, name:'Flap Branca Estruturada', cat:'mini', price:'R$ 569', status:'available', isNew:false, favorite:false, img:'webp/bag-06.webp', tags:[], occasion:'dia-a-dia' },
-  { id:7, name:'Aeterna Azul Marinho', cat:'mini', price:'R$ 689', status:'available', isNew:false, favorite:false, img:'webp/bag-07.webp', promo:'R$ 599', tags:['Promoção'], occasion:'ocasiao-especial' },
-  { id:8, name:'Hobo Rosé Suave', cat:'shoulder', price:'R$ 419', status:'sold_out', isNew:false, favorite:false, img:'webp/bag-08.webp', tags:[], occasion:'dia-a-dia' },
-  { id:9, name:'Tote Aubrey Lona & Couro', cat:'tote', price:'R$ 489', status:'available', isNew:false, favorite:false, img:'webp/bag-09.webp', tags:['Presente'], occasion:'presente' },
-  { id:10, name:'Clutch Prata Cristais', cat:'clutch', price:'R$ 379', status:'coming_soon', isNew:true, favorite:false, img:'webp/bag-10.webp', tags:['Edição Limitada'], occasion:'ocasiao-especial' },
+  { id:101, name:'Luma Preta',         cat:'tote',     price:'R$ 119', status:'available', isNew:true, favorite:true, img:'webp/nova-bolsa-01-luma-preta.webp',       promo:null, tags:[], occasion:'dia-a-dia',        order:1 },
+  { id:102, name:'Bia Preta',          cat:'shoulder', price:'R$ 149', status:'available', isNew:true, favorite:true, img:'webp/nova-bolsa-02-bia-preta.webp',        promo:null, tags:[], occasion:'ocasiao-especial', order:2 },
+  { id:103, name:'Duda Caramelo',      cat:'mini',     price:'R$ 179', status:'available', isNew:true, favorite:true, img:'webp/nova-bolsa-03-duda-caramelo.webp',  promo:null, tags:[], occasion:'ocasiao-especial', order:3 },
+  { id:104, name:'Nina Preta',         cat:'shoulder', price:'R$ 129', status:'available', isNew:true, favorite:true, img:'webp/nova-bolsa-04-nina-preta.webp',       promo:null, tags:[], occasion:'ocasiao-especial', order:4 },
+  { id:105, name:'Lola Marrom',        cat:'tote',     price:'R$ 219', status:'available', isNew:true, favorite:true, img:'webp/nova-bolsa-05-lola-marrom.webp',      promo:null, tags:[], occasion:'dia-a-dia',        order:5 },
+  { id:106, name:'Cacá Caramelo',      cat:'shoulder', price:'R$ 199', status:'available', isNew:true, favorite:true, img:'webp/nova-bolsa-06-caca-caramelo.webp',  promo:null, tags:[], occasion:'dia-a-dia',        order:6 },
+  { id:107, name:'Mila Preta',         cat:'tote',     price:'R$ 239', status:'available', isNew:true, favorite:true, img:'webp/nova-bolsa-07-mila-preta.webp',       promo:null, tags:[], occasion:'dia-a-dia',        order:7 },
 ];

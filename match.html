@@ -816,6 +816,7 @@ let ALL_ITEMS = [...BAGS_ITEMS, ...LOOKS_ITEMS].map((it,i)=>({ ...it, id:i }));
 // ficar mostrando bolsas/peças antigas que já foram removidas/editadas no
 // admin. Se o banco falhar, continua usando os dados locais (fallback).
 async function refreshMatchItemsFromDB() {
+  if (window.MFB_USE_REMOTE_CATALOG === false) return;
   try {
     const [dbBags, dbLooks] = await Promise.all([sbFetchBags(), sbFetchLooks()]);
     if (dbBags && dbBags.length) window.MFB_BAGS = dbBags;

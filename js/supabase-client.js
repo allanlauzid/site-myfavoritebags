@@ -3,8 +3,8 @@
 // Toda escrita passa pelas Edge Functions (admin-write / remove-bg), que usam
 // a senha do admin + a service_role key protegida no servidor.
 
-const SUPABASE_URL = 'https://ywgyhscofkdgrqxxmrxh.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_l-VshmSjhuLSKJn7KaY_Ug_O08Ees81';
+const SUPABASE_URL = 'https://xlyqytdnfpzyxmifcthp.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_kzOYP-tPrXQO_y5jlFRdFw_hGA-5tBa';
 
 const FN_URL = `${SUPABASE_URL}/functions/v1`;
 
