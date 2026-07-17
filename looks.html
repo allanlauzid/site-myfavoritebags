@@ -6,20 +6,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Favorite Looks — Recife</title>
 <meta name="description" content="Acessórios selecionados para compor o seu look. Recife, PE.">
-<link rel="canonical" href="https://myfavoritebags.com.br/looks.html">
+<link rel="canonical" href="https://myfavoritebags.vercel.app/looks.html">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="img/favicon-180.png">
 <meta name="theme-color" content="#FAF7F1">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://myfavoritebags.vercel.app/looks.html">
 <meta property="og:title" content="My Favorite Looks — Recife">
 <meta property="og:description" content="Acessórios selecionados para compor o seu look. Recife, PE.">
-<meta property="og:image" content="img/og-image.jpg">
+<meta property="og:image" content="https://myfavoritebags.vercel.app/img/og-image.jpg">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="My Favorite Looks — Recife">
 <meta name="twitter:description" content="Acessórios selecionados para compor o seu look. Recife, PE.">
-<meta name="twitter:image" content="img/og-image.jpg">
+<meta name="twitter:image" content="https://myfavoritebags.vercel.app/img/og-image.jpg">
 <script>
   // Bloqueio/visibilidade controlado pelo painel central do My Favorite Bags (localStorage compartilhado)
   // ?preview=1 permite que o admin edite/visualize a página mesmo bloqueada, sem publicar.
@@ -1925,6 +1926,50 @@ function renderProducts(filter = 'all') {
   if (count) count.textContent = `${list.length} ${list.length === 1 ? 'peça encontrada' : 'peças encontradas'}`;
   initFloatingDrag(grid);
   initViewShake(grid);
+  injectProductSchema(list);
+}
+
+// ── SEO: injeta/atualiza um JSON-LD (schema.org/Product) com o catálogo
+// visível no momento. Roda toda vez que renderProducts() é chamado, então o
+// schema reflete filtros/estoque atualizados sem precisar de página própria
+// por peça (o catálogo é montado só em JS a partir do Supabase).
+function injectProductSchema(list) {
+  const SITE_URL = 'https://myfavoritebags.vercel.app';
+  const availabilityMap = {
+    available: 'https://schema.org/InStock',
+    sold_out: 'https://schema.org/OutOfStock',
+    coming_soon: 'https://schema.org/PreOrder',
+  };
+  const items = list.slice(0, 60).map(p => {
+    const price = priceNum(p.promo ? p.promo.new : p.price);
+    const img = p.img ? (p.img.startsWith('http') ? p.img : `${SITE_URL}/${p.img.replace(/^\//, '')}`) : `${SITE_URL}/img/og-image.jpg`;
+    return {
+      '@type': 'Product',
+      name: p.name,
+      category: CATS[p.cat] || p.cat,
+      image: img,
+      description: p.desc || `${p.name} — ${CATS[p.cat] || p.cat}. My Favorite Looks, Recife.`,
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'BRL',
+        price: price || '0',
+        availability: availabilityMap[p.status] || 'https://schema.org/InStock',
+        url: `${SITE_URL}/looks.html`,
+      },
+    };
+  });
+  const data = {
+    '@context': 'https://schema.org',
+    '@graph': items,
+  };
+  let el = document.getElementById('productSchema');
+  if (!el) {
+    el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = 'productSchema';
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(data);
 }
 
 // Toda vez que um item flutuante entra na tela (primeira vez, ou de novo ao

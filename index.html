@@ -6,20 +6,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Favorite Bags — Recife</title>
 <meta name="description" content="Bolsas premium selecionadas para mulheres que sabem o que querem. Recife, PE.">
-<link rel="canonical" href="https://myfavoritebags.com.br/">
+<link rel="canonical" href="https://myfavoritebags.vercel.app/">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="img/favicon-180.png">
 <meta name="theme-color" content="#F3EFE9">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://myfavoritebags.vercel.app/">
 <meta property="og:title" content="My Favorite Bags — Recife">
 <meta property="og:description" content="Bolsas premium selecionadas para mulheres que sabem o que querem. Recife, PE.">
-<meta property="og:image" content="img/og-image.jpg">
+<meta property="og:image" content="https://myfavoritebags.vercel.app/img/og-image.jpg">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="My Favorite Bags — Recife">
 <meta name="twitter:description" content="Bolsas premium selecionadas para mulheres que sabem o que querem. Recife, PE.">
-<meta name="twitter:image" content="img/og-image.jpg">
+<meta name="twitter:image" content="https://myfavoritebags.vercel.app/img/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/cursor.css">
@@ -43,9 +44,9 @@
 
 /* ─── TOKENS ──────────────────────────────────────────────────────────────── */
 :root {
-  --rose:        #B68B73;
-  --rose-dark:   #915E48;
-  --rose-deep:   #653C2B;
+  --rose:        #B55A38;
+  --rose-dark:   #8A3F26;
+  --rose-deep:   #4A2318;
   --bg:          #F3EFE9;
   --bg2:         #E7E2D9;
   --csel-bg:     #EFE6D8; /* bege claro usado no dropdown customizado (popup e caixa fechada) */
@@ -54,7 +55,7 @@
   --text-mid:    #8C6555;   /* subheadings */
   --text-body:   #7A6055;   /* body */
   --text-muted:  #806858;   /* captions — ajustado p/ contraste 4.5:1 sobre --bg */
-  --line:        rgba(182,139,115,.18);
+  --line:        rgba(181,90,56,.18);
   --ease:        cubic-bezier(.4,0,.2,1);
   /* Escala de raio de borda — usar nos componentes novos; o site tem alguns
      valores legados (5,6,10,14,16,18,20px) que ainda não foram migrados. */
@@ -2011,6 +2012,50 @@ function renderProducts(filter = 'all') {
   if (count) count.textContent = `${list.length} ${list.length === 1 ? 'bolsa encontrada' : 'bolsas encontradas'}`;
   initFloatingDrag(grid);
   initViewShake(grid);
+  injectProductSchema(list);
+}
+
+// ── SEO: injeta/atualiza um JSON-LD (schema.org/Product) com o catálogo
+// visível no momento. Roda toda vez que renderProducts() é chamado, então o
+// schema reflete filtros/estoque atualizados sem precisar de página própria
+// por bolsa (o catálogo é montado só em JS a partir do Supabase).
+function injectProductSchema(list) {
+  const SITE_URL = 'https://myfavoritebags.vercel.app';
+  const availabilityMap = {
+    available: 'https://schema.org/InStock',
+    sold_out: 'https://schema.org/OutOfStock',
+    coming_soon: 'https://schema.org/PreOrder',
+  };
+  const items = list.slice(0, 60).map(p => {
+    const price = priceNum(p.promo ? p.promo.new : p.price);
+    const img = p.img ? (p.img.startsWith('http') ? p.img : `${SITE_URL}/${p.img.replace(/^\//, '')}`) : `${SITE_URL}/img/og-image.jpg`;
+    return {
+      '@type': 'Product',
+      name: p.name,
+      category: CATS[p.cat] || p.cat,
+      image: img,
+      description: p.desc || `${p.name} — ${CATS[p.cat] || p.cat}. My Favorite Bags, Recife.`,
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'BRL',
+        price: price || '0',
+        availability: availabilityMap[p.status] || 'https://schema.org/InStock',
+        url: `${SITE_URL}/`,
+      },
+    };
+  });
+  const data = {
+    '@context': 'https://schema.org',
+    '@graph': items,
+  };
+  let el = document.getElementById('productSchema');
+  if (!el) {
+    el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = 'productSchema';
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(data);
 }
 
 // Toda vez que um item flutuante entra na tela (primeira vez, ou de novo ao

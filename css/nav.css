@@ -63,8 +63,8 @@ button.csel-trigger {
   padding:9px 12px; color:var(--text); cursor:pointer;
   transition:background .12s, color .12s;
 }
-.csel-opt:hover { background:rgba(145,94,72,.35); color:var(--text); }
-.csel-opt.sel { background:rgba(145,94,72,.35); color:var(--text); font-weight:700; }
+.csel-opt:hover { background:color-mix(in srgb, var(--rose-dark) 35%, transparent); color:var(--text); }
+.csel-opt.sel { background:color-mix(in srgb, var(--rose-dark) 35%, transparent); color:var(--text); font-weight:700; }
 
 /* ─── LEGENDA DE CATEGORIA (catálogo público) — passar o mouse ou clicar
    mostra uma explicação curta da categoria acima do botão. ────────────────── */
