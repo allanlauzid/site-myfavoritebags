@@ -381,15 +381,13 @@
   .pim-confirm-actions { grid-template-columns:1fr; }
 }
 
-@media(prefers-reduced-motion:reduce) {
-  .admin-panel,
-  .pim-overlay,
-  .pim-dialog,
-  .atab,
-  .aabtn,
-  .admin-image-btn,
-  .pim-btn { transition-duration:.01ms !important; }
-}
+html.reduce-motion .admin-panel,
+html.reduce-motion .pim-overlay,
+html.reduce-motion .pim-dialog,
+html.reduce-motion .atab,
+html.reduce-motion .aabtn,
+html.reduce-motion .admin-image-btn,
+html.reduce-motion .pim-btn { transition-duration:.01ms !important; }
 
 /* CRUD de bolsas */
 .crud-create {

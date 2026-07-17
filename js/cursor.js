@@ -1,4 +1,25 @@
 // ═══════════════════════════════════════════════════════════════════════════
+// DETECÇÃO DE CONEXÃO FRACA — compartilhado entre index.html, looks.html e
+// match.html. As animações do site ficam sempre ligadas por padrão; só são
+// reduzidas (classe "reduce-motion" na tag <html>, usada em
+// css/interface-polish.css) quando o navegador reporta uma conexão ruim de
+// verdade (Save-Data ligado, ou rede 2G/slow-2g), via Network Information
+// API. Essa API só existe em navegadores baseados em Chromium — em
+// navegadores sem suporte (Safari, Firefox) a classe nunca é aplicada e o
+// site simplesmente roda com tudo animado, como o normal.
+// ═══════════════════════════════════════════════════════════════════════════
+(function () {
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (!conn) return;
+  function applyConnectionMotionState() {
+    const slow = conn.saveData === true || /(^|-)2g$/.test(conn.effectiveType || '');
+    document.documentElement.classList.toggle('reduce-motion', slow);
+  }
+  applyConnectionMotionState();
+  if (conn.addEventListener) conn.addEventListener('change', applyConnectionMotionState);
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
 // CURSOR CUSTOMIZADO — compartilhado entre index.html, looks.html e match.html
 // Requer: <div class="cursor" id="cur"></div> e <div class="cursor-ring" id="ring"></div>
 // já presentes logo após a abertura do <body>, e css/cursor.css incluído.
@@ -45,7 +66,10 @@
   new MutationObserver(bindHoverTargets).observe(document.body, { childList:true, subtree:true });
 
   // ─── CURSOR TRAIL (cauda longa e suave, some rápido) ───────────────────────
-  if (window.matchMedia('(hover:none)').matches || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  // Só desliga em telas de toque (sem mouse) ou em conexão fraca detectada
+  // (classe "reduce-motion" — ver DETECÇÃO DE CONEXÃO FRACA no topo deste
+  // arquivo). Não depende mais da preferência de movimento do sistema.
+  if (window.matchMedia('(hover:none)').matches || document.documentElement.classList.contains('reduce-motion')) return;
   const TRAIL_LEN = 16;
   const trail = [];
   for (let i = 0; i < TRAIL_LEN; i++) {

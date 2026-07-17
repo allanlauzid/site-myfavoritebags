@@ -251,3 +251,26 @@ nav.s { padding:clamp(.75rem, 1.8vw, 1rem) var(--page-gutter); }
   .nav-words-main { font-size:.85rem; }
   .nav-words-sub { font-size:.8125rem; }
 }
+
+/* ─── CORTINA DE TRANSIÇÃO ENTRE SITES (Bags ⇄ Looks ⇄ Match) ───────────────
+   Compartilhada pelas três páginas — ver js/page-transition.js. Começa
+   fora da tela (por cima), desce cobrindo tudo ao sair de uma página, e
+   na página seguinte continua descendo e sai por baixo, revelando o
+   conteúdo novo. */
+.page-curtain {
+  position:fixed; inset:0; z-index:99999;
+  background:#2A1F18;
+  transform:translateY(-100%);
+  transition:transform .6s cubic-bezier(.65,0,.35,1);
+  pointer-events:none;
+  will-change:transform;
+}
+.page-curtain.is-closing,
+.page-curtain.is-closed {
+  transform:translateY(0);
+}
+.page-curtain.is-closed { transition:none; }
+.page-curtain.is-opening {
+  transform:translateY(100%);
+}
+html.reduce-motion .page-curtain { display:none !important; }

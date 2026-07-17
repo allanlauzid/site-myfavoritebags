@@ -179,33 +179,47 @@ p, li, figcaption, .cat-desc, .hero-sub, .about-body, .login-s,
   .page-match .m-config-navbtn { width:min(100%, 250px); }
 }
 
-@media(prefers-reduced-motion:reduce) {
-  html { scroll-behavior:auto !important; }
-  *, *::before, *::after {
-    animation-duration:.01ms !important;
-    animation-iteration-count:1 !important;
-    transition-duration:.01ms !important;
-    scroll-behavior:auto !important;
-  }
-  .reveal, .reveal.vis {
-    opacity:1 !important;
-    transform:none !important;
-    filter:none !important;
-  }
-  /* A faixa de texto corrido (marquee) é puramente decorativa e de baixa
-     intensidade — mantém o movimento mesmo com "reduzir movimento" ativado,
-     restaurando o comportamento original do site. */
-  .m-track {
-    animation-duration:26s !important;
-    animation-iteration-count:infinite !important;
-  }
-  /* Botão flutuante do My Favorite Match — mesma lógica: decorativo e
-     discreto, mantém a animação original mesmo com "reduzir movimento". */
-  #matchHeroBtn::before { animation-duration:2.6s !important; animation-iteration-count:infinite !important; }
-  #matchHeroBtn .mhb-visual { animation-duration:13s !important; animation-iteration-count:infinite !important; }
-  #matchHeroBtn .mhb-visual::after { animation-duration:17s !important; animation-iteration-count:infinite !important; }
-  #matchHeroBtn img {
-    animation-duration:10.5s, 7.8s, 15s !important;
-    animation-iteration-count:infinite, infinite, infinite !important;
-  }
+/* ─── Redução de movimento — SOMENTE por conexão fraca ─────────────────────
+   Por padrão todas as animações do site ficam ligadas, mesmo se o sistema
+   operacional do visitante estiver com "reduzir movimento" ativado (não
+   usamos mais a media query prefers-reduced-motion). Em vez disso, um
+   pequeno script em js/cursor.js detecta conexão ruim (Network Information
+   API — Save-Data ligado, ou modo 2G/slow-2g) e adiciona a classe
+   `reduce-motion` na tag <html>. Só nesse caso as animações são reduzidas.
+   Navegadores sem suporte a essa API (ex: Safari) simplesmente nunca ganham
+   a classe e continuam com tudo animado normalmente. ────────────────────── */
+html.reduce-motion { scroll-behavior:auto !important; }
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration:.01ms !important;
+  animation-iteration-count:1 !important;
+  transition-duration:.01ms !important;
+  scroll-behavior:auto !important;
+}
+html.reduce-motion .reveal,
+html.reduce-motion .reveal.vis {
+  opacity:1 !important;
+  transform:none !important;
+  filter:none !important;
+}
+/* Mesmo em modo de conexão fraca, mantemos ligadas as animações decorativas
+   mais leves e os feedbacks essenciais de interface (não pesam nada — são
+   só CSS — mas ajudam a manter a marca com a mesma cara). */
+html.reduce-motion .m-track {
+  animation-duration:26s !important;
+  animation-iteration-count:infinite !important;
+}
+html.reduce-motion #matchHeroBtn::before { animation-duration:2.6s !important; animation-iteration-count:infinite !important; }
+html.reduce-motion #matchHeroBtn .mhb-visual { animation-duration:13s !important; animation-iteration-count:infinite !important; }
+html.reduce-motion #matchHeroBtn .mhb-visual::after { animation-duration:17s !important; animation-iteration-count:infinite !important; }
+html.reduce-motion #matchHeroBtn img {
+  animation-duration:10.5s, 7.8s, 15s !important;
+  animation-iteration-count:infinite, infinite, infinite !important;
+}
+html.reduce-motion nav {
+  transition-duration:.5s, .4s, .5s !important;
+}
+html.reduce-motion .site-toast {
+  transition-duration:.3s !important;
 }

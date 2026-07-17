@@ -517,11 +517,9 @@ button { font-family:'Jost',sans-serif; }
 .pcard-float:not(.dragging) .pcard-img { transition:transform .55s var(--ease); }
 .pcard-float.dragging .pcard-img { transition:none; }
 
-@media (prefers-reduced-motion:no-preference) {
-  .pcard-float:not(.dragging) .pcard-img { animation:bagFloat 5.5s ease-in-out infinite; }
-  .prow > .pcard:nth-child(2) .pcard-float:not(.dragging) .pcard-img { animation-delay:-2.75s; }
-  .pcard-visual > img, .pcard-visual > svg { animation:itemShake 10s ease-in-out infinite; animation-delay:var(--shake-delay, 0s); }
-}
+.pcard-float:not(.dragging) .pcard-img { animation:bagFloat 5.5s ease-in-out infinite; }
+.prow > .pcard:nth-child(2) .pcard-float:not(.dragging) .pcard-img { animation-delay:-2.75s; }
+.pcard-visual > img, .pcard-visual > svg { animation:itemShake 10s ease-in-out infinite; animation-delay:var(--shake-delay, 0s); }
 @keyframes bagFloat {
   0%, 100% { transform:translateY(0); }
   50%      { transform:translateY(-14px); }
@@ -1830,6 +1828,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 <script src="data/products-bags.js"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/cursor.js"></script>
+<script src="js/page-transition.js"></script>
 <script src="js/catalog-admin.js"></script>
 <script>
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -4008,6 +4007,7 @@ function renderAdminList() {
 
 function showToast(msg) {
   const t = document.createElement('div');
+  t.className = 'site-toast';
   t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#2A1F18;color:#fff;padding:10px 20px;border-radius:8px;font-size:13.6px;font-family:"Jost",sans-serif;z-index:9999;opacity:0;transition:opacity .3s;white-space:nowrap;';
   t.textContent = msg;
   document.body.appendChild(t);

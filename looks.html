@@ -112,7 +112,7 @@ button { font-family:'Jost',sans-serif; }
 
 .hero-veil {
   position:absolute; inset:0;
-  background:linear-gradient(100deg,
+  background:linear-gradient(260deg,
     rgba(247,241,232,.85) 0%,
     rgba(247,241,232,.5) 45%,
     rgba(247,241,232,.08) 100%);
@@ -521,11 +521,9 @@ button { font-family:'Jost',sans-serif; }
 .pcard-float:not(.dragging) .pcard-img { transition:transform .55s var(--ease); }
 .pcard-float.dragging .pcard-img { transition:none; }
 
-@media (prefers-reduced-motion:no-preference) {
-  .pcard-float:not(.dragging) .pcard-img { animation:pieceFloat 5.5s ease-in-out infinite; }
-  .prow > .pcard:nth-child(2) .pcard-float:not(.dragging) .pcard-img { animation-delay:-2.75s; }
-  .pcard-visual > img, .pcard-visual > svg { animation:itemShake 10s ease-in-out infinite; animation-delay:var(--shake-delay, 0s); }
-}
+.pcard-float:not(.dragging) .pcard-img { animation:pieceFloat 5.5s ease-in-out infinite; }
+.prow > .pcard:nth-child(2) .pcard-float:not(.dragging) .pcard-img { animation-delay:-2.75s; }
+.pcard-visual > img, .pcard-visual > svg { animation:itemShake 10s ease-in-out infinite; animation-delay:var(--shake-delay, 0s); }
 @keyframes pieceFloat {
   0%, 100% { transform:translateY(0); }
   50%      { transform:translateY(-14px); }
@@ -1760,6 +1758,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 <script src="data/products-looks.js"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/cursor.js"></script>
+<script src="js/page-transition.js"></script>
 <script src="js/catalog-admin.js"></script>
 <script>
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -2704,6 +2703,7 @@ function renderAdminList() {
 
 function showToast(msg) {
   const t = document.createElement('div');
+  t.className = 'site-toast';
   t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 20px;border-radius:8px;font-size:12px;font-family:"Jost",sans-serif;z-index:9999;opacity:0;transition:opacity .3s;white-space:nowrap;';
   t.textContent = msg;
   document.body.appendChild(t);
