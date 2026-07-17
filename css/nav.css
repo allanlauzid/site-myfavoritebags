@@ -63,8 +63,27 @@ button.csel-trigger {
   padding:9px 12px; color:var(--text); cursor:pointer;
   transition:background .12s, color .12s;
 }
-.csel-opt:hover { background:var(--rose-dark); color:var(--csel-bg, var(--bg2)); }
-.csel-opt.sel { background:var(--rose-dark); color:var(--csel-bg, var(--bg2)); font-weight:700; }
+.csel-opt:hover { background:rgba(145,94,72,.35); color:var(--text); }
+.csel-opt.sel { background:rgba(145,94,72,.35); color:var(--text); font-weight:700; }
+
+/* ─── LEGENDA DE CATEGORIA (catálogo público) — passar o mouse ou clicar
+   mostra uma explicação curta da categoria acima do botão. ────────────────── */
+.cat-tip { position:relative; }
+.cat-tip::after {
+  content:attr(data-desc);
+  position:absolute; left:50%; bottom:calc(100% + 10px); transform:translateX(-50%) translateY(4px);
+  width:max-content; max-width:220px;
+  background:var(--rose-dark); color:#fff; font-size:11px; line-height:1.5;
+  padding:8px 12px; border-radius:6px; text-align:center;
+  opacity:0; pointer-events:none; transition:opacity .18s, transform .18s; z-index:20;
+}
+.cat-tip::before {
+  content:''; position:absolute; left:50%; bottom:calc(100% + 6px); transform:translateX(-50%) translateY(4px);
+  border:5px solid transparent; border-top-color:var(--rose-dark);
+  opacity:0; pointer-events:none; transition:opacity .18s, transform .18s; z-index:20;
+}
+.cat-tip:hover::after, .cat-tip:hover::before,
+.cat-tip.show-tip::after, .cat-tip.show-tip::before { opacity:1; transform:translateX(-50%) translateY(0); }
 
 /* ─── BOTÃO FLUTUANTE DO WHATSAPP — compartilhado entre index.html e looks.html ───
    --wa-bg          cor de fundo do botão

@@ -42,8 +42,20 @@ function renderCatFilters() {
   if (!wrap) return;
   if (!CATS_LIST.some(c => c.key === lastCatFilter)) lastCatFilter = 'all';
   wrap.innerHTML = `<button class="fpill${lastCatFilter==='all'?' on':''}" aria-pressed="${lastCatFilter==='all'}" onclick="fp('all',this)">Todas</button>` +
-    CATS_LIST.map(c => `<button class="fpill${lastCatFilter===c.key?' on':''}" aria-pressed="${lastCatFilter===c.key}" onclick="fp('${c.key}',this)">${c.label}</button>`).join('');
+    CATS_LIST.map(c => `<button class="fpill cat-tip${lastCatFilter===c.key?' on':''}" aria-pressed="${lastCatFilter===c.key}" data-desc="${(c.desc||'').replace(/"/g,'&quot;')}" onclick="fp('${c.key}',this);showCatTip(this)">${c.label}</button>`).join('');
   renderProducts(lastCatFilter);
+}
+
+// Mostra a legenda da categoria ao passar o mouse (CSS) ou ao clicar (toque) —
+// no clique, o botão já filtra normalmente; a legenda só aparece por cima por
+// um instante, sem interferir no filtro.
+let _catTipTimer = null;
+function showCatTip(btn) {
+  document.querySelectorAll('.cat-tip.show-tip').forEach(b => b.classList.remove('show-tip'));
+  if (!btn.dataset.desc) return;
+  btn.classList.add('show-tip');
+  clearTimeout(_catTipTimer);
+  _catTipTimer = setTimeout(() => btn.classList.remove('show-tip'), 2600);
 }
 function renderCatSelect() {
   const sel = document.getElementById('nc');

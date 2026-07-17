@@ -795,10 +795,10 @@ footer {
 .gal-card-img img { width:100%; height:100%; object-fit:contain; }
 .gal-badge {
   position:absolute; top:6px; left:6px; background:var(--rose-dark); color:#fff;
-  font-size:9.5px; letter-spacing:.06em; text-transform:uppercase;
+  font-size:11px; letter-spacing:.06em; text-transform:uppercase;
   padding:3px 8px; border-radius:999px;
 }
-.gal-card-name { font-size:10.5px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gal-card-name { font-size:11px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .gal-card-actions { display:flex; gap:6px; justify-content:center; }
 .gal-card-actions button {
   width:30px; height:30px; border-radius:8px; border:1px solid var(--line);
@@ -1668,10 +1668,6 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   <div class="catalog-filter-stack reveal reveal-d2">
   <div class="filters" id="catFilters">
     <button class="fpill on" onclick="fp('all',this)">Todas</button>
-    <button class="fpill"    onclick="fp('tote',this)">Tote Bags</button>
-    <button class="fpill"    onclick="fp('shoulder',this)">Shoulder</button>
-    <button class="fpill"    onclick="fp('clutch',this)">Clutch</button>
-    <button class="fpill"    onclick="fp('mini',this)">Mini Bags</button>
   </div>
 
   <div class="filters" id="statusFilters">
@@ -1740,7 +1736,6 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
     </div>
   </div>
   <div class="foot-bot" style="flex-direction:column;align-items:flex-start;gap:8px;">
-    <span class="foot-copy">© 2025 My Favorite Bags · Recife <span style="margin:0 10px;opacity:.4;">—</span> Todos os direitos reservados</span>
     <button class="admin-trig" onclick="openA()">Admin</button>
   </div>
 </footer>
@@ -1823,10 +1818,14 @@ loadProductsFromDB();
 
 // ─── CATEGORIAS (editáveis pelo admin) ─────────────────────────────────────────
 let CATS_LIST = [
-  { key:'tote',     label:'Tote Bag' },
-  { key:'shoulder', label:'Shoulder' },
-  { key:'clutch',   label:'Clutch' },
-  { key:'mini',     label:'Mini Bag' },
+  { key:'tote',       label:'Tote Bag',   desc:'Bolsas grandes e estruturadas, ideais para o dia a dia.' },
+  { key:'shoulder',   label:'Shoulder Bag', desc:'Alça de ombro, tamanho médio — o clássico do dia a dia.' },
+  { key:'crossbody',  label:'Crossbody', desc:'Alça transversal, mãos livres — prática para sair.' },
+  { key:'clutch',     label:'Clutch',    desc:'De festa ou noite, sem alça ou com alça removível.' },
+  { key:'mini',       label:'Mini Bag',  desc:'Bem pequena, mais acessório do que funcional.' },
+  { key:'bucket',     label:'Bucket Bag', desc:'Formato saco, fechamento por cordão.' },
+  { key:'tiracolo',   label:'Tiracolo',  desc:'Alça longa e ajustável, atravessada no corpo.' },
+  { key:'necessaire', label:'Necessaire', desc:'Pequena e utilitária, para organizar o essencial.' },
 ];
 
 // Bag SVG illustrations — using brand palette
@@ -2129,7 +2128,7 @@ function renderLoginView() {
     <div class="login-wrap">
       <div class="login-t">Acesso Restrito</div>
       <p class="login-s">Painel · My Favorite Bags</p>
-      <input class="fi" type="password" id="pw" placeholder="Senha de acesso"/>
+      <input class="fi" type="password" id="pw" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter') tryLoginPassword()"/>
       <button class="fb" onclick="tryLoginPassword()" id="loginBtn">Entrar</button>
       <p class="lerr" id="lerr"></p>
       <div class="login-links">
@@ -2165,7 +2164,7 @@ function renderLoginView() {
     <div class="login-wrap">
       <div class="login-t">Código do Autenticador</div>
       <p class="login-s">Digite o código de 6 dígitos do app autenticador (Google Authenticator, Authy…).</p>
-      <input class="fi" type="text" inputmode="numeric" maxlength="6" id="pwTotp" placeholder="000000"/>
+      <input class="fi" type="text" inputmode="numeric" maxlength="6" id="pwTotp" placeholder="000000" onkeydown="if(event.key==='Enter') tryLoginTotp()"/>
       <button class="fb" onclick="tryLoginTotp()" id="loginBtn">Entrar</button>
       <p class="lerr" id="lerr"></p>
       <div class="login-links">
@@ -2405,8 +2404,16 @@ function renderPanel() {
           <button type="button" class="crud-remove-bg" id="crudRemoveBg" onclick="removeCrudNewBackground()" disabled>Remover fundo</button>
         </div>
         <label><span>Nome</span><input class="fi" id="crudNewName" placeholder="Ex: Luma Preta"></label>
-        <label><span>Preço</span><input class="fi" id="crudNewPrice" inputmode="numeric" placeholder="Ex: 149"></label>
-        <label><span>Categoria</span><select class="fi" id="crudNewCat"><option value="tote">Tote Bag</option><option value="shoulder">Shoulder</option><option value="clutch">Clutch</option><option value="mini">Mini Bag</option></select></label>
+        <label><span>Preço</span><input class="fi" id="crudNewPrice" inputmode="numeric" placeholder="Ex: R$ 149"></label>
+        <label><span>Categoria</span>
+          <select class="fi" id="crudNewCat" style="display:none;"></select>
+          <button type="button" class="fi csel-trigger" id="crudNewCatBtn"
+            onclick="event.preventDefault(); openCatPopup(this, document.getElementById('crudNewCat').value, function(k){ document.getElementById('crudNewCat').value = k; renderCrudNewCatSelect(); });">
+            <span id="crudNewCatBtnLabel">Selecione</span>
+            <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <p id="crudNewCatDesc" style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5;"></p>
+        </label>
       </div>
       <p class="crud-message" id="crudMessage" role="status"></p>
       <button type="button" class="fb crud-add" onclick="addCrudBag()">+ Adicionar bolsa</button>
@@ -2422,7 +2429,24 @@ function renderPanel() {
   renderOverviewTab();
   renderAdminList();
   renderCatSelect();
+  renderCrudNewCatSelect();
   renderBannerTab();
+}
+
+// Dropdown de categoria do "Cadastrar nova bolsa" (aba CRUD) — sincroniza
+// com CATS_LIST e mostra a legenda da categoria escolhida.
+function renderCrudNewCatSelect() {
+  const sel = document.getElementById('crudNewCat');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = CATS_LIST.map(c => `<option value="${c.key}">${c.label}</option>`).join('');
+  if (CATS_LIST.some(c => c.key === cur)) sel.value = cur;
+  else if (CATS_LIST[0]) sel.value = CATS_LIST[0].key;
+  const c = CATS_LIST.find(c => c.key === sel.value);
+  const label = document.getElementById('crudNewCatBtnLabel');
+  const desc = document.getElementById('crudNewCatDesc');
+  if (label) label.textContent = c ? c.label : 'Selecione';
+  if (desc) desc.textContent = c ? c.desc || '' : '';
 }
 
 // ── Aba Banner — troca de imagem + ajuste de posição (object-position) +

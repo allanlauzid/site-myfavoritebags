@@ -404,7 +404,7 @@
 .crud-create h3 { margin:0 0 4px; color:var(--text); font:600 22px/1.15 'Cormorant Garamond',serif; }
 .crud-create p { margin:0; color:var(--text-muted); font-size:12px; line-height:1.55; }
 .crud-create-grid { display:grid; grid-template-columns:140px minmax(180px,1fr) 150px 170px; gap:12px; align-items:end; }
-.crud-create-grid label:not(.crud-upload), .crud-field { display:grid; gap:6px; color:var(--text-muted); font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.crud-create-grid label:not(.crud-upload), .crud-field { display:grid; gap:6px; color:var(--text-muted); font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
 .crud-upload { position:relative; display:grid; place-items:center; min-height:86px; overflow:hidden; border:1px dashed var(--rose-dark); border-radius:10px; color:var(--rose-dark); font-size:11px; font-weight:700; cursor:pointer; }
 .crud-upload input { position:absolute; opacity:0; pointer-events:none; }
 .crud-upload img { display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
@@ -416,7 +416,7 @@
 .crud-add { justify-self:start; margin-top:0 !important; }
 .crud-list { display:grid; gap:10px; }
 .crud-row { display:grid; grid-template-columns:92px minmax(180px,1fr) 150px auto; gap:14px; align-items:center; padding:12px; border:1px solid var(--line); border-radius:12px; background:var(--bg); }
-.crud-thumb { display:grid; place-items:center; width:92px; height:92px; overflow:hidden; border-radius:9px; background:var(--bg2); color:var(--text-muted); font-size:10px; }
+.crud-thumb { display:grid; place-items:center; width:92px; height:92px; overflow:hidden; border-radius:9px; background:var(--bg2); color:var(--text-muted); font-size:11px; }
 .crud-thumb img { width:100%; height:100%; object-fit:cover; }
 .crud-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:7px; }
 .crud-btn { min-height:38px; padding:8px 11px; border:1px solid var(--line); border-radius:8px; background:transparent; color:var(--text); font:600 11px/1.2 'Jost',sans-serif; cursor:pointer; }

@@ -1703,7 +1703,6 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
     </div>
   </div>
   <div class="foot-bot" style="flex-direction:column;align-items:flex-start;gap:8px;">
-    <span class="foot-copy">© 2025 My Favorite Looks · Recife <span style="margin:0 10px;opacity:.4;">—</span> Todos os direitos reservados</span>
     <button class="admin-trig" onclick="openA()">Admin</button>
   </div>
 </footer>
@@ -2072,7 +2071,7 @@ function renderLoginView() {
     <div class="login-wrap">
       <div class="login-t">Acesso Restrito</div>
       <p class="login-s">Painel · My Favorite Looks</p>
-      <input class="fi" type="password" id="pw" placeholder="Senha de acesso"/>
+      <input class="fi" type="password" id="pw" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter') tryLoginPassword()"/>
       <button class="fb" onclick="tryLoginPassword()" id="loginBtn">Entrar</button>
       <p class="lerr" id="lerr"></p>
       <div class="login-links">
@@ -2108,7 +2107,7 @@ function renderLoginView() {
     <div class="login-wrap">
       <div class="login-t">Código do Autenticador</div>
       <p class="login-s">Digite o código de 6 dígitos do app autenticador (Google Authenticator, Authy…).</p>
-      <input class="fi" type="text" inputmode="numeric" maxlength="6" id="pwTotp" placeholder="000000"/>
+      <input class="fi" type="text" inputmode="numeric" maxlength="6" id="pwTotp" placeholder="000000" onkeydown="if(event.key==='Enter') tryLoginTotp()"/>
       <button class="fb" onclick="tryLoginTotp()" id="loginBtn">Entrar</button>
       <p class="lerr" id="lerr"></p>
       <div class="login-links">
