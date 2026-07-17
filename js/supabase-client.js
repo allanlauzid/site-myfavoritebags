@@ -69,10 +69,13 @@ function productToRow(p) {
   };
 }
 
-// ── Gemini — gera uma descrição curta de bolsa a partir de nome/categoria/
-// preço (sem foto). O texto volta pra revisão do admin, nada é salvo aqui.
-async function sbGenerateDescription(name, cat, price) {
-  const data = await sbAdminWrite(null, 'generate_description', { name, cat, price });
+// ── Gemini — gera uma descrição curta de bolsa a partir da FOTO real da
+// peça (mais nome/categoria/preço como contexto). `image` é obrigatória:
+// uma data URL (bolsa nova, ainda não publicada) ou a URL pública da foto já
+// salva (bolsa existente). O texto volta pra revisão do admin, nada é salvo.
+async function sbGenerateDescription(name, cat, price, image) {
+  if (!image) throw new Error('Escolha a foto da bolsa antes de gerar a descrição.');
+  const data = await sbAdminWrite(null, 'generate_description', { name, cat, price, image });
   return data?.description || '';
 }
 

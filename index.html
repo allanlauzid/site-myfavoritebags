@@ -2501,8 +2501,8 @@ function renderPanel() {
           <span>Descrição</span>
           <textarea class="fi" id="crudNewDesc" rows="3" placeholder="Ex: Bolsa em couro legítimo, ideal para o dia a dia. Alça ajustável e bolso interno para celular e carteira." style="resize:vertical;width:100%;font-family:'Jost',sans-serif;"></textarea>
           <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
-            <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);font-size:12px;padding:8px 14px;" id="crudGenDescBtn" onclick="generateCrudNewDesc()">Gerar descrição</button>
-            <span id="crudGenDescStatus" style="font-size:11px;color:var(--text-muted);"></span>
+            <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);font-size:12px;padding:8px 14px;" id="crudGenDescBtn" onclick="generateCrudNewDesc()" disabled title="Escolha a foto da bolsa primeiro">Gerar descrição</button>
+            <span id="crudGenDescStatus" style="font-size:11px;color:var(--text-muted);">Escolha a foto da bolsa pra poder gerar a descrição.</span>
           </div>
         </label>
       </div>
@@ -3510,6 +3510,21 @@ function formatCrudPrice(value) {
   return digits ? `R$ ${Number(digits)}` : '';
 }
 
+// Habilita o botão "Gerar descrição" quando há foto, e avisa (sem apagar o
+// texto já escrito) que a foto mudou, já que a próxima geração vai se basear
+// na imagem atual.
+function _crudNewDescOnImageChanged() {
+  const genBtn = document.getElementById('crudGenDescBtn');
+  const status = document.getElementById('crudGenDescStatus');
+  const textarea = document.getElementById('crudNewDesc');
+  if (genBtn) { genBtn.disabled = false; genBtn.removeAttribute('title'); }
+  if (status) {
+    status.textContent = (textarea && textarea.value.trim())
+      ? 'Foto alterada — clique em "Gerar descrição" de novo pra atualizar com base nela.'
+      : '';
+  }
+}
+
 function previewCrudNewImage(input) {
   crudNewFile = input.files && input.files[0] ? input.files[0] : null;
   crudNewImageSource = crudNewFile;
@@ -3523,6 +3538,7 @@ function previewCrudNewImage(input) {
   if (removeButton) removeButton.disabled = false;
   const message = document.getElementById('crudMessage');
   if (message) message.textContent = 'Imagem carregada. Se desejar, clique em “Remover fundo”.';
+  _crudNewDescOnImageChanged();
 }
 
 async function removeCrudNewBackground() {
@@ -3538,6 +3554,7 @@ async function removeCrudNewBackground() {
     if (preview) preview.src = crudNewImageSource;
     if (message) message.textContent = 'Fundo removido. Confira a prévia antes de adicionar.';
     button.textContent = 'Fundo removido';
+    _crudNewDescOnImageChanged();
   } catch (error) {
     crudNewImageSource = crudNewFile;
     button.disabled = false;
@@ -3562,7 +3579,7 @@ function renderCrudBags() {
         <span>Descrição</span>
         <textarea class="fi" id="crudDesc-${p.id}" rows="3" style="resize:vertical;width:100%;font-family:'Jost',sans-serif;">${_pimEscape(p.desc || '')}</textarea>
         <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
-          <button type="button" class="crud-btn" id="crudGenDescBtn-${p.id}" onclick="generateCrudExistingDesc(${p.id})">Gerar descrição</button>
+          <button type="button" class="crud-btn" id="crudGenDescBtn-${p.id}" onclick="generateCrudExistingDesc(${p.id})" ${p.img ? '' : 'disabled'} title="${p.img ? '' : 'Esta bolsa ainda não tem uma foto'}">Gerar descrição</button>
         </div>
       </label>
       <div class="crud-actions">
@@ -3579,9 +3596,10 @@ async function generateCrudExistingDesc(id) {
   const btn = document.getElementById(`crudGenDescBtn-${id}`);
   const textarea = document.getElementById(`crudDesc-${id}`);
   if (!product || !btn || !textarea) return;
+  if (!product.img) { alert('Esta bolsa ainda não tem uma foto — escolha uma imagem antes de gerar a descrição.'); return; }
   btn.disabled = true; btn.textContent = 'Gerando…';
   try {
-    const desc = await sbGenerateDescription(product.name, catLabel(product.cat), product.price);
+    const desc = await sbGenerateDescription(product.name, catLabel(product.cat), product.price, product.img);
     if (desc) textarea.value = desc;
   } catch (e) {
     alert(`Não foi possível gerar: ${e.message}`);
@@ -3616,10 +3634,12 @@ async function generateCrudNewDesc() {
   const cat = document.getElementById('crudNewCat')?.value;
   const catLbl = catLabel(cat);
   if (!name) { if (status) status.textContent = 'Preencha o nome antes de gerar.'; return; }
+  if (!crudNewImageSource && !crudNewFile) { if (status) status.textContent = 'Escolha a foto da bolsa primeiro.'; return; }
   btn.disabled = true; btn.textContent = 'Gerando…';
   if (status) status.textContent = '';
   try {
-    const desc = await sbGenerateDescription(name, catLbl, price);
+    const image = typeof crudNewImageSource === 'string' ? crudNewImageSource : await fileToDataUrl(crudNewFile);
+    const desc = await sbGenerateDescription(name, catLbl, price, image);
     if (desc) textarea.value = desc;
     else if (status) status.textContent = 'Não veio texto — tente de novo.';
   } catch (e) {
@@ -3659,7 +3679,9 @@ async function addCrudBag() {
     document.getElementById('crudNewPrice').value = '';
     document.getElementById('crudNewImage').value = '';
     document.getElementById('crudNewDesc').value = '';
-    document.getElementById('crudGenDescStatus').textContent = '';
+    document.getElementById('crudGenDescBtn').disabled = true;
+    document.getElementById('crudGenDescBtn').title = 'Escolha a foto da bolsa primeiro';
+    document.getElementById('crudGenDescStatus').textContent = 'Escolha a foto da bolsa pra poder gerar a descrição.';
     document.getElementById('crudNewPreview').style.display = 'none';
     document.getElementById('crudUploadText').textContent = 'Escolher imagem';
     crudNewFile = null;

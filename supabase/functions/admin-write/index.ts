@@ -111,9 +111,24 @@ serve(async (req) => {
       });
     }
 
-    // Gera uma descrição curta de bolsa via Gemini (Google AI Studio).
-    // payload: { name, cat, price } — não grava nada, só devolve o texto pro
-    // admin revisar/editar antes de salvar a bolsa.
+    // Converte um Uint8Array em base64 sem depender de Buffer (não existe no
+    // runtime do Deno das Edge Functions) — em blocos, pra não estourar o
+    // limite de argumentos do String.fromCharCode em imagens grandes.
+    function bytesToBase64(bytes: Uint8Array): string {
+      let binary = "";
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+      }
+      return btoa(binary);
+    }
+
+    // Gera uma descrição curta de bolsa via Gemini (Google AI Studio), com
+    // base na FOTO real da peça (não inventa material/cor — descreve o que
+    // vê na imagem). payload: { name, cat, price, image } onde `image` é uma
+    // data URL (data:image/...;base64,...) ou uma URL pública (http/https) —
+    // nos dois casos a função busca os bytes e manda a imagem pro Gemini.
+    // Não grava nada, só devolve o texto pro admin revisar antes de salvar.
     if (action === "generate_description") {
       if (!GEMINI_API_KEY) {
         return new Response(JSON.stringify({ error: "GEMINI_API_KEY não configurada no Supabase." }), {
@@ -121,16 +136,51 @@ serve(async (req) => {
           headers: JSON_HEADERS,
         });
       }
-      const { name, cat, price } = payload || {};
-      const prompt = `Escreva uma descrição curta (2 a 3 frases, no máximo 280 caracteres) em português do Brasil para uma bolsa de loja online chamada "${name || 'bolsa'}", categoria "${cat || 'bolsa'}", preço "${price || ''}". Tom: elegante, direto, sem exagero, sem emojis, sem aspas. Foque em material, uso no dia a dia e um diferencial da peça (pode inventar detalhes plausíveis de material/acabamento coerentes com a categoria, já que não há foto disponível). Não repita o nome da bolsa literalmente na primeira palavra.`;
+      const { name, cat, price, image } = payload || {};
+      if (!image) {
+        return new Response(JSON.stringify({ error: "Envie ou escolha a foto da bolsa antes de gerar a descrição." }), {
+          status: 400,
+          headers: JSON_HEADERS,
+        });
+      }
 
       try {
+        let mimeType = "image/jpeg";
+        let base64Data: string;
+
+        if (image.startsWith("data:")) {
+          const commaIdx = image.indexOf(",");
+          const meta = image.slice(0, commaIdx);
+          base64Data = image.slice(commaIdx + 1);
+          mimeType = /data:(.*?);base64/.exec(meta)?.[1] || mimeType;
+        } else {
+          const imgRes = await fetch(image);
+          if (!imgRes.ok) {
+            return new Response(JSON.stringify({ error: "Não foi possível ler a imagem da bolsa." }), {
+              status: 502,
+              headers: JSON_HEADERS,
+            });
+          }
+          mimeType = imgRes.headers.get("content-type") || mimeType;
+          const bytes = new Uint8Array(await imgRes.arrayBuffer());
+          base64Data = bytesToBase64(bytes);
+        }
+
+        const prompt = `Olhe a foto da bolsa em anexo e escreva uma descrição curta (2 a 3 frases, no máximo 280 caracteres) em português do Brasil para uma loja online. Nome da peça: "${name || 'bolsa'}". Categoria: "${cat || 'bolsa'}". Preço: "${price || ''}". Descreva o que você vê de fato na imagem (cor, material aparente, formato, tipo de alça, acabamento) — não invente características que não conseguir identificar na foto. Tom: elegante, direto, sem exagero, sem emojis, sem aspas. Não repita o nome da bolsa literalmente na primeira palavra.`;
+
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
           {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { text: prompt },
+                  { inline_data: { mime_type: mimeType, data: base64Data } },
+                ],
+              }],
+            }),
           },
         );
         const geminiJson = await geminiRes.json();
