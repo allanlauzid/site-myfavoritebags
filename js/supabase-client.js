@@ -47,6 +47,7 @@ function rowToProduct(row) {
     tags: row.tags || [],
     occasion: row.occasion || null,
     order: row.sort_order,
+    desc: row.desc || '',
   };
 }
 
@@ -64,7 +65,15 @@ function productToRow(p) {
     tags: p.tags || [],
     occasion: p.occasion || null,
     sort_order: p.order ?? 0,
+    desc: p.desc || '',
   };
+}
+
+// ── Gemini — gera uma descrição curta de bolsa a partir de nome/categoria/
+// preço (sem foto). O texto volta pra revisão do admin, nada é salvo aqui.
+async function sbGenerateDescription(name, cat, price) {
+  const data = await sbAdminWrite(null, 'generate_description', { name, cat, price });
+  return data?.description || '';
 }
 
 async function sbFetchBags() {

@@ -14,6 +14,9 @@ const ADMIN_PASSWORD = Deno.env.get("ADMIN_PASSWORD")!;
 // Segredo TOTP (base32) usado pelo app autenticador (Google Authenticator,
 // Authy, etc.) — configurado uma única vez via secret no Supabase.
 const TOTP_SECRET = Deno.env.get("ADMIN_TOTP_SECRET")!;
+// Chave do Gemini (Google AI Studio) — usada só pra gerar a descrição
+// automática da bolsa no CRUD. Free tier, sem custo pro volume do site.
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -108,7 +111,48 @@ serve(async (req) => {
       });
     }
 
-    const NO_TABLE_ACTIONS = ["upload_image", "list_images", "delete_image"];
+    // Gera uma descrição curta de bolsa via Gemini (Google AI Studio).
+    // payload: { name, cat, price } — não grava nada, só devolve o texto pro
+    // admin revisar/editar antes de salvar a bolsa.
+    if (action === "generate_description") {
+      if (!GEMINI_API_KEY) {
+        return new Response(JSON.stringify({ error: "GEMINI_API_KEY não configurada no Supabase." }), {
+          status: 500,
+          headers: JSON_HEADERS,
+        });
+      }
+      const { name, cat, price } = payload || {};
+      const prompt = `Escreva uma descrição curta (2 a 3 frases, no máximo 280 caracteres) em português do Brasil para uma bolsa de loja online chamada "${name || 'bolsa'}", categoria "${cat || 'bolsa'}", preço "${price || ''}". Tom: elegante, direto, sem exagero, sem emojis, sem aspas. Foque em material, uso no dia a dia e um diferencial da peça (pode inventar detalhes plausíveis de material/acabamento coerentes com a categoria, já que não há foto disponível). Não repita o nome da bolsa literalmente na primeira palavra.`;
+
+      try {
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+          {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+          },
+        );
+        const geminiJson = await geminiRes.json();
+        if (!geminiRes.ok) {
+          return new Response(JSON.stringify({ error: geminiJson?.error?.message || "Falha ao gerar descrição." }), {
+            status: 502,
+            headers: JSON_HEADERS,
+          });
+        }
+        const text = geminiJson?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+        return new Response(JSON.stringify({ data: { description: text } }), {
+          headers: JSON_HEADERS,
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: String(e) }), {
+          status: 500,
+          headers: JSON_HEADERS,
+        });
+      }
+    }
+
+    const NO_TABLE_ACTIONS = ["upload_image", "list_images", "delete_image", "generate_description"];
     if (!NO_TABLE_ACTIONS.includes(action) && !ALLOWED_TABLES.includes(table)) {
       return new Response(JSON.stringify({ error: "invalid table" }), {
         status: 400,

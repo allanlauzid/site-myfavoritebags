@@ -6,6 +6,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Favorite Looks — Recife</title>
 <meta name="description" content="Acessórios selecionados para compor o seu look. Recife, PE.">
+<link rel="canonical" href="https://myfavoritebags.com.br/looks.html">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/favicon-180.png">
+<meta name="theme-color" content="#FAF7F1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="My Favorite Looks — Recife">
+<meta property="og:description" content="Acessórios selecionados para compor o seu look. Recife, PE.">
+<meta property="og:image" content="img/og-image.jpg">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="My Favorite Looks — Recife">
+<meta name="twitter:description" content="Acessórios selecionados para compor o seu look. Recife, PE.">
+<meta name="twitter:image" content="img/og-image.jpg">
 <script>
   // Bloqueio/visibilidade controlado pelo painel central do My Favorite Bags (localStorage compartilhado)
   // ?preview=1 permite que o admin edite/visualize a página mesmo bloqueada, sem publicar.
@@ -35,7 +49,7 @@
   --text:        #262626;   /* headings */
   --text-mid:    #4A453E;   /* subheadings */
   --text-body:   #4A453E;   /* body */
-  --text-muted:  #8C8B85;   /* captions */
+  --text-muted:  #756F63;   /* captions — ajustado p/ contraste 4.5:1 sobre --bg */
   --silver:      #8C8B85;   /* secondary metallic accent */
   --line:        rgba(140,139,133,.32);
   --ease:        cubic-bezier(.4,0,.2,1);
@@ -1720,7 +1734,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   <div class="admin-panel">
     <div class="admin-hd">
       <span class="admin-hd-t">Painel Administrativo</span>
-      <button class="admin-x" onclick="closeA()">✕</button>
+      <button class="admin-x" onclick="closeA()" aria-label="Fechar painel"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
     </div>
     <div class="admin-tabs" id="adminTabs" style="display:none;">
       <button class="atab on" onclick="swTab('overview',this)">Visão Geral</button>
@@ -1751,6 +1765,29 @@ const HERO_SLIDES = [];
 // Fonte de verdade: banco de dados (Supabase). data/products-looks.js fica só
 // como fallback de emergência (site continua funcionando se o banco cair).
 let products = window.MFB_LOOKS;
+
+// Skeleton exibido enquanto o catálogo real ainda não foi renderizado —
+// evita flash entre carregar a página e os itens aparecerem.
+function renderCatalogSkeleton() {
+  const grid = document.getElementById('pgrid');
+  if (!grid) return;
+  const card = `
+    <div class="pcard" aria-hidden="true">
+      <div class="pcard-img" style="background:linear-gradient(90deg,var(--bg2) 25%,var(--line) 37%,var(--bg2) 63%);background-size:400% 100%;animation:skeletonShine 1.4s ease-in-out infinite;"></div>
+      <div class="pcard-info">
+        <div style="height:14px;width:70%;border-radius:4px;background:var(--bg2);margin-bottom:10px;"></div>
+        <div style="height:12px;width:40%;border-radius:4px;background:var(--bg2);"></div>
+      </div>
+    </div>`;
+  grid.innerHTML = `<div class="prow prow-a">${card}${card}</div><div class="prow prow-b">${card}${card}</div>`;
+}
+if (!document.getElementById('skeletonShineKeyframes')) {
+  const style = document.createElement('style');
+  style.id = 'skeletonShineKeyframes';
+  style.textContent = '@keyframes skeletonShine{0%{background-position:100% 0}100%{background-position:0 0}}';
+  document.head.appendChild(style);
+}
+renderCatalogSkeleton();
 
 async function loadProductsFromDB() {
   if (window.MFB_USE_REMOTE_CATALOG === false) return;
@@ -1834,7 +1871,7 @@ function renderProducts(filter = 'all') {
     <div class="pcard ${isAvail ? '' : 'out'}" data-id="${p.id}">
       <div class="pcard-float" data-drag-id="${p.id}">
         <div class="pcard-img">
-          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;" onerror="this.onerror=null;this.style.display='none';this.closest('.pcard-visual').classList.add('img-fallback');">` : bagSVG(p.cat, ic)}</div>
+          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" width="480" height="640" loading="lazy" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;" onerror="this.onerror=null;this.style.display='none';this.closest('.pcard-visual').classList.add('img-fallback');">` : bagSVG(p.cat, ic)}</div>
           ${!isAvail ? `<div class="sold-ov"><div class="sold-badge">${ovText}</div></div>` : ''}
 
           ${isAvail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
@@ -1862,6 +1899,21 @@ function renderProducts(filter = 'all') {
       </div>
     </div>`;
   };
+
+  if (!list.length) {
+    const emptyMsg = products.length === 0
+      ? 'Novidades chegando em breve. Fale com a gente pelo WhatsApp pra ser avisada assim que a coleção estiver no ar.'
+      : 'Nenhuma peça encontrada com esse filtro. Tente outra categoria ou status.';
+    grid.innerHTML = `
+      <div class="catalog-empty" style="grid-column:1/-1;text-align:center;padding:64px 20px;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text);margin-bottom:10px;">Em breve por aqui</p>
+        <p style="font-size:13px;color:var(--text-body);max-width:380px;margin:0 auto 20px;line-height:1.7;">${emptyMsg}</p>
+        <a href="${waMsg('a próxima coleção', 'coming_soon')}" target="_blank" class="fb" style="display:inline-block;text-decoration:none;">Falar no WhatsApp</a>
+      </div>`;
+    const count = document.getElementById('catalogResultCount');
+    if (count) count.textContent = '';
+    return;
+  }
 
   const rows = [];
   for (let i = 0; i < list.length; i += 2) {
@@ -2322,7 +2374,7 @@ function renderPanel() {
   </div>
 
   <div style="border-top:1px solid var(--line);margin-top:28px;padding-top:20px;text-align:right;">
-    <button onclick="openReview()" style="background:#9C7A34;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.06em;">Revisar e Salvar →</button>
+    <button onclick="openReview()" style="background:#9C7A34;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.06em;display:inline-flex;align-items:center;">Revisar e Salvar<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-left:4px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   </div>`;
   renderOverviewTab();
   renderAdminList();
@@ -2538,7 +2590,7 @@ function renderAdminList() {
           <button class="aabtn" onclick="openPriceModal(${p.id})"
             style="font-size:16px;padding:0;width:38px;height:38px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;border:1px solid var(--rose);
-                   background:rgba(156,122,52,.06);color:#9C7A34;cursor:pointer;">$</button>
+                   background:rgba(156,122,52,.06);color:#9C7A34;cursor:pointer;" aria-label="Editar preço" title="Editar preço"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.4-5 3.4c0 4.2 10 2 10 6.2 0 2-2.2 3.4-5 3.4s-5-1.1-5-3"/></svg></button>
           <button class="aabtn" onclick="togNew(${p.id})"
             style="font-size:12px;padding:0;width:64px;height:38px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;letter-spacing:.06em;
@@ -3425,7 +3477,7 @@ positionBagsBtnMobile();
 <!-- ═══ ITEM DETAIL MODAL ════════════════════════════════════════════════════ -->
 <div id="bagModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(30,28,22,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
   <div style="background:var(--bg);border-radius:16px;max-width:520px;width:92%;overflow:hidden;position:relative;animation:modalIn .28s ease;">
-    <button onclick="closeBagModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);z-index:2;">✕</button>
+    <button onclick="closeBagModal()" aria-label="Fechar" style="position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;color:var(--text-muted);z-index:2;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
     <div id="modalImgWrap" style="width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--bg2);cursor:zoom-in;position:relative;touch-action:none;display:flex;align-items:center;justify-content:center;">
       <img id="modalPhoto" src="" alt="" style="width:100%;height:100%;object-fit:cover;transform-origin:center center;will-change:transform;">
     </div>

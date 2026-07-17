@@ -6,11 +6,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Favorite Bags — Recife</title>
 <meta name="description" content="Bolsas premium selecionadas para mulheres que sabem o que querem. Recife, PE.">
+<link rel="canonical" href="https://myfavoritebags.com.br/">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/favicon-180.png">
+<meta name="theme-color" content="#F3EFE9">
+<meta property="og:type" content="website">
+<meta property="og:title" content="My Favorite Bags — Recife">
+<meta property="og:description" content="Bolsas premium selecionadas para mulheres que sabem o que querem. Recife, PE.">
+<meta property="og:image" content="img/og-image.jpg">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="My Favorite Bags — Recife">
+<meta name="twitter:description" content="Bolsas premium selecionadas para mulheres que sabem o que querem. Recife, PE.">
+<meta name="twitter:image" content="img/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/cursor.css">
 <link rel="stylesheet" href="css/nav.css">
 <style>
+
+/* ─── ESCALA DE Z-INDEX (documentada) ────────────────────────────────────────
+   9000  bagModal (detalhe do produto, público)
+   9100  reviewModal (revisar e salvar)
+   9200  confirmação genérica (ex: excluir item)
+   9300  bulkPromoModal
+   9400  priceModal / catModal (nova/editar categoria)
+   9500  galleryModal / modais de confirmação sequenciais do bulk
+   9600  admin panel (login/painel) / pimModal (gerenciador de imagem do produto)
+   9650  cropModal (sempre acima de galleryModal/pimModal, que o abrem)
+   9700  imgZoomOv (zoom — sempre no topo de tudo, exceto toast)
+   9999  toasts/confirmações voláteis (showToast, mensagens de sucesso)
+   Ao criar um modal novo: escolha o próximo múltiplo de 100 livre acima do
+   nível de quem o abre (nunca abaixo), pra garantir empilhamento correto.
+────────────────────────────────────────────────────────────────────────────── */
 
 /* ─── TOKENS ──────────────────────────────────────────────────────────────── */
 :root {
@@ -24,9 +53,15 @@
   --text:        #653C2B;   /* headings */
   --text-mid:    #8C6555;   /* subheadings */
   --text-body:   #7A6055;   /* body */
-  --text-muted:  #AE9888;   /* captions */
+  --text-muted:  #806858;   /* captions — ajustado p/ contraste 4.5:1 sobre --bg */
   --line:        rgba(182,139,115,.18);
   --ease:        cubic-bezier(.4,0,.2,1);
+  /* Escala de raio de borda — usar nos componentes novos; o site tem alguns
+     valores legados (5,6,10,14,16,18,20px) que ainda não foram migrados. */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-pill: 999px;
   --wa-bg: #653C2B;
   --wa-shadow-rgb: 101,60,43;
 
@@ -731,7 +766,7 @@ footer {
 .admin-gallery-btn {
   display:flex; align-items:center; justify-content:center;
   background:none; border:none; color:#fff;
-  width:38px; height:38px; padding:0;
+  width:44px; height:44px; padding:0;
   cursor:pointer; transition:opacity .25s, transform .2s; opacity:.85;
 }
 .admin-gallery-btn:hover { opacity:1; transform:scale(1.08); }
@@ -1357,6 +1392,14 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   .pwa { min-height:44px; }
   .filters { align-items:stretch; }
   .fpill { flex:1 1 calc(50% - .5rem); }
+  /* #catFilters agora tem até 9 pills (Todas + 8 categorias) — em vez de
+     quebrar em ~5 linhas de 50%, vira uma faixa rolável horizontalmente. */
+  #catFilters {
+    flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; padding-bottom:2px;
+  }
+  #catFilters::-webkit-scrollbar { display:none; }
+  #catFilters .fpill { flex:0 0 auto; }
   .about-visual::before { inset:.9rem -.9rem -.9rem .9rem; }
   .foot-bot { align-items:flex-start; gap:1rem; flex-direction:column; }
   .admin-panel { height:calc(100svh - 1rem); max-height:calc(100svh - 1rem); }
@@ -1757,7 +1800,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
         <button class="admin-gallery-btn" id="adminGalleryBtn" onclick="openGalleryModal()" title="Galeria de imagens" aria-label="Galeria de imagens" style="display:none;">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11a2 2 0 0 1 2 2v11"/><rect x="3" y="7" width="15" height="15" rx="2.4"/><path d="M7.5 14.2c.8-1 1.6-1.6 2.4-1.6.7 0 1.2.5 1.9 1.3.9-1.4 1.7-2.1 2.6-2.1 1 0 1.8.9 3.1 2.8"/><circle cx="8.7" cy="10.8" r="1"/></svg>
         </button>
-        <button class="admin-x" onclick="closeA()">✕</button>
+        <button class="admin-x" onclick="closeA()" aria-label="Fechar painel"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
       </div>
     </div>
     <div class="admin-tabs" id="adminTabs" style="display:none;">
@@ -1795,6 +1838,31 @@ let products = (() => {
   try { return JSON.parse(localStorage.getItem(LOCAL_BAGS_KEY)) || window.MFB_BAGS; }
   catch (_) { return window.MFB_BAGS; }
 })();
+
+// Skeleton exibido enquanto o catálogo real (local ou do banco) ainda não
+// foi renderizado — evita a tela em branco/flash entre carregar a página e
+// os produtos aparecerem (ou o aviso de "nenhuma bolsa" aparecer cedo demais
+// enquanto o Supabase ainda está respondendo).
+function renderCatalogSkeleton() {
+  const grid = document.getElementById('pgrid');
+  if (!grid) return;
+  const card = `
+    <div class="pcard" aria-hidden="true">
+      <div class="pcard-img" style="background:linear-gradient(90deg,var(--bg2) 25%,var(--line) 37%,var(--bg2) 63%);background-size:400% 100%;animation:skeletonShine 1.4s ease-in-out infinite;"></div>
+      <div class="pcard-info">
+        <div style="height:14px;width:70%;border-radius:4px;background:var(--bg2);margin-bottom:10px;"></div>
+        <div style="height:12px;width:40%;border-radius:4px;background:var(--bg2);"></div>
+      </div>
+    </div>`;
+  grid.innerHTML = `<div class="prow prow-a">${card}${card}</div><div class="prow prow-b">${card}${card}</div>`;
+}
+if (!document.getElementById('skeletonShineKeyframes')) {
+  const style = document.createElement('style');
+  style.id = 'skeletonShineKeyframes';
+  style.textContent = '@keyframes skeletonShine{0%{background-position:100% 0}100%{background-position:0 0}}';
+  document.head.appendChild(style);
+}
+renderCatalogSkeleton();
 
 async function loadProductsFromDB() {
   if (window.MFB_USE_REMOTE_CATALOG === false) return;
@@ -1889,7 +1957,7 @@ function renderProducts(filter = 'all') {
     <div class="pcard ${isAvail ? '' : 'out'}" data-id="${p.id}">
       <div class="pcard-float" data-drag-id="${p.id}">
         <div class="pcard-img">
-          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;" onerror="this.onerror=null;this.style.display='none';this.closest('.pcard-visual').classList.add('img-fallback');">` : bagSVG(p.cat, ic)}</div>
+          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" width="480" height="640" loading="lazy" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;" onerror="this.onerror=null;this.style.display='none';this.closest('.pcard-visual').classList.add('img-fallback');">` : bagSVG(p.cat, ic)}</div>
           ${!isAvail ? `<div class="sold-ov"><div class="sold-badge">${ovText}</div></div>` : ''}
 
           ${isAvail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
@@ -1917,6 +1985,21 @@ function renderProducts(filter = 'all') {
       </div>
     </div>`;
   };
+
+  if (!list.length) {
+    const emptyMsg = products.length === 0
+      ? 'Novidades chegando em breve. Fale com a gente pelo WhatsApp pra ser avisada assim que a coleção estiver no ar.'
+      : 'Nenhuma bolsa encontrada com esse filtro. Tente outra categoria ou status.';
+    grid.innerHTML = `
+      <div class="catalog-empty" style="grid-column:1/-1;text-align:center;padding:64px 20px;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text);margin-bottom:10px;">Em breve por aqui</p>
+        <p style="font-size:13px;color:var(--text-body);max-width:380px;margin:0 auto 20px;line-height:1.7;">${emptyMsg}</p>
+        <a href="${waMsg('a próxima coleção', 'coming_soon')}" target="_blank" class="fb" style="display:inline-block;text-decoration:none;">Falar no WhatsApp</a>
+      </div>`;
+    const count = document.getElementById('catalogResultCount');
+    if (count) count.textContent = '';
+    return;
+  }
 
   const rows = [];
   for (let i = 0; i < list.length; i += 2) {
@@ -2233,7 +2316,7 @@ function openContactKupimModal() {
     ov.id = 'kupimContactModal';
     ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:9600;background:rgba(20,12,7,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;';
     ov.innerHTML = `
-      <div style="background:var(--bg);width:min(440px,92vw);border-radius:14px;padding:32px;">
+      <div style="background:var(--bg);width:min(440px,92vw);border-radius:var(--radius-lg);padding:32px;">
         <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:6px;color:var(--text);">Falar com Kupim Digital</h3>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">Escreva sua mensagem — vamos abrir seu app de e-mail com tudo preenchido, você só confirma o envio.</p>
         <label class="flabel">Assunto</label>
@@ -2414,6 +2497,14 @@ function renderPanel() {
           </button>
           <p id="crudNewCatDesc" style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5;"></p>
         </label>
+        <label class="crud-desc-field" style="grid-column:1/-1;">
+          <span>Descrição</span>
+          <textarea class="fi" id="crudNewDesc" rows="3" placeholder="Ex: Bolsa em couro legítimo, ideal para o dia a dia. Alça ajustável e bolso interno para celular e carteira." style="resize:vertical;width:100%;font-family:'Jost',sans-serif;"></textarea>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+            <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);font-size:12px;padding:8px 14px;" id="crudGenDescBtn" onclick="generateCrudNewDesc()">Gerar descrição</button>
+            <span id="crudGenDescStatus" style="font-size:11px;color:var(--text-muted);"></span>
+          </div>
+        </label>
       </div>
       <p class="crud-message" id="crudMessage" role="status"></p>
       <button type="button" class="fb crud-add" onclick="addCrudBag()">+ Adicionar bolsa</button>
@@ -2424,7 +2515,7 @@ function renderPanel() {
   <div class="apane" id="tab-banner"></div>
 
   <div style="border-top:1px solid var(--line);margin-top:28px;padding-top:20px;text-align:right;">
-    <button onclick="openReview()" style="background:var(--rose-deep);color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.06em;">Revisar e Salvar →</button>
+    <button onclick="openReview()" style="background:var(--rose-deep);color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.06em;display:inline-flex;align-items:center;">Revisar e Salvar${ARROW_RIGHT_SVG}</button>
   </div>`;
   renderOverviewTab();
   renderAdminList();
@@ -3011,10 +3102,10 @@ async function openGalleryModal(onPick) {
     ov.id = 'galleryModal';
     ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:9500;background:rgba(20,12,7,.78);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;';
     ov.innerHTML = `
-      <div style="background:var(--bg);width:min(1100px,94vw);height:min(88vh,900px);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="background:var(--bg);width:min(1100px,94vw);height:min(88vh,900px);border-radius:var(--radius-lg);display:flex;flex-direction:column;overflow:hidden;">
         <div style="padding:20px 26px;display:flex;align-items:center;justify-content:space-between;background:var(--rose-deep);flex-shrink:0;">
           <span id="galleryModalTitle" style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#fff;letter-spacing:.08em;">Galeria de Imagens</span>
-          <button onclick="closeGalleryModal()" aria-label="Fechar galeria" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;">✕</button>
+          <button onclick="closeGalleryModal()" aria-label="Fechar galeria" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;">${CLOSE_X_SVG}</button>
         </div>
         <div id="galleryPickerBanner" style="display:none;padding:12px 26px;background:rgba(139,74,60,.1);border-bottom:1px solid var(--line);flex-shrink:0;">
           <label class="fb" style="margin:0;display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
@@ -3112,7 +3203,7 @@ function renderGalleryGrid() {
   }
   grid.innerHTML = list.map(img => `
     <div class="gal-card">
-      <div class="gal-card-img" onclick="openImageZoom('${_pimEscape(img.url)}')">
+      <div class="gal-card-img" role="button" tabindex="0" aria-label="Ampliar ${_pimEscape(img.name)}" onclick="openImageZoom('${_pimEscape(img.url)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openImageZoom('${_pimEscape(img.url)}');}">
         <img src="${_pimEscape(img.url)}" alt="${_pimEscape(img.name)}" loading="lazy">
         ${isGalleryNoBg(img.name) ? '<span class="gal-badge">Sem fundo</span>' : ''}
       </div>
@@ -3121,10 +3212,10 @@ function renderGalleryGrid() {
       <button type="button" class="fb" style="margin:6px 0 0;width:100%;font-size:11.5px;padding:8px;" onclick="pickGalleryImage('${_pimEscape(img.url)}','${_pimEscape(img.name)}')">Usar esta imagem</button>
       ` : `
       <div class="gal-card-actions">
-        <button title="Editar (crop / remover fundo)" onclick="editGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')"><img src="webp/icons/icon-edit.png" alt=""></button>
-        <button title="Remover fundo" onclick="removeBgGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')">${GALLERY_SCISSORS_SVG}</button>
-        <button title="Baixar" onclick="downloadGalleryImage('${_pimEscape(img.url)}','${_pimEscape(img.name)}')"><img src="webp/icons/icon-download.png" alt=""></button>
-        <button title="Excluir" onclick="deleteGalleryImage('${_pimEscape(img.name)}')"><img src="webp/icons/icon-delete.png" alt=""></button>
+        <button title="Editar (crop / remover fundo)" aria-label="Editar ${_pimEscape(img.name)}" onclick="editGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')"><img src="webp/icons/icon-edit.png" alt=""></button>
+        <button title="Remover fundo" aria-label="Remover fundo de ${_pimEscape(img.name)}" onclick="removeBgGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')">${GALLERY_SCISSORS_SVG}</button>
+        <button title="Baixar" aria-label="Baixar ${_pimEscape(img.name)}" onclick="downloadGalleryImage('${_pimEscape(img.url)}','${_pimEscape(img.name)}')"><img src="webp/icons/icon-download.png" alt=""></button>
+        <button title="Excluir" aria-label="Excluir ${_pimEscape(img.name)}" onclick="deleteGalleryImage('${_pimEscape(img.name)}')"><img src="webp/icons/icon-delete.png" alt=""></button>
       </div>`}
     </div>`).join('');
 }
@@ -3136,6 +3227,15 @@ function pickGalleryImage(url, name) {
 }
 
 const GALLERY_SCISSORS_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8B4A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M8.5 7.5 20 20M8.5 16.5 20 4"/></svg>`;
+
+// ── Ícones SVG reutilizáveis (substituem caracteres Unicode usados como
+// ícone: ✕, ★/☆, $, →) — consistência visual entre navegadores/fontes.
+const CLOSE_X_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>`;
+function starSVG(filled) {
+  return `<svg viewBox="0 0 24 24" width="16" height="16" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.7-4.3 4.1 1.1 5.9L12 16.7l-5.3 2.9 1.1-5.9-4.3-4.1 5.9-.7z"/></svg>`;
+}
+const DOLLAR_SVG = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.4-5 3.4c0 4.2 10 2 10 6.2 0 2-2.2 3.4-5 3.4s-5-1.1-5-3"/></svg>`;
+const ARROW_RIGHT_SVG = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-left:4px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
 
 // Calcula o próximo nome de cópia pra um nome-base (crop/remover fundo nunca
 // sobrescrevem o arquivo original — sempre criam " - Cópia N").
@@ -3175,10 +3275,10 @@ function openCropTool(name, url, onCropped) {
     ov.id = 'cropModal';
     ov.style.cssText = 'display:none;position:fixed;inset:0;z-index:9650;background:rgba(20,12,7,.85);align-items:center;justify-content:center;padding:24px;';
     ov.innerHTML = `
-      <div style="background:var(--bg);width:min(640px,94vw);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;max-height:92vh;">
+      <div style="background:var(--bg);width:min(640px,94vw);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;max-height:92vh;">
         <div style="padding:16px 22px;display:flex;align-items:center;justify-content:space-between;background:var(--rose-deep);flex-shrink:0;">
           <span style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#fff;">Recortar imagem</span>
-          <button onclick="closeCropTool()" aria-label="Fechar recorte" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;">✕</button>
+          <button onclick="closeCropTool()" aria-label="Fechar recorte" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;">${CLOSE_X_SVG}</button>
         </div>
         <div style="padding:20px 22px;overflow:auto;">
           <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Arraste as bordas da seleção pra ajustar o recorte. O original nunca é alterado — o resultado vira uma cópia nova.</p>
@@ -3327,7 +3427,7 @@ function openImageZoom(url) {
     ov.id = 'imgZoomOv';
     ov.style.cssText = 'display:none;position:fixed;inset:0;z-index:9700;background:rgba(0,0,0,.9);align-items:center;justify-content:center;';
     ov.innerHTML = `
-      <button onclick="closeImageZoom()" style="position:absolute;top:20px;right:26px;background:none;border:none;color:#fff;font-size:26px;cursor:pointer;z-index:2;">✕</button>
+      <button onclick="closeImageZoom()" aria-label="Fechar visualização" style="position:absolute;top:20px;right:26px;background:none;border:none;color:#fff;cursor:pointer;z-index:2;"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
       <div id="imgZoomWrap" style="width:90vw;height:90vh;overflow:hidden;position:relative;cursor:zoom-in;touch-action:none;">
         <img id="imgZoomPhoto" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;will-change:transform;">
       </div>`;
@@ -3458,6 +3558,13 @@ function renderCrudBags() {
       <div class="crud-thumb">${p.img ? `<img src="${_pimEscape(p.img)}" alt="${_pimEscape(p.name)}">` : '<span>Sem imagem</span>'}</div>
       <label class="crud-field"><span>Nome</span><input class="fi" id="crudName-${p.id}" value="${_pimEscape(p.name)}"></label>
       <label class="crud-field crud-price"><span>Preço</span><input class="fi" id="crudPrice-${p.id}" value="${_pimEscape(p.price)}" inputmode="numeric"></label>
+      <label class="crud-field crud-desc-field" style="grid-column:1/-1;">
+        <span>Descrição</span>
+        <textarea class="fi" id="crudDesc-${p.id}" rows="3" style="resize:vertical;width:100%;font-family:'Jost',sans-serif;">${_pimEscape(p.desc || '')}</textarea>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+          <button type="button" class="crud-btn" id="crudGenDescBtn-${p.id}" onclick="generateCrudExistingDesc(${p.id})">Gerar descrição</button>
+        </div>
+      </label>
       <div class="crud-actions">
         <button type="button" class="crud-btn" onclick="openProductImageManager(${p.id})">Escolher imagem</button>
         <button type="button" class="crud-btn" onclick="insertProductIntoBanner(${p.id})">Inserir no banner</button>
@@ -3467,13 +3574,31 @@ function renderCrudBags() {
     </article>`).join('');
 }
 
+async function generateCrudExistingDesc(id) {
+  const product = products.find(p => p.id === id);
+  const btn = document.getElementById(`crudGenDescBtn-${id}`);
+  const textarea = document.getElementById(`crudDesc-${id}`);
+  if (!product || !btn || !textarea) return;
+  btn.disabled = true; btn.textContent = 'Gerando…';
+  try {
+    const desc = await sbGenerateDescription(product.name, catLabel(product.cat), product.price);
+    if (desc) textarea.value = desc;
+  } catch (e) {
+    alert(`Não foi possível gerar: ${e.message}`);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Gerar descrição';
+  }
+}
+
 function saveCrudBag(id) {
   const product = products.find(p => p.id === id);
   const name = document.getElementById(`crudName-${id}`)?.value.trim();
   const price = formatCrudPrice(document.getElementById(`crudPrice-${id}`)?.value);
+  const desc = document.getElementById(`crudDesc-${id}`)?.value.trim() || '';
   if (!product || !name || !price) return;
   product.name = name;
   product.price = price;
+  product.desc = desc;
   markDirty();
   renderProducts('all');
   renderFavCarousel();
@@ -3482,10 +3607,33 @@ function saveCrudBag(id) {
   renderCrudBags();
 }
 
+async function generateCrudNewDesc() {
+  const btn = document.getElementById('crudGenDescBtn');
+  const status = document.getElementById('crudGenDescStatus');
+  const textarea = document.getElementById('crudNewDesc');
+  const name = document.getElementById('crudNewName')?.value.trim();
+  const price = document.getElementById('crudNewPrice')?.value.trim();
+  const cat = document.getElementById('crudNewCat')?.value;
+  const catLbl = catLabel(cat);
+  if (!name) { if (status) status.textContent = 'Preencha o nome antes de gerar.'; return; }
+  btn.disabled = true; btn.textContent = 'Gerando…';
+  if (status) status.textContent = '';
+  try {
+    const desc = await sbGenerateDescription(name, catLbl, price);
+    if (desc) textarea.value = desc;
+    else if (status) status.textContent = 'Não veio texto — tente de novo.';
+  } catch (e) {
+    if (status) status.textContent = `Não foi possível gerar: ${e.message}`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Gerar descrição';
+  }
+}
+
 async function addCrudBag() {
   const name = document.getElementById('crudNewName')?.value.trim();
   const price = formatCrudPrice(document.getElementById('crudNewPrice')?.value);
   const cat = document.getElementById('crudNewCat')?.value || 'shoulder';
+  const desc = document.getElementById('crudNewDesc')?.value.trim() || '';
   const message = document.getElementById('crudMessage');
   if (!crudNewFile || !name || !price) {
     if (message) message.textContent = 'Escolha a imagem e preencha nome e preço.';
@@ -3495,7 +3643,7 @@ async function addCrudBag() {
     if (message) message.textContent = 'Preparando a imagem…';
     const product = {
       id: Date.now(), name, cat, price, status:'available', isNew:true,
-      favorite:true, img:null, promo:null, tags:[], occasion:'dia-a-dia', order:products.length + 1
+      favorite:true, img:null, promo:null, tags:[], occasion:'dia-a-dia', order:products.length + 1, desc
     };
     const webp = await convertToWebp(crudNewImageSource || crudNewFile, .9);
     product.img = webp;
@@ -3510,6 +3658,8 @@ async function addCrudBag() {
     document.getElementById('crudNewName').value = '';
     document.getElementById('crudNewPrice').value = '';
     document.getElementById('crudNewImage').value = '';
+    document.getElementById('crudNewDesc').value = '';
+    document.getElementById('crudGenDescStatus').textContent = '';
     document.getElementById('crudNewPreview').style.display = 'none';
     document.getElementById('crudUploadText').textContent = 'Escolher imagem';
     crudNewFile = null;
@@ -3538,7 +3688,7 @@ function openProductImageManager(id) {
     ov.id = 'pimModal';
     ov.style.cssText = 'display:none;position:fixed;inset:0;z-index:9600;background:rgba(20,12,7,.82);align-items:center;justify-content:center;padding:24px;';
     ov.innerHTML = `
-      <div style="background:var(--bg);width:min(420px,92vw);border-radius:14px;padding:28px;">
+      <div style="background:var(--bg);width:min(420px,92vw);border-radius:var(--radius-lg);padding:28px;">
         <h3 id="pimTitle" style="font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:16px;color:var(--text);"></h3>
         <div id="pimPreviewWrap" style="width:100%;aspect-ratio:4/5;background:#F2ECE6;border-radius:8px;overflow:hidden;margin-bottom:18px;display:flex;align-items:center;justify-content:center;cursor:zoom-in;">
           <img id="pimPreview" style="max-width:100%;max-height:100%;object-fit:contain;" onclick="if(this.src) openImageZoom(this.src)">
@@ -3712,15 +3862,15 @@ function renderAdminList() {
             ${STATUS_LABEL[p.status]}
           </button>
           <button class="aabtn" onclick="openPriceModal(${p.id})"
-            style="font-size:16px;padding:0;width:38px;height:38px;display:flex;align-items:center;
+            style="font-size:16px;padding:0;width:44px;height:44px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;border:1px solid var(--rose);
-                   background:rgba(139,74,60,.06);color:#8B4A3C;cursor:pointer;">$</button>
-          <button class="aabtn" onclick="togFav(${p.id})"
-            style="font-size:18px;padding:0;width:38px;height:38px;display:flex;align-items:center;
+                   background:rgba(139,74,60,.06);color:#8B4A3C;cursor:pointer;" aria-label="Editar preço" title="Editar preço">${DOLLAR_SVG}</button>
+          <button class="aabtn" onclick="togFav(${p.id})" aria-label="${p.favorite ? 'Remover dos favoritos' : 'Marcar como favorito'}" title="Favorito"
+            style="font-size:18px;padding:0;width:44px;height:44px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;
                    border:1px solid ${p.favorite ? '#f5c518' : 'var(--line)'};
                    background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};
-                   color:${p.favorite ? '#f5c518' : '#C0B4AB'};">${p.favorite ? '★' : '☆'}</button>
+                   color:${p.favorite ? '#f5c518' : '#C0B4AB'};">${starSVG(p.favorite)}</button>
           <button class="aabtn" onclick="togNew(${p.id})"
             style="font-size:12px;padding:0;width:64px;height:38px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;letter-spacing:.1em;
@@ -3734,7 +3884,7 @@ function renderAdminList() {
             <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <button class="aabtn del" onclick="confirmDel(${p.id})" title="Excluir ${_pimEscape(p.name)}" aria-label="Excluir ${_pimEscape(p.name)}"
-            style="width:44px;height:38px;padding:0;display:flex;align-items:center;
+            style="width:44px;height:44px;padding:0;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;border-color:#b83232;background:rgba(184,50,50,.06);">
             <img src="webp/icons/icon-delete.png" alt="" style="width:16px;height:16px;filter:invert(20%) sepia(60%) saturate(2000%) hue-rotate(340deg) brightness(85%);">
           </button>
@@ -3978,8 +4128,9 @@ function bulkToggle(field, value) {
     if (field === 'favorite') {
       const btn = document.querySelector(`button[onclick="togFav(${p.id})"]`);
       if (btn) {
-        btn.textContent = p.favorite ? '★' : '☆';
-        btn.style.cssText = `font-size:18px;padding:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid ${p.favorite ? '#f5c518' : 'var(--line)'};background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};color:${p.favorite ? '#f5c518' : '#C0B4AB'};cursor:pointer;`;
+        btn.innerHTML = starSVG(p.favorite);
+        btn.setAttribute('aria-label', p.favorite ? 'Remover dos favoritos' : 'Marcar como favorito');
+        btn.style.cssText = `font-size:18px;padding:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid ${p.favorite ? '#f5c518' : 'var(--line)'};background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};color:${p.favorite ? '#f5c518' : '#C0B4AB'};cursor:pointer;`;
       }
     }
     if (field === 'isNew') {
@@ -4342,8 +4493,9 @@ function updateAdminRow(id) {
 
   const favBtn = document.querySelector(`button[onclick="togFav(${id})"]`);
   if (favBtn) {
-    favBtn.textContent = p.favorite ? '★' : '☆';
-    favBtn.style.cssText = `font-size:18px;padding:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid ${p.favorite ? '#f5c518' : 'var(--line)'};background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};color:${p.favorite ? '#f5c518' : '#C0B4AB'};cursor:pointer;`;
+    favBtn.innerHTML = starSVG(p.favorite);
+    favBtn.setAttribute('aria-label', p.favorite ? 'Remover dos favoritos' : 'Marcar como favorito');
+    favBtn.style.cssText = `font-size:18px;padding:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid ${p.favorite ? '#f5c518' : 'var(--line)'};background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};color:${p.favorite ? '#f5c518' : '#C0B4AB'};cursor:pointer;`;
     favBtn.title = p.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
   }
 
@@ -4470,6 +4622,11 @@ function openBagModal(id, source) {
     : (p.promo)
       ? `<span style="text-decoration:line-through;color:#B5544A;font-size:15px;margin-right:8px;font-weight:600;">${p.promo.old}</span><span style="color:var(--rose-dark);">${p.promo.new}</span>${(p.promo.showPct && p.promo.pct) ? `<span style="display:inline-block;margin-left:10px;vertical-align:middle;background:#B5544A;color:#fff;font-size:12px;font-weight:700;font-family:'Jost',sans-serif;letter-spacing:.04em;padding:3px 8px;border-radius:3px;">-${p.promo.pct}%</span>` : ''}`
       : p.price;
+  const descEl = document.getElementById('modalDesc');
+  if (descEl) {
+    descEl.textContent = p.desc || '';
+    descEl.style.display = p.desc ? 'block' : 'none';
+  }
   document.getElementById('modalWa').href = waMsg(p.name, p.status);
   document.getElementById('modalWa').onclick = () => trackWa(id);
   const m = document.getElementById('bagModal');
@@ -4594,7 +4751,7 @@ applyMatchButtonVisibility();
 <!-- ═══ BAG DETAIL MODAL ════════════════════════════════════════════════════ -->
 <div id="bagModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(42,31,24,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
   <div style="background:var(--bg);border-radius:16px;max-width:520px;width:92%;overflow:hidden;position:relative;animation:modalIn .28s ease;">
-    <button onclick="closeBagModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);z-index:2;">✕</button>
+    <button onclick="closeBagModal()" aria-label="Fechar" style="position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;color:var(--text-muted);z-index:2;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
     <div id="modalImgWrap" style="width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--bg2);cursor:zoom-in;position:relative;touch-action:none;">
       <img id="modalPhoto" src="" alt="" style="width:100%;height:100%;object-fit:cover;transform-origin:center center;will-change:transform;">
     </div>
@@ -4603,6 +4760,7 @@ applyMatchButtonVisibility();
       <div id="modalName"  style="font-size:18px;font-weight:700;color:#2A1F18;margin-bottom:6px;"></div>
       <div id="modalCat"   style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#A08070;margin-bottom:16px;"></div>
       <div id="modalPrice" style="font-size:22px;font-weight:800;color:#8B4A3C;margin-bottom:20px;"></div>
+      <p id="modalDesc" style="font-size:13px;color:var(--text-body);line-height:1.7;margin-bottom:20px;display:none;"></p>
       <a id="modalWa" href="#" target="_blank" class="pwa" style="text-decoration:none;width:fit-content;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
         Comprar via WhatsApp
