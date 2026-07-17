@@ -192,4 +192,20 @@ p, li, figcaption, .cat-desc, .hero-sub, .about-body, .login-s,
     transform:none !important;
     filter:none !important;
   }
+  /* A faixa de texto corrido (marquee) é puramente decorativa e de baixa
+     intensidade — mantém o movimento mesmo com "reduzir movimento" ativado,
+     restaurando o comportamento original do site. */
+  .m-track {
+    animation-duration:26s !important;
+    animation-iteration-count:infinite !important;
+  }
+  /* Botão flutuante do My Favorite Match — mesma lógica: decorativo e
+     discreto, mantém a animação original mesmo com "reduzir movimento". */
+  #matchHeroBtn::before { animation-duration:2.6s !important; animation-iteration-count:infinite !important; }
+  #matchHeroBtn .mhb-visual { animation-duration:13s !important; animation-iteration-count:infinite !important; }
+  #matchHeroBtn .mhb-visual::after { animation-duration:17s !important; animation-iteration-count:infinite !important; }
+  #matchHeroBtn img {
+    animation-duration:10.5s, 7.8s, 15s !important;
+    animation-iteration-count:infinite, infinite, infinite !important;
+  }
 }

@@ -91,7 +91,7 @@ body{
 }
 .m-filters { display:flex; gap:6px; flex-wrap:wrap; }
 .mf-pill {
-  font-size:12px; letter-spacing:.14em; text-transform:uppercase; line-height:1.4;
+  font-size:13px; letter-spacing:.14em; text-transform:uppercase; line-height:1.4;
   padding:7px 14px; border-radius:20px; cursor:pointer;
   background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14);
   color:rgba(255,255,255,.75); font-family:'Jost',sans-serif; transition:background-color .3s,border-color .3s,color .3s,box-shadow .3s,scale .15s;
@@ -147,14 +147,14 @@ body{
   font-size:clamp(1.95rem,9.1vw,2.6rem); line-height:1.15; text-wrap:balance;
 }
 .m-config-title em{ color:var(--rose); font-style:italic; }
-.m-config-sub { font-size:clamp(.85rem,3vw,.95rem); color:var(--text-muted); line-height:1.5; }
+.m-config-sub { font-size:clamp(1rem,.95rem + .8vw,1.0625rem); color:var(--text-muted); line-height:1.5; }
 .m-config-group{ display:flex; flex-direction:column; gap:.6rem; }
 .m-config-label {
-  font-size:.75rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); line-height:1.4;
+  font-size:.8125rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); line-height:1.4;
 }
 .m-chip-row{ display:flex; flex-wrap:wrap; gap:.5rem; }
 .m-chip {
-  font-size:clamp(.8rem,2.8vw,.9rem); padding:.55rem 1rem; border-radius:20px; cursor:pointer; line-height:1.4;
+  font-size:clamp(.8125rem,2.8vw,.9rem); padding:.55rem 1rem; border-radius:20px; cursor:pointer; line-height:1.4;
   background:rgba(74,35,24,.06); border:1px solid rgba(74,35,24,.18);
   color:var(--text); font-family:'Jost',sans-serif; transition:background-color .25s,border-color .25s,color .25s,box-shadow .25s,scale .15s;
 }
@@ -162,7 +162,7 @@ body{
 .m-config-start {
   margin-top:.4rem; width:100%; border:none; border-radius:12px; cursor:pointer;
   background:var(--rose-dark); color:#fff; font-family:'Jost',sans-serif; font-weight:600;
-  letter-spacing:.08em; text-transform:uppercase; font-size:clamp(.75rem,3vw,.85rem);
+  letter-spacing:.08em; text-transform:uppercase; font-size:clamp(.8125rem,3vw,.9rem);
   padding:clamp(.85rem,3.6vw,1.05rem); min-height:48px;
 }
 .m-config-start:active{ transform:scale(.96); }
@@ -175,7 +175,7 @@ body{
   display:inline-flex; align-items:center; gap:7px;
   padding:9px 18px; border-radius:999px; border:1.5px solid #B8896F;
   color:#24343C; font-family:'Cormorant Garamond',serif;
-  font-size:12.5px; font-weight:500; letter-spacing:.04em; text-transform:uppercase;
+  font-size:13px; font-weight:500; letter-spacing:.04em; text-transform:uppercase;
   text-decoration:none; background:#F6F1EC;
   transition:background .3s, box-shadow .3s;
 }
@@ -244,7 +244,7 @@ body{
 }
 .m-card-info-main { min-width:0; }
 .m-card-brand {
-  display:inline-block; font-size:12px; letter-spacing:.16em; text-transform:uppercase; line-height:1.4;
+  display:inline-block; font-size:13px; letter-spacing:.16em; text-transform:uppercase; line-height:1.4;
   padding:4px 10px; border-radius:20px; margin-bottom:9px;
   background:rgba(255,255,255,.14); color:#fff;
 }
@@ -256,7 +256,7 @@ body{
   color:var(--rose); border:1px solid var(--rose);
 }
 .m-authentic svg{ display:block; }
-.m-card-cat { font-size:12px; letter-spacing:.16em; text-transform:uppercase; line-height:1.4; color:rgba(255,255,255,.78); }
+.m-card-cat { font-size:13px; letter-spacing:.16em; text-transform:uppercase; line-height:1.4; color:rgba(255,255,255,.78); }
 
 .m-info-btn {
   flex-shrink:0; width:clamp(2.05rem, 8vw, 2.35rem); height:clamp(2.05rem, 8vw, 2.35rem); min-width:34px; min-height:34px; border-radius:50%;
@@ -269,7 +269,7 @@ body{
 /* Selo Novidade */
 .m-badge-new{
   position:absolute; top:clamp(3.4rem,15vw,4.1rem); left:clamp(.8rem,3.6vw,1.05rem); z-index:3;
-  background:rgba(145,94,72,.82); color:#fff; font-size:12px; letter-spacing:.14em; text-transform:uppercase; line-height:1.4;
+  background:rgba(145,94,72,.82); color:#fff; font-size:13px; letter-spacing:.14em; text-transform:uppercase; line-height:1.4;
   padding:5px 10px; border-radius:20px; font-weight:600;
 }
 
@@ -291,11 +291,11 @@ body{
   background:rgba(74,35,24,.06); border:1px solid rgba(74,35,24,.16); color:var(--text);
   display:flex; align-items:center; justify-content:center; cursor:pointer;
 }
-.m-info-sheet-cat{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--rose-dark); margin-bottom:8px; line-height:1.4; }
-.m-info-sheet-desc{ font-size:clamp(.9rem,3.2vw,1rem); color:var(--text); line-height:1.55; margin-bottom:14px; }
+.m-info-sheet-cat{ font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--rose-dark); margin-bottom:8px; line-height:1.4; }
+.m-info-sheet-desc{ font-size:clamp(1rem,.95rem + .5vw,1.0625rem); color:var(--text); line-height:1.55; margin-bottom:14px; }
 .m-info-tags{ display:flex; flex-wrap:wrap; gap:8px; }
 .m-info-tag{
-  font-size:12px; letter-spacing:.05em; padding:6px 12px; border-radius:20px; line-height:1.4;
+  font-size:13px; letter-spacing:.05em; padding:6px 12px; border-radius:20px; line-height:1.4;
   border:1px solid var(--rose); color:var(--rose); background:transparent;
 }
 .m-info-backdrop{
@@ -384,7 +384,7 @@ body{
 .m-ov-star { color:var(--rose); vertical-align:-1px; flex-shrink:0; }
 .m-ov-item-price { flex-shrink:0; color:var(--rose-dark); font-weight:600; }
 .m-ov-item-status {
-  flex-shrink:0; font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; line-height:1.4;
+  flex-shrink:0; font-size:.8125rem; letter-spacing:.08em; text-transform:uppercase; line-height:1.4;
   padding:3px 7px; border-radius:20px; font-weight:600; white-space:nowrap;
 }
 .m-ov-item-status.available   { background:rgba(46,158,107,.14); color:#1F7A4C; }
@@ -466,7 +466,7 @@ body{
 .m-tut-skip {
   position:absolute; right:20px; top:58%; z-index:10;
   background:transparent; border:none; color:rgba(255,255,255,.65);
-  font-family:'Jost',sans-serif; font-size:.8rem; letter-spacing:.04em; cursor:pointer;
+  font-family:'Jost',sans-serif; font-size:.8125rem; letter-spacing:.04em; cursor:pointer;
   text-decoration:underline; padding:.5rem;
 }
 
@@ -564,7 +564,7 @@ button:focus-visible {
   min-width:max-content;
   min-height:40px;
   padding:clamp(.5rem, 2.2vw, .65rem) clamp(.7rem, 3.2vw, .95rem);
-  font-size:clamp(.75rem, 2.3vw, .8rem);
+  font-size:clamp(.8125rem, 2.3vw, .87rem);
   line-height:1.4;
   letter-spacing:clamp(.08em, .6vw, .14em);
 }
@@ -573,7 +573,7 @@ button:focus-visible {
   padding:0 clamp(1rem, 4.2vw, 1.25rem) clamp(1.15rem, 5vw, 1.65rem);
 }
 .m-card-brand {
-  font-size:clamp(.75rem, 2.1vw, .8rem);
+  font-size:clamp(.8125rem, 2.1vw, .87rem);
   line-height:1.4;
   letter-spacing:clamp(.1em, .6vw, .16em);
 }
@@ -584,7 +584,7 @@ button:focus-visible {
   text-wrap:balance;
 }
 .m-card-cat {
-  font-size:clamp(.75rem, 2.5vw, .8rem);
+  font-size:clamp(.8125rem, 2.5vw, .87rem);
   line-height:1.4;
   overflow-wrap:anywhere;
 }
@@ -614,7 +614,7 @@ button:focus-visible {
   text-wrap:balance;
 }
 .m-empty p {
-  font-size:clamp(.85rem, 3.2vw, .95rem);
+  font-size:clamp(1rem, .95rem + .5vw, 1.0625rem);
   line-height:1.5;
   color:var(--text-muted);
 }
@@ -647,8 +647,8 @@ button:focus-visible {
 @media(max-width:360px), (max-height:640px){
   .m-top { padding-top:.6rem; }
   .m-brand-t { font-size:.92rem; }
-  .m-close { font-size:.75rem; }
-  .mf-pill { min-height:38px; padding-inline:.55rem; font-size:.75rem; }
+  .m-close { font-size:.8125rem; }
+  .mf-pill { min-height:38px; padding-inline:.55rem; font-size:.8125rem; }
   .m-card-info { padding:0 .85rem 1.05rem; }
   .m-actions { padding-bottom:.85rem; gap:.55rem; }
   .m-pass { width:2.9rem; height:2.9rem; }

@@ -2,8 +2,8 @@
 .admin-panel {
   width:min(96vw, 1320px);
   max-width:96vw;
-  height:92vh;
-  max-height:92vh;
+  height:80vh;
+  max-height:86vh;
   border-radius:18px;
   box-shadow:
     0 0 0 1px rgba(0,0,0,.06),
@@ -56,8 +56,8 @@
 .alist-col-label {
   display:block;
   color:var(--text-muted);
-  font:600 9px/1.1 'Jost',sans-serif;
-  letter-spacing:.06em;
+  font:600 11.5px/1.15 'Jost',sans-serif;
+  letter-spacing:.05em;
   text-align:center;
   text-transform:uppercase;
   white-space:nowrap;
@@ -67,8 +67,8 @@
   align-items:center;
   padding-inline:12px;
   color:var(--text-muted);
-  font:600 10px/1.2 'Jost',sans-serif;
-  letter-spacing:.1em;
+  font:600 12.5px/1.2 'Jost',sans-serif;
+  letter-spacing:.08em;
   text-transform:uppercase;
 }
 .admin-mobile-more { display:none; }
@@ -401,16 +401,16 @@
   border-radius:14px;
   background:rgba(255,255,255,.58);
 }
-.crud-create h3 { margin:0 0 4px; color:var(--text); font:600 22px/1.15 'Cormorant Garamond',serif; }
-.crud-create p { margin:0; color:var(--text-muted); font-size:12px; line-height:1.55; }
+.crud-create h3 { margin:0 0 4px; color:var(--text); font:600 24px/1.15 'Cormorant Garamond',serif; }
+.crud-create p { margin:0; color:var(--text-muted); font-size:14px; line-height:1.55; }
 .crud-create-grid { display:grid; grid-template-columns:140px minmax(180px,1fr) 150px 170px; gap:12px; align-items:end; }
 .crud-create-grid label:not(.crud-upload), .crud-field { display:grid; gap:6px; color:var(--text-muted); font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-.crud-upload { position:relative; display:grid; place-items:center; min-height:86px; overflow:hidden; border:1px dashed var(--rose-dark); border-radius:10px; color:var(--rose-dark); font-size:11px; font-weight:700; cursor:pointer; }
+.crud-upload { position:relative; display:grid; place-items:center; min-height:86px; overflow:hidden; border:1px dashed var(--rose-dark); border-radius:10px; color:var(--rose-dark); font-size:13px; font-weight:700; cursor:pointer; }
 .crud-upload input { position:absolute; opacity:0; pointer-events:none; }
 .crud-upload img { display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .crud-upload span { position:relative; z-index:1; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,.9); }
 .crud-image-tools { display:grid; gap:7px; }
-.crud-remove-bg { min-height:36px; padding:7px 9px; border:1px solid rgba(101,60,43,.28); border-radius:8px; background:rgba(182,139,115,.12); color:#653C2B; font:600 10px/1.2 'Jost',sans-serif; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
+.crud-remove-bg { min-height:36px; padding:7px 9px; border:1px solid rgba(101,60,43,.28); border-radius:8px; background:rgba(182,139,115,.12); color:#653C2B; font:600 12px/1.2 'Jost',sans-serif; letter-spacing:.05em; text-transform:uppercase; cursor:pointer; }
 .crud-remove-bg:disabled { opacity:.48; cursor:not-allowed; }
 .crud-message { min-height:18px; color:var(--rose-dark) !important; }
 .crud-add { justify-self:start; margin-top:0 !important; }

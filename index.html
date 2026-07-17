@@ -84,7 +84,7 @@
 /* ─── RESET ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
-body { font-family:'Jost',sans-serif; background:var(--bg); color:var(--text-body); overflow-x:hidden; position:relative; }
+body { font-family:'Jost',sans-serif; background:var(--bg); color:var(--text-body); overflow-x:hidden; position:relative; zoom:1.1; }
 a { text-decoration:none; color:inherit; }
 button { font-family:'Jost',sans-serif; }
 
@@ -133,7 +133,7 @@ button { font-family:'Jost',sans-serif; }
 
 /* Right decorative bag silhouette */
 .hero-deco {
-  position:absolute; right:5%; top:50%; transform:translateY(-50%);
+  position:absolute; left:5%; top:50%; transform:translateY(-50%) scaleX(-1);
   width:280px; height:320px; opacity:.08;
   pointer-events:none;
 }
@@ -227,7 +227,7 @@ button { font-family:'Jost',sans-serif; }
 #matchHeroBtn .mhb-tip {
   position:absolute; top:100%; left:50%; transform:translateX(-50%);
   margin-top:8px; white-space:nowrap;
-  font-family:'Jost',sans-serif; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  font-family:'Jost',sans-serif; font-size:13px; letter-spacing:.16em; text-transform:uppercase;
   color:#fff; background:rgba(36,24,18,.72); padding:5px 12px; border-radius:999px;
   opacity:0; pointer-events:none; transition:opacity .3s;
 }
@@ -238,16 +238,16 @@ button { font-family:'Jost',sans-serif; }
 
 /* Content */
 .hero-content {
-  position:absolute; left:7%; top:50%; transform:translateY(-50%);
-  max-width:560px;
+  position:absolute; right:7%; top:50%; transform:translateY(-50%);
+  max-width:560px; text-align:right;
 }
 .hero-eyebrow {
-  display:flex; align-items:center; gap:14px;
+  display:flex; align-items:center; justify-content:flex-end; gap:14px;
   font-size:12px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--rose); margin-bottom:20px;
   opacity:0; animation:fadeUp 1s .2s var(--ease) forwards;
 }
-.hero-eyebrow::before {
+.hero-eyebrow::after {
   content:''; display:inline-block;
   width:28px; height:1px; background:var(--rose);
 }
@@ -267,7 +267,7 @@ button { font-family:'Jost',sans-serif; }
 .hero-sub {
   font-size:13px; letter-spacing:.04em; line-height:1.85;
   color:rgba(255,255,255,.55); font-weight:300;
-  margin-bottom:44px; max-width:360px;
+  margin-bottom:44px; margin-left:auto; max-width:360px;
   opacity:0; animation:fadeUp 1s .7s var(--ease) forwards;
 }
 .hero-btn {
@@ -303,9 +303,7 @@ button { font-family:'Jost',sans-serif; }
 
 /* Scroll hint */
 .h-scroll {
-  position:absolute; right:46px; bottom:36px;
-  display:flex; flex-direction:column; align-items:center; gap:9px;
-  opacity:0; animation:fadeIn 1s 1.8s forwards;
+  display:none;
 }
 .h-scroll-txt {
   font-size:12px; letter-spacing:.16em; text-transform:uppercase;
@@ -412,7 +410,7 @@ button { font-family:'Jost',sans-serif; }
 }
 .pcard:not(.out):hover .pcard-action { transform:translateY(0); }
 .slide-btn {
-  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  font-size:13px; letter-spacing:.16em; text-transform:uppercase;
   color:#fff; background:transparent;
   border:1px solid rgba(255,255,255,.45);
   padding:9px 22px; cursor:pointer;
@@ -433,7 +431,7 @@ button { font-family:'Jost',sans-serif; }
 }
 .promo-b {
   position:absolute; top:14px; right:14px;
-  font-size:12px; font-weight:700; letter-spacing:.04em;
+  font-size:13px; font-weight:700; letter-spacing:.04em;
   font-family:'Jost',sans-serif;
   background:#B5544A; color:#fff; padding:5px 10px; border-radius:3px;
 }
@@ -447,7 +445,7 @@ button { font-family:'Jost',sans-serif; }
 .pcard:not(.out):hover .pname { color:var(--rose-deep); }
 .pmeta { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
 .pcat {
-  font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-muted);
+  font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-muted);
 }
 .pprice {
   font-family:'Cormorant Garamond',serif;
@@ -646,7 +644,7 @@ button { font-family:'Jost',sans-serif; }
 }
 .about-cta {
   display:inline-flex; align-items:center; gap:14px;
-  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  font-size:13px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--rose-dark); font-weight:500;
   transition:gap .4s, color .3s;
 }
@@ -680,7 +678,7 @@ button { font-family:'Jost',sans-serif; }
 }
 .insta-link {
   display:inline-flex; align-items:center; gap:11px;
-  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  font-size:13px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--text); border-bottom:1px solid var(--line); padding-bottom:4px;
   transition:color .3s, border-color .3s, gap .4s;
 }
@@ -709,21 +707,21 @@ footer {
 .foot-logo-row { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
 .foot-logo-svg { width:48px; height:48px; }
 .foot-brand { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:400; letter-spacing:.14em; color:#fff; }
-.foot-brand-sub { font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+.foot-brand-sub { font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.6); }
 .foot-body { font-size:12px; color:rgba(255,255,255,.62); line-height:1.85; font-weight:300; }
-.foot-col-h { font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--rose); margin-bottom:18px; }
+.foot-col-h { font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--rose); margin-bottom:18px; }
 .foot-links { list-style:none; }
 .foot-links li { margin-bottom:10px; }
-.foot-links a { font-size:12px; color:rgba(255,255,255,.6); transition:color .3s; letter-spacing:.03em; }
+.foot-links a { font-size:14px; color:rgba(255,255,255,.6); transition:color .3s; letter-spacing:.03em; }
 .foot-links a:hover { color:rgba(255,255,255,.85); }
 .foot-bot { display:flex; align-items:center; justify-content:space-between; }
-.foot-copy { font-size:12px; color:rgba(255,255,255,.5); letter-spacing:.1em; }
+.foot-copy { font-size:13px; color:rgba(255,255,255,.5); letter-spacing:.1em; }
 .foot-rule { width:32px; height:1px; background:var(--rose); opacity:.4; }
 
 /* ─── WA FLOAT ────────────────────────────────────────────────────────────── */
 /* ─── ADMIN ───────────────────────────────────────────────────────────────── */
 .admin-trig {
-  font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  font-size:13px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--rose-deep); cursor:pointer; background:none; border:none;
   font-family:'Jost',sans-serif; transition:color .3s;
 }
@@ -739,7 +737,7 @@ footer {
 .admin-ov.visible { opacity:1; }
 .admin-panel {
   background:var(--bg); width:60vw;
-  max-width:96vw; min-width:900px; height:85vh; max-height:92vh;
+  max-width:96vw; min-width:900px; height:80vh; max-height:86vh;
   display:flex; flex-direction:column;
   overflow:hidden;
   transform:translateY(18px) scale(.97);
@@ -751,13 +749,14 @@ footer {
 }
 .admin-ov.visible .admin-panel { transform:translateY(0) scale(1); opacity:1; }
 .admin-hd {
-  background:var(--rose-deep); padding:26px 38px;
-  display:flex; align-items:center; justify-content:space-between;
+  background:var(--rose-deep); padding:14px 38px;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px;
   flex-shrink:0;
 }
 .admin-hd-t {
   font-family:'Cormorant Garamond',serif;
   font-size:22px; font-weight:400; color:#fff; letter-spacing:.12em;
+  text-align:center; grid-column:2;
 }
 .admin-x {
   background:none; border:none; color:rgba(255,255,255,.6);
@@ -767,10 +766,18 @@ footer {
 .admin-gallery-btn {
   display:flex; align-items:center; justify-content:center;
   background:none; border:none; color:#fff;
-  width:44px; height:44px; padding:0;
+  width:52px; height:52px; padding:0;
   cursor:pointer; transition:opacity .25s, transform .2s; opacity:.85;
 }
+.admin-gallery-btn svg { width:30px; height:30px; }
 .admin-gallery-btn:hover { opacity:1; transform:scale(1.08); }
+.admin-logout-btn {
+  justify-self:start;
+  font-family:'Jost',sans-serif; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(255,255,255,.75); background:none; border:1px solid rgba(255,255,255,.4);
+  border-radius:6px; padding:6px 12px; cursor:pointer; transition:background .25s, color .25s, border-color .25s;
+}
+.admin-logout-btn:hover { background:rgba(255,255,255,.12); color:#fff; border-color:rgba(255,255,255,.7); }
 .admin-bd {
   padding:28px 38px 40px; overflow-y:auto; flex:1;
   scrollbar-width:thin; scrollbar-color:var(--rose-dark) transparent;
@@ -788,7 +795,7 @@ footer {
 .admin-tabs::-webkit-scrollbar { display:none; }
 .atab {
   flex:1; text-align:center;
-  font-size:12px; letter-spacing:.2em; text-transform:uppercase;
+  font-size:13.6px; letter-spacing:.2em; text-transform:uppercase;
   padding:12px 16px; background:none; border:none;
   color:var(--text-muted); cursor:pointer; font-family:'Jost',sans-serif;
   border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .3s, border-color .3s, background-color .3s, scale .15s;
@@ -805,7 +812,7 @@ footer {
   background:rgba(182,139,115,.13); border-color:var(--rose-dark);
 }
 .upload-dropzone-title { font-size:16px; color:var(--text); margin-bottom:6px; }
-.upload-dropzone-sub { font-size:12px; color:var(--text-muted); }
+.upload-dropzone-sub { font-size:13.6px; color:var(--text-muted); }
 .manage-toolbar { display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
 .manage-search {
   display:flex; align-items:center; gap:8px; flex:1; min-width:200px;
@@ -815,7 +822,7 @@ footer {
 .manage-search input { border:none; outline:none; flex:1; font-size:13px; font-family:'Jost',sans-serif; background:transparent; }
 .gal-filter-group { display:flex; gap:6px; flex-wrap:wrap; }
 .gal-chip {
-  font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  font-size:12.5px; letter-spacing:.06em; text-transform:uppercase;
   padding:8px 14px; border-radius:999px; border:1px solid var(--line);
   background:transparent; color:var(--text-muted); cursor:pointer;
   font-family:'Jost',sans-serif; transition:background .2s,color .2s,border-color .2s;
@@ -831,10 +838,10 @@ footer {
 .gal-card-img img { width:100%; height:100%; object-fit:contain; }
 .gal-badge {
   position:absolute; top:6px; left:6px; background:var(--rose-dark); color:#fff;
-  font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  font-size:12.5px; letter-spacing:.06em; text-transform:uppercase;
   padding:3px 8px; border-radius:999px;
 }
-.gal-card-name { font-size:11px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gal-card-name { font-size:12.5px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .gal-card-actions { display:flex; gap:6px; justify-content:center; }
 .gal-card-actions button {
   width:30px; height:30px; border-radius:8px; border:1px solid var(--line);
@@ -852,7 +859,7 @@ footer {
 .frow { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
 .fg { display:flex; flex-direction:column; gap:6px; }
 .fg.full { grid-column:1/-1; }
-.flabel { font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); }
+.flabel { font-size:13.6px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); }
 .fi {
   font-family:'Jost',sans-serif; font-size:13px; padding:12px 14px;
   border:1px solid var(--line); background:var(--white);
@@ -872,7 +879,7 @@ select.fi option { color:#653C2B; background-color:#F3EFE9; }
 select.fi option:checked,
 select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
 .fb {
-  font-family:'Jost',sans-serif; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  font-family:'Jost',sans-serif; font-size:13.6px; letter-spacing:.16em; text-transform:uppercase;
   padding:13px 28px; background:var(--rose-dark); color:#fff;
   border:1px solid var(--rose-dark); cursor:pointer; transition:background .3s, border-color .3s;
   margin-top:8px;
@@ -909,12 +916,12 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   border:1px solid var(--line);
 }
 .aname { font-family:'Cormorant Garamond',serif; font-size:17px; color:var(--text); flex:1; }
-.astatus { font-size:12px; letter-spacing:.2em; text-transform:uppercase; padding:4px 12px; }
+.astatus { font-size:13.6px; letter-spacing:.2em; text-transform:uppercase; padding:4px 12px; }
 .sa { background:rgba(37,211,102,.1); color:#1a7a3e; }
 .ss { background:rgba(182,139,115,.12); color:var(--text-muted); }
 .aacts { display:flex; gap:7px; }
 .aabtn {
-  font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  font-size:13.6px; letter-spacing:.14em; text-transform:uppercase;
   padding:7px 14px; border:1px solid var(--line);
   background:transparent; color:var(--text-muted); cursor:pointer;
   font-family:'Jost',sans-serif; transition:background-color .3s, border-color .3s, color .3s, scale .15s;
@@ -927,15 +934,17 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   display:flex; flex-direction:column; gap:14px;
   max-width:340px; margin:0 auto; padding:60px 0; text-align:center;
 }
+.login-wrap .fb { font-size:15px; padding:14px 28px; }
+.login-wrap.login-wide { max-width:480px; }
 .login-t {
-  font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:400;
+  font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:400;
   color:var(--text); letter-spacing:.1em; margin-bottom:6px;
 }
-.login-s { font-size:12px; color:var(--text-muted); letter-spacing:.1em; margin-bottom:24px; }
+.login-s { font-size:15.5px; color:var(--text-muted); letter-spacing:.08em; margin-bottom:24px; }
 .login-links { display:flex; flex-direction:column; gap:10px; align-items:center; margin-top:18px; }
-.login-links a { font-size:12px; color:var(--rose-dark); text-decoration:underline; text-underline-offset:2px; }
+.login-links a { font-size:15px; color:var(--rose-dark); text-decoration:underline; text-underline-offset:2px; }
 .login-links a:hover { color:var(--rose-deep); }
-.lerr { font-size:12px; color:#7A1E1E; margin-top:8px; }
+.lerr { font-size:14.5px; color:#7A1E1E; margin-top:8px; }
 
 /* ─── ANIMATIONS ──────────────────────────────────────────────────────────── */
 @keyframes fadeUp  { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
@@ -1023,10 +1032,10 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   nav { padding:16px 20px; }
   nav.s { padding:12px 20px; }
   .nav-links { display:none; }
-  .nav-cta { font-size:12px; padding:8px 16px; }
+  .nav-cta { font-size:13px; padding:8px 16px; }
   .nav-words-main { font-size:13px; letter-spacing:.14em; }
   
-  .hero-content { left:5%; max-width:95%; }
+  .hero-content { right:5%; max-width:95%; }
   .hero-title { font-size:clamp(38px,11vw,60px); }
   .hero-sub { display:none; }
   .hero-btn { margin-top:8px; }
@@ -1034,7 +1043,7 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   .pgrid { grid-template-columns:1fr 1fr; gap:16px 10px; }
   .pname { font-size:16px; }
   .pprice { font-size:15px; }
-  .pcat { font-size:12px; }
+  .pcat { font-size:13px; }
   .pwa { font-size:12px; letter-spacing:.12em; padding:10px 8px; }
   .pwa svg { display:none; }
   
@@ -1057,14 +1066,14 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   
   .frow { grid-template-columns:1fr; }
   .admin-bd { padding:20px 16px; }
-  .admin-panel { height:92vh; max-height:92vh; }
+  .admin-panel { height:76vh; max-height:76vh; }
 }
 
 /* Mobile small */
 @media(max-width:380px){
   .pgrid { grid-template-columns:1fr; }
   .hero-title { font-size:38px; }
-  .nav-words-main { font-size:12px; }
+  .nav-words-main { font-size:13px; }
   .nav-cta { display:none; }
 }
 
@@ -1077,7 +1086,7 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   #navLooksBtn { display:none !important; }
   #bijusHeroBtn {
     right:auto !important; bottom:auto !important;
-    padding:0 !important; font-size:12px !important;
+    padding:0 !important; font-size:13px !important;
     white-space:nowrap !important;
     background:transparent !important; border:none !important; box-shadow:none !important;
     color:#F6F1EC !important;
@@ -1106,7 +1115,7 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
 /* ── LOGO PNG transparente ───────────────────────────── */
 .nav-logo-img { display:block; width:44px; height:44px; object-fit:contain; filter: brightness(0) invert(1); transition: filter .4s; }
 nav.s .nav-logo-img { filter: none; }
-.hero-logo-img { display:block; width:116px; height:auto; max-height:116px; object-fit:contain; opacity:0; animation:fadeUp 1s .35s var(--ease) forwards; }
+.hero-logo-img { display:block; margin-left:auto; width:116px; height:auto; max-height:116px; object-fit:contain; opacity:0; animation:fadeUp 1s .35s var(--ease) forwards; }
 .about-logo-img { display:block; width:min(320px,72vw); height:auto; object-fit:contain; }
 .foot-logo-img  { display:block; width:170px; height:auto; object-fit:contain; filter: brightness(0) invert(1) opacity(.85); }
 @media(max-width:600px){
@@ -1147,7 +1156,7 @@ textarea:focus-visible {
   min-height:min(42rem, 100svh);
 }
 .hero-content {
-  left:var(--page-gutter);
+  right:var(--page-gutter);
   width:min(100% - (var(--page-gutter) * 2), 35rem);
 }
 .hero-deco {
@@ -1156,7 +1165,7 @@ textarea:focus-visible {
   aspect-ratio:7/8;
 }
 .hero-eyebrow {
-  font-size:clamp(0.75rem, .68rem + .18vw, .85rem);
+  font-size:clamp(0.8125rem, .74rem + .18vw, .9rem);
   letter-spacing:clamp(.24em, 1.2vw, .44em);
   line-height:1.5;
   flex-wrap:wrap;
@@ -1168,7 +1177,7 @@ textarea:focus-visible {
 }
 .hero-title em { padding:clamp(.45rem, 1.5vw, 1rem) 0; }
 .hero-sub {
-  font-size:clamp(.82rem, .76rem + .2vw, .92rem);
+  font-size:clamp(1rem, .95rem + .25vw, 1.05rem);
   max-width:min(38ch, 100%);
 }
 .hero-btn {
@@ -1208,7 +1217,7 @@ textarea:focus-visible {
 .cat-desc,
 .about-body,
 .foot-body {
-  font-size:clamp(.82rem, .78rem + .18vw, .95rem);
+  font-size:clamp(1rem, .95rem + .2vw, 1.0625rem);
 }
 .filters {
   gap:clamp(.45rem, 1.2vw, .75rem);
@@ -1217,7 +1226,7 @@ textarea:focus-visible {
 .fpill {
   min-height:44px;
   padding:clamp(.55rem, 1.4vw, .72rem) clamp(.9rem, 2.4vw, 1.4rem);
-  font-size:clamp(0.75rem, .68rem + .16vw, .85rem);
+  font-size:clamp(0.8125rem, .74rem + .16vw, .9rem);
   letter-spacing:clamp(.12em, .65vw, .16em);
 }
 
@@ -1303,9 +1312,9 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 .admin-panel {
   width:min(56.25rem, calc(100vw - 1rem));
   max-width:calc(100vw - 1rem);
-  height:min(82vh, 47.5rem);
+  height:min(80vh, 44rem);
 }
-.admin-hd { padding:clamp(1rem, 3vw, 1.6rem) clamp(1rem, 4vw, 2.4rem); gap:1rem; }
+.admin-hd { padding:clamp(.6rem, 1.6vw, .9rem) clamp(1rem, 4vw, 2.4rem); gap:1rem; }
 .admin-hd-t {
   min-width:0;
   font-size:clamp(1.15rem, .95rem + 1vw, 1.38rem);
@@ -1334,22 +1343,23 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 /* Eyebrows / small caps labels: fluid letter-spacing so mobile stays legible */
 .eyebrow,
 .about-eyebrow {
-  font-size:clamp(0.75rem, .66rem + .15vw, .82rem);
+  font-size:clamp(0.8125rem, .72rem + .15vw, .9rem);
   letter-spacing:clamp(.14em, 1vw, .16em);
 }
 .m-item {
-  font-size:clamp(0.75rem, .66rem + .15vw, .82rem);
+  font-size:clamp(0.8125rem, .72rem + .15vw, .9rem);
   letter-spacing:clamp(.14em, 1vw, .16em);
 }
 .h-scroll-txt {
+  font-size:clamp(0.8125rem, .72rem + .15vw, .9rem);
   letter-spacing:clamp(.14em, 1vw, .16em);
 }
 .new-b {
-  font-size:clamp(0.75rem, .58rem + .15vw, .78rem);
+  font-size:clamp(0.8125rem, .66rem + .15vw, .85rem);
   letter-spacing:clamp(.12em, .8vw, .16em);
 }
 .sold-badge {
-  font-size:clamp(0.75rem, .6rem + .15vw, .8rem);
+  font-size:clamp(0.8125rem, .68rem + .15vw, .87rem);
   letter-spacing:clamp(.14em, .8vw, .16em);
 }
 .astatus {
@@ -1382,7 +1392,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   nav { align-items:center; }
   .hero-content { top:48%; max-width:none; }
   .hero-title { font-size:clamp(2.35rem, 11vw, 3.75rem); margin-bottom:1rem; }
-  .hero-sub { display:block; font-size:.8rem; line-height:1.7; margin-bottom:1.35rem; max-width:31ch; }
+  .hero-sub { display:block; font-size:1rem; line-height:1.6; margin-bottom:1.35rem; max-width:31ch; }
   .hero-logo-img { width:clamp(4.8rem, 24vw, 5.5rem); }
   .catalog, .about, .insta { padding-block:var(--section-y-sm); }
   .pgrid { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:1.2rem .75rem; }
@@ -1409,10 +1419,10 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 @media(max-width:430px){
   .nav-logo { gap:.65rem; }
   .nav-logo-img { width:2.25rem; height:2.25rem; }
-  .nav-words-main { font-size:.7rem; white-space:nowrap; }
-  .nav-words-sub { font-size:.55rem; }
+  .nav-words-main { font-size:.85rem; white-space:nowrap; }
+  .nav-words-sub { font-size:.8125rem; }
   .nav-cta { padding-inline:.75rem; letter-spacing:.12em; }
-  .hero-eyebrow::before { width:1.1rem; }
+  .hero-eyebrow::after { width:1.1rem; }
   .hero-title { font-size:clamp(2.15rem, 11vw, 3.15rem); }
   .hero-sub { max-width:28ch; }
   #bijusHeroBtn {
@@ -1622,7 +1632,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   </div>
 
   <div class="hero-content">
-    <p class="hero-eyebrow">Recife · Coleção Exclusiva</p>
+    <p class="hero-eyebrow">Coleção Exclusiva · Recife</p>
 
     <!-- Hero logo mark --><img src="webp/LogoMFB_B.webp" alt="My Favorite Bags" class="hero-logo-img">
 
@@ -1779,7 +1789,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
       </ul>
     </div>
   </div>
-  <div class="foot-bot" style="flex-direction:column;align-items:flex-start;gap:8px;">
+  <div class="foot-bot" style="flex-direction:column;align-items:flex-end;gap:8px;">
     <button class="admin-trig" onclick="openA()">Admin</button>
   </div>
 </footer>
@@ -1796,8 +1806,9 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 <div class="admin-ov" id="adminOv">
   <div class="admin-panel">
     <div class="admin-hd">
+      <button class="admin-logout-btn" id="adminLogoutBtn" onclick="adminLogout()" title="Sair" aria-label="Sair" style="display:none;">Sair</button>
       <span class="admin-hd-t">Painel Administrativo</span>
-      <div style="display:flex;align-items:center;gap:14px;">
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:14px;">
         <button class="admin-gallery-btn" id="adminGalleryBtn" onclick="openGalleryModal()" title="Galeria de imagens" aria-label="Galeria de imagens" style="display:none;">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h11a2 2 0 0 1 2 2v11"/><rect x="3" y="7" width="15" height="15" rx="2.4"/><path d="M7.5 14.2c.8-1 1.6-1.6 2.4-1.6.7 0 1.2.5 1.9 1.3.9-1.4 1.7-2.1 2.6-2.1 1 0 1.8.9 3.1 2.8"/><circle cx="8.7" cy="10.8" r="1"/></svg>
         </button>
@@ -1993,8 +2004,8 @@ function renderProducts(filter = 'all') {
       : 'Nenhuma bolsa encontrada com esse filtro. Tente outra categoria ou status.';
     grid.innerHTML = `
       <div class="catalog-empty" style="grid-column:1/-1;text-align:center;padding:64px 20px;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text);margin-bottom:10px;">Em breve por aqui</p>
-        <p style="font-size:13px;color:var(--text-body);max-width:380px;margin:0 auto 20px;line-height:1.7;">${emptyMsg}</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem, 2rem + 2vw, 3.2rem);font-weight:400;color:var(--text);margin-bottom:14px;line-height:1.1;">Em breve por aqui</p>
+        <p style="font-size:clamp(1rem,.95rem + .2vw,1.0625rem);color:var(--text-body);max-width:380px;margin:0 auto 20px;line-height:1.7;">${emptyMsg}</p>
         <a href="${waMsg('a próxima coleção', 'coming_soon')}" target="_blank" class="fb" style="display:inline-block;text-decoration:none;">Falar no WhatsApp</a>
       </div>`;
     const count = document.getElementById('catalogResultCount');
@@ -2234,6 +2245,12 @@ function closeA() {
   ov.classList.remove('visible');
   setTimeout(() => ov.classList.remove('open'), 350);
 }
+function adminLogout() {
+  sessionStorage.removeItem('mfb_auth_ts');
+  sessionStorage.removeItem('mfbAdminPassword');
+  loggedIn = false;
+  renderLogin();
+}
 
 // ═══ LOGIN — senha (principal) ou autenticador (alternativa), nunca os dois
 // juntos — e um caminho de recuperação via e-mail pra Kupim Digital ═════════
@@ -2243,6 +2260,8 @@ function renderLogin() {
   document.getElementById('adminTabs').style.display = 'none';
   const galBtn = document.getElementById('adminGalleryBtn');
   if (galBtn) galBtn.style.display = 'none';
+  const logoutBtn = document.getElementById('adminLogoutBtn');
+  if (logoutBtn) logoutBtn.style.display = 'none';
   _loginView = 'password';
   renderLoginView();
 }
@@ -2261,7 +2280,7 @@ function renderLoginView() {
       <p class="lerr" id="lerr"></p>
       <div class="login-links">
         <a href="#" onclick="event.preventDefault(); setLoginView('forgot')">Esqueci a senha</a>
-        <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acesso de outra forma</a>
+        <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acessar de outra forma</a>
       </div>
     </div>`;
   } else if (_loginView === 'forgot') {
@@ -2277,27 +2296,25 @@ function renderLoginView() {
   } else if (_loginView === 'altmenu') {
     body.innerHTML = `
     <div class="login-wrap">
-      <div class="login-t">Acesso de outra forma</div>
-      <p class="login-s">Escolha como prefere continuar.</p>
+      <div class="login-t">Escolha como prefere continuar</div>
       <div class="login-links" style="margin-bottom:18px;">
-        <a href="#" onclick="event.preventDefault(); setLoginView('totp')">Tentar pelo autenticador</a>
+        <button class="fb" onclick="setLoginView('totp')">Tentar pelo autenticador</button>
       </div>
-      <button class="fb" onclick="openContactKupimModal()">Fala com Kupim Digital</button>
+      <button class="fb" onclick="openContactKupimModal()">Falar com Kupim Digital</button>
       <div class="login-links">
         <a href="#" onclick="event.preventDefault(); setLoginView('password')">Voltar para acesso com senha</a>
       </div>
     </div>`;
   } else if (_loginView === 'totp') {
     body.innerHTML = `
-    <div class="login-wrap">
-      <div class="login-t">Código do Autenticador</div>
-      <p class="login-s">Digite o código de 6 dígitos do app autenticador (Google Authenticator, Authy…).</p>
+    <div class="login-wrap login-wide">
+      <div class="login-t" style="font-size:24px;white-space:normal;">Digite o código de 6 dígitos do app autenticador<br>(Google Authenticator, Authy, ...)</div>
       <input class="fi" type="text" inputmode="numeric" maxlength="6" id="pwTotp" placeholder="000000" onkeydown="if(event.key==='Enter') tryLoginTotp()"/>
       <button class="fb" onclick="tryLoginTotp()" id="loginBtn">Entrar</button>
       <p class="lerr" id="lerr"></p>
       <div class="login-links">
         <a href="#" onclick="event.preventDefault(); setLoginView('password')">Voltar para acesso com senha</a>
-        <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acesso de outra forma</a>
+        <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acessar de outra forma</a>
       </div>
     </div>`;
   }
@@ -2363,7 +2380,7 @@ function openContactKupimModal() {
     ov.innerHTML = `
       <div style="background:var(--bg);width:min(440px,92vw);border-radius:var(--radius-lg);padding:32px;">
         <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:6px;color:var(--text);">Falar com Kupim Digital</h3>
-        <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">Escreva sua mensagem — vamos abrir seu app de e-mail com tudo preenchido, você só confirma o envio.</p>
+        <p style="font-size:13.6px;color:var(--text-muted);margin-bottom:20px;">Escreva sua mensagem — vamos abrir seu app de e-mail com tudo preenchido, você só confirma o envio.</p>
         <label class="flabel">Assunto</label>
         <input class="fi" id="kupimSubject" placeholder="Ex: Esqueci a senha do painel" style="margin-bottom:14px;">
         <label class="flabel">Mensagem</label>
@@ -2394,6 +2411,8 @@ function renderPanel() {
   document.getElementById('adminTabs').style.display = 'flex';
   const galBtn = document.getElementById('adminGalleryBtn');
   if (galBtn) galBtn.style.display = 'flex';
+  const logoutBtn = document.getElementById('adminLogoutBtn');
+  if (logoutBtn) logoutBtn.style.display = 'inline-flex';
   // Garantir que a tab visual sempre começa em Visão Geral
   document.querySelectorAll('#adminTabs .atab').forEach(t => t.classList.remove('on'));
   const firstTab = document.querySelector('#adminTabs .atab');
@@ -2467,17 +2486,17 @@ function renderPanel() {
       <div id="npPhotoBox" style="border:1.5px dashed var(--line);border-radius:8px;padding:18px;text-align:center;">
         <div id="npPhotoEmpty">
           <button type="button" class="fb" style="margin-top:0;" onclick="document.getElementById('npFile').click()">Escolher foto</button>
-          <p style="font-size:11.5px;color:var(--modal-muted,#A08070);margin-top:8px;">O fundo é removido automaticamente (remove.bg) — você confere antes de salvar.</p>
+          <p style="font-size:15px;color:var(--modal-muted,#A08070);margin-top:8px;">O fundo é removido automaticamente (remove.bg) — você confere antes de salvar.</p>
         </div>
         <div id="npPhotoWorking" style="display:none;font-size:12.5px;color:var(--rose-dark);">Preparando a imagem, aguarde…</div>
         <div id="npPhotoPreviewWrap" style="display:none;">
           <div style="display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
             <div>
-              <p style="font-size:11px;letter-spacing:.1em;color:var(--modal-muted,#A08070);margin-bottom:6px;">ORIGINAL</p>
+              <p style="font-size:12.5px;letter-spacing:.1em;color:var(--modal-muted,#A08070);margin-bottom:6px;">ORIGINAL</p>
               <img id="npPhotoOriginal" style="width:120px;height:120px;object-fit:contain;background:#eee;border-radius:6px;">
             </div>
             <div>
-              <p style="font-size:11px;letter-spacing:.1em;color:var(--modal-muted,#A08070);margin-bottom:6px;">FUNDO REMOVIDO</p>
+              <p style="font-size:12.5px;letter-spacing:.1em;color:var(--modal-muted,#A08070);margin-bottom:6px;">FUNDO REMOVIDO</p>
               <img id="npPhotoResult" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;">
             </div>
           </div>
@@ -2486,13 +2505,13 @@ function renderPanel() {
             <button type="button" class="fb" style="margin-top:0;" onclick="confirmNewProdPhoto()">Usar esta foto</button>
           </div>
         </div>
-        <div id="npPhotoError" style="display:none;font-size:12px;color:#b83232;">
+        <div id="npPhotoError" style="display:none;font-size:13.6px;color:#b83232;">
           <p id="npPhotoErrorMsg" style="margin-bottom:10px;"></p>
           <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="useOriginalPhotoNoRemoveBg()">Usar foto original (sem remover fundo)</button>
         </div>
         <div id="npPhotoConfirmed" style="display:none;">
           <img id="npPhotoFinal" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;margin-bottom:8px;">
-          <p style="font-size:12px;color:#1a7a3e;font-weight:600;">✓ Foto pronta para salvar</p>
+          <p style="font-size:13.6px;color:#1a7a3e;font-weight:600;">✓ Foto pronta para salvar</p>
           <button type="button" class="fb" style="margin-top:8px;" onclick="removeNewProdBackground()">Remover fundo</button>
           <button type="button" class="fb" style="margin-top:8px;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="document.getElementById('npFile').click()">Trocar foto</button>
         </div>
@@ -2500,7 +2519,7 @@ function renderPanel() {
     </div>
 
     <button class="fb" onclick="addProd()">+ Adicionar ao Catálogo</button>
-    <p id="addMsg" style="font-size:12px;margin-top:10px;"></p>
+    <p id="addMsg" style="font-size:13.6px;margin-top:10px;"></p>
   </div>
 
   <div class="apane" id="tab-manage">
@@ -2540,14 +2559,14 @@ function renderPanel() {
             <span id="crudNewCatBtnLabel">Selecione</span>
             <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <p id="crudNewCatDesc" style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5;"></p>
+          <p id="crudNewCatDesc" style="font-size:12.5px;color:var(--text-muted);margin-top:6px;line-height:1.5;"></p>
         </label>
         <label class="crud-desc-field" style="grid-column:1/-1;">
           <span>Descrição</span>
           <textarea class="fi" id="crudNewDesc" rows="3" placeholder="Ex: Bolsa em couro legítimo, ideal para o dia a dia. Alça ajustável e bolso interno para celular e carteira." style="resize:vertical;width:100%;font-family:'Jost',sans-serif;"></textarea>
           <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
-            <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);font-size:12px;padding:8px 14px;" id="crudGenDescBtn" onclick="generateCrudNewDesc()" disabled title="Escolha a foto da bolsa primeiro">Gerar descrição</button>
-            <span id="crudGenDescStatus" style="font-size:11px;color:var(--text-muted);">Escolha a foto da bolsa pra poder gerar a descrição.</span>
+            <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);font-size:13.6px;padding:8px 14px;" id="crudGenDescBtn" onclick="generateCrudNewDesc()" disabled title="Escolha a foto da bolsa primeiro">Gerar descrição</button>
+            <span id="crudGenDescStatus" style="font-size:12.5px;color:var(--text-muted);">Escolha a foto da bolsa pra poder gerar a descrição.</span>
           </div>
         </label>
       </div>
@@ -2560,7 +2579,7 @@ function renderPanel() {
   <div class="apane" id="tab-banner"></div>
 
   <div style="border-top:1px solid var(--line);margin-top:28px;padding-top:20px;text-align:right;">
-    <button onclick="openReview()" style="background:var(--rose-deep);color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.06em;display:inline-flex;align-items:center;">Revisar e Salvar${ARROW_RIGHT_SVG}</button>
+    <button onclick="openReview()" style="background:var(--rose-deep);color:#fff;border:none;border-radius:8px;padding:12px 26px;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;cursor:pointer;letter-spacing:.08em;display:inline-flex;align-items:center;">Revisar e Salvar</button>
   </div>`;
   renderOverviewTab();
   renderAdminList();
@@ -2600,8 +2619,8 @@ function renderBannerTab() {
   const pane = document.getElementById('tab-banner');
   if (!pane) return;
   pane.innerHTML = `
-    <p style="font-size:12.5px;color:var(--text-body);line-height:1.75;margin-bottom:24px;">
-      Imagens atualmente publicadas no carrossel do banner. Ajuste a posição, inverta horizontalmente ou troque a foto — tudo aqui.
+    <p style="font-size:14.5px;color:var(--text-body);line-height:1.75;margin-bottom:24px;">
+      Imagens atualmente publicadas no carrossel do banner.<br>Ajuste a posição, inverta horizontalmente ou troque a foto — tudo aqui.
     </p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
       ${HERO_SLIDES.map((img,idx) => `
@@ -2609,20 +2628,20 @@ function renderBannerTab() {
         <img id="bannerImg-${idx}" src="${img}" alt="Slide ${idx+1}" style="${bannerImgStyle(idx)}">
         <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(20,12,7,.88) 0%, rgba(20,12,7,.35) 45%, rgba(20,12,7,.15) 100%);"></div>
         <div style="position:absolute;left:0;right:0;bottom:0;padding:16px;text-align:center;">
-          <p style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:4px;">Slide ${idx+1}</p>
+          <p style="font-size:13.6px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:4px;">Slide ${idx+1}</p>
           <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
-            <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.7);">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:rgba(255,255,255,.7);">
               Posição X
               <input type="range" min="0" max="100" value="${_bmFor(idx).posX}" oninput="setBannerPos(${idx},'posX',this.value)" style="flex:1;">
             </label>
-            <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.7);">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:rgba(255,255,255,.7);">
               Posição Y
               <input type="range" min="0" max="100" value="${_bmFor(idx).posY}" oninput="setBannerPos(${idx},'posY',this.value)" style="flex:1;">
             </label>
           </div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-            <button class="fb" style="font-size:11px;padding:8px 12px;margin-top:0;" onclick="triggerBannerUpload(${idx})">Trocar Imagem</button>
-            <button class="fb" style="font-size:11px;padding:8px 12px;margin-top:0;background:transparent;border:1px solid #fff;" onclick="toggleBannerFlip(${idx})">${_bmFor(idx).flipped ? 'Desfazer inversão' : 'Inverter horizontalmente'}</button>
+            <button class="fb" style="font-size:12.5px;padding:8px 12px;margin-top:0;" onclick="triggerBannerUpload(${idx})">Trocar Imagem</button>
+            <button class="fb" style="font-size:12.5px;padding:8px 12px;margin-top:0;background:transparent;border:1px solid #fff;" onclick="toggleBannerFlip(${idx})">${_bmFor(idx).flipped ? 'Desfazer inversão' : 'Inverter horizontalmente'}</button>
           </div>
           <input type="file" id="bannerFile-${idx}" accept="image/*" style="display:none;" onchange="handleBannerUpload(${idx},this)">
         </div>
@@ -2685,7 +2704,7 @@ function renderAnalyticsBody() {
   const body = document.getElementById('analyticsBody');
   if (!body) return;
   const ids = [...new Set([...Object.keys(analytics.views), ...Object.keys(analytics.wa)])].map(Number);
-  if (!ids.length) { body.innerHTML = '<p style="font-size:12px;color:#A08070;">Nenhum clique registrado ainda.</p>'; return; }
+  if (!ids.length) { body.innerHTML = '<p style="font-size:15px;color:#A08070;">Nenhum clique registrado ainda.</p>'; return; }
 
   let grandTotal = 0;
   const rows = ids.map(id => {
@@ -2698,10 +2717,10 @@ function renderAnalyticsBody() {
     grandTotal += tot;
     return `<div style="padding:7px 0;border-bottom:1px solid var(--line);">
       <div style="display:flex;justify-content:space-between;align-items:baseline;">
-        <div style="font-size:12px;font-weight:600;color:#653C2B;">${p.name}</div>
-        <div style="font-size:12px;font-weight:700;color:#8B4A3C;">${tot} clique${tot!==1?'s':''}</div>
+        <div style="font-size:13.6px;font-weight:600;color:#653C2B;">${p.name}</div>
+        <div style="font-size:13.6px;font-weight:700;color:#8B4A3C;">${tot} clique${tot!==1?'s':''}</div>
       </div>
-      <div style="font-size:12px;color:#A08070;margin-top:2px;">
+      <div style="font-size:13.6px;color:#A08070;margin-top:2px;">
         <span style="color:#8B4A3C;">👁</span> Catálogo: <b>${cat}</b> · Favoritos: <b>${fav}</b> &nbsp;|&nbsp;
         <span style="color:#8B4A3C;">💬</span> WhatsApp: <b>${wa}</b>
       </div>
@@ -2710,7 +2729,7 @@ function renderAnalyticsBody() {
 
   body.innerHTML = rows + `
     <div style="margin-top:10px;padding-top:10px;border-top:2px solid var(--rose);display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-size:12px;font-weight:600;color:#A08070;letter-spacing:.1em;">TOTAL</span>
+      <span style="font-size:13.6px;font-weight:600;color:#A08070;letter-spacing:.1em;">TOTAL</span>
       <span style="font-size:14px;font-weight:800;color:#8B4A3C;">${grandTotal} clique${grandTotal!==1?'s':''}</span>
     </div>`;
 }
@@ -2727,38 +2746,38 @@ function renderOverviewTab() {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
       <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
         <div style="font-size:28px;font-weight:800;color:#8B4A3C;">${products.length}</div>
-        <div style="font-size:12px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Total de Bolsas</div>
+        <div style="font-size:13.6px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Total de Bolsas</div>
       </div>
       <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
         <div style="font-size:28px;font-weight:800;color:#1a7a3e;">${avail.length}</div>
-        <div style="font-size:12px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Disponíveis</div>
+        <div style="font-size:13.6px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Disponíveis</div>
       </div>
       <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
         <div style="font-size:28px;font-weight:800;color:#7A1E1E;">${esgot.length}</div>
-        <div style="font-size:12px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Esgotadas</div>
+        <div style="font-size:13.6px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Esgotadas</div>
       </div>
       <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
         <div style="font-size:28px;font-weight:800;color:#C97A3D;">${embreve.length}</div>
-        <div style="font-size:12px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Em Breve</div>
+        <div style="font-size:13.6px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Em Breve</div>
       </div>
       <div style="background:#faf7f4;border-radius:10px;padding:18px;text-align:center;">
         <div style="font-size:28px;font-weight:800;color:var(--rose-deep);">${favs.length}</div>
-        <div style="font-size:12px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Favoritas</div>
+        <div style="font-size:13.6px;letter-spacing:.12em;color:#A08070;text-transform:uppercase;margin-top:4px;">Favoritas</div>
       </div>
     </div>
     <div style="background:#faf7f4;border-radius:10px;padding:16px 18px;margin-bottom:12px;">
-      <p style="font-weight:700;font-size:12px;margin-bottom:10px;color:#8B4A3C;">★ Favoritas do Momento</p>
+      <p style="font-weight:700;font-size:15.5px;margin-bottom:10px;color:#8B4A3C;">★ Favoritas do Momento</p>
       ${favs.length
-        ? favs.map(p => `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:12px;"><span style="color:#653C2B;">${p.name}</span><span style="color:#8B4A3C;font-weight:600;">${p.price}</span></div>`).join('')
-        : `<p style="font-size:12px;color:#A08070;">Nenhuma marcada.</p>`}
+        ? favs.map(p => `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:13.6px;"><span style="color:#653C2B;">${p.name}</span><span style="color:#8B4A3C;font-weight:600;">${p.price}</span></div>`).join('')
+        : `<p style="font-size:15px;color:#A08070;">Nenhuma marcada.</p>`}
     </div>
     <div style="background:#faf7f4;border-radius:10px;padding:16px 18px;margin-top:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-        <p style="font-weight:700;font-size:12px;color:#8B4A3C;margin:0;">👜 Cliques por Bolsa</p>
+        <p style="font-weight:700;font-size:15.5px;color:#8B4A3C;margin:0;">👜 Cliques por Bolsa</p>
         <div style="display:flex;gap:4px;flex-wrap:wrap;">
           ${['1d','7d','30d','365d','custom'].map(k => `
           <button onclick="setAnalyticsPeriod('${k}')" id="apbtn-${k}"
-            style="font-size:12px;padding:3px 8px;border:1px solid ${k==='30d'?'#8B4A3C':'var(--line)'};
+            style="font-size:13.6px;padding:3px 8px;border:1px solid ${k==='30d'?'#8B4A3C':'var(--line)'};
                    background:${k==='30d'?'rgba(139,74,60,.1)':'transparent'};
                    color:${k==='30d'?'#8B4A3C':'#A08070'};cursor:pointer;border-radius:4px;
                    font-family:'Jost',sans-serif;letter-spacing:.08em;">
@@ -2768,20 +2787,20 @@ function renderOverviewTab() {
       </div>
       <div id="analyticsPeriodPicker" style="display:none;margin-bottom:10px;display:none;">
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <input type="date" id="apFrom" style="font-size:12px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
-          <span style="font-size:12px;color:#A08070;">até</span>
-          <input type="date" id="apTo" style="font-size:12px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
-          <button onclick="applyCustomPeriod()" style="font-size:12px;padding:4px 10px;border:1px solid #8B4A3C;color:#8B4A3C;background:transparent;cursor:pointer;border-radius:4px;">OK</button>
+          <input type="date" id="apFrom" style="font-size:13.6px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
+          <span style="font-size:13.6px;color:#A08070;">até</span>
+          <input type="date" id="apTo" style="font-size:13.6px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
+          <button onclick="applyCustomPeriod()" style="font-size:13.6px;padding:4px 10px;border:1px solid #8B4A3C;color:#8B4A3C;background:transparent;cursor:pointer;border-radius:4px;">OK</button>
         </div>
       </div>
       <div id="analyticsBody">
-        <p style="font-size:12px;color:#A08070;">Nenhum clique registrado ainda.</p>
+        <p style="font-size:15px;color:#A08070;">Nenhum clique registrado ainda.</p>
       </div>
     </div>
 
     <div id="centralPanel" style="margin-top:20px;padding:18px 20px;border:1px solid var(--line);border-radius:10px;background:#faf7f4;">
-      <p style="font-size:13px;font-weight:700;color:#8B4A3C;margin-bottom:4px;">🔗 Painel Central · Looks &amp; Match</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:14px;">Controle o acesso às outras frentes da marca.</p>
+      <p style="font-size:15.5px;font-weight:700;color:#8B4A3C;margin-bottom:4px;">🔗 Painel Central · Looks &amp; Match</p>
+      <p style="font-size:15px;color:#A08070;margin-bottom:14px;">Controle o acesso às outras frentes da marca.</p>
       <div id="centralPanelRows"></div>
     </div>`;
   renderAnalyticsBody();
@@ -2826,14 +2845,14 @@ function renderCentralPanel() {
     return `
     <div style="padding:12px 0;border-top:1px solid var(--line);">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-        <span style="font-size:12px;font-weight:600;color:#653C2B;padding-top:6px;">${SITE_LABEL[site]}</span>
+        <span style="font-size:13.6px;font-weight:600;color:#653C2B;padding-top:6px;">${SITE_LABEL[site]}</span>
         ${isMatch ? `
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
-          <span style="font-size:12px;font-weight:600;color:#653C2B;">Filtro de itens</span>
+          <span style="font-size:13.6px;font-weight:600;color:#653C2B;">Filtro de itens</span>
           <div style="display:flex;gap:4px;">
             ${filterOpts.map(o => `
             <button onclick="setMatchDefaultFilter('${o.v}')"
-              style="font-size:12px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;
+              style="font-size:13.6px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;
                      font-family:'Jost',sans-serif;font-weight:600;
                      border:1px solid ${curFilter===o.v ? '#8B4A3C' : 'var(--line)'};
                      background:${curFilter===o.v ? 'rgba(139,74,60,.12)' : 'transparent'};
@@ -2841,14 +2860,14 @@ function renderCentralPanel() {
           </div>
         </div>` : ''}
         <a href="${SITE_PAGE[site]}?preview=1" target="_blank"
-          style="font-size:12px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;margin-top:6px;
+          style="font-size:11.5px;letter-spacing:.08em;padding:5px 10px;border-radius:5px;cursor:pointer;margin-top:6px;
                  font-family:'Jost',sans-serif;font-weight:600;text-decoration:none;text-transform:uppercase;
                  border:1px solid var(--line); background:var(--bg); color:#A08070;">Editar (sem publicar)</a>
       </div>
       <div style="display:flex;gap:4px;">
         ${opts.map(o => `
         <button onclick="setSiteState('${site}','${o.v}')"
-          style="font-size:12px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;
+          style="font-size:13.6px;letter-spacing:.08em;padding:6px 12px;border-radius:5px;cursor:pointer;
                  font-family:'Jost',sans-serif;font-weight:600;
                  border:1px solid ${cur===o.v ? '#8B4A3C' : 'var(--line)'};
                  background:${cur===o.v ? 'rgba(139,74,60,.12)' : 'transparent'};
@@ -2960,18 +2979,17 @@ function positionMatchBtn(btn, hero) {
   // Posição sempre fixa (não salva mais no localStorage): o botão pode ser
   // arrastado, mas sempre volta pro mesmo lugar ao soltar.
   const heroRect = hero.getBoundingClientRect();
-  // Y alinhado com o topo da logo do nav, X centralizado com "Fale Conosco"
-  const logo = document.querySelector('.hero-logo-img') || document.querySelector('.nav-logo');
-  const cta  = document.querySelector('.nav-cta');
+  // Y alinhado com o topo da logo do hero, X centralizado com o título do nav
+  const heroLogo = document.querySelector('.hero-logo-img');
+  const navTitle = document.querySelector('.nav-logo');
   const btnSize = btn.getBoundingClientRect().width || 92;
   let topPx, leftPx;
-  if (logo && cta) {
-    const logoRect = logo.getBoundingClientRect();
-    const ctaRect  = cta.getBoundingClientRect();
-    topPx  = logoRect.top - heroRect.top;
-    leftPx = (ctaRect.left + ctaRect.width / 2) - heroRect.left - (btnSize / 2);
+  topPx = heroLogo ? (heroLogo.getBoundingClientRect().top - heroRect.top) : 24;
+  if (navTitle) {
+    const navRect = navTitle.getBoundingClientRect();
+    leftPx = (navRect.left + navRect.width / 2) - heroRect.left - (btnSize / 2);
   } else {
-    topPx = 24; leftPx = heroRect.width - btnSize - 40;
+    leftPx = 40;
   }
   btn.style.top = topPx + 'px';
   btn.style.left = leftPx + 'px';
@@ -3157,7 +3175,7 @@ async function openGalleryModal(onPick) {
             + Enviar nova foto (remove o fundo automaticamente)
             <input type="file" accept="image/png,image/jpeg,image/webp" style="display:none;" onchange="handlePickerAutoUpload(this)">
           </label>
-          <span style="font-size:12px;color:var(--text-muted);margin-left:10px;">ou clique em "Usar esta imagem" em qualquer foto da galeria abaixo.</span>
+          <span style="font-size:13.6px;color:var(--text-muted);margin-left:10px;">ou clique em "Usar esta imagem" em qualquer foto da galeria abaixo.</span>
         </div>
         <div style="padding:14px 26px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line);flex-shrink:0;">
           <div class="gal-filter-group" id="galFilterOriginal">
@@ -3254,7 +3272,7 @@ function renderGalleryGrid() {
       </div>
       <p class="gal-card-name" title="${_pimEscape(img.name)}">${_pimEscape(img.name)}</p>
       ${_galleryPickerCallback ? `
-      <button type="button" class="fb" style="margin:6px 0 0;width:100%;font-size:11.5px;padding:8px;" onclick="pickGalleryImage('${_pimEscape(img.url)}','${_pimEscape(img.name)}')">Usar esta imagem</button>
+      <button type="button" class="fb" style="margin:6px 0 0;width:100%;font-size:13.1px;padding:8px;" onclick="pickGalleryImage('${_pimEscape(img.url)}','${_pimEscape(img.name)}')">Usar esta imagem</button>
       ` : `
       <div class="gal-card-actions">
         <button title="Editar (crop / remover fundo)" aria-label="Editar ${_pimEscape(img.name)}" onclick="editGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')"><img src="webp/icons/icon-edit.png" alt=""></button>
@@ -3326,7 +3344,7 @@ function openCropTool(name, url, onCropped) {
           <button onclick="closeCropTool()" aria-label="Fechar recorte" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;">${CLOSE_X_SVG}</button>
         </div>
         <div style="padding:20px 22px;overflow:auto;">
-          <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Arraste as bordas da seleção pra ajustar o recorte. O original nunca é alterado — o resultado vira uma cópia nova.</p>
+          <p style="font-size:13.6px;color:var(--text-muted);margin-bottom:12px;">Arraste as bordas da seleção pra ajustar o recorte. O original nunca é alterado — o resultado vira uma cópia nova.</p>
           <div id="cropStage" style="position:relative;width:100%;max-height:56vh;overflow:hidden;background:#1c130d;display:flex;align-items:center;justify-content:center;">
             <img id="cropImg" crossorigin="anonymous" style="max-width:100%;max-height:56vh;display:block;user-select:none;-webkit-user-drag:none;">
             <div id="cropBox" style="position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5);cursor:move;">
@@ -3939,13 +3957,13 @@ function renderAdminList() {
                    background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};
                    color:${p.favorite ? '#f5c518' : '#C0B4AB'};">${starSVG(p.favorite)}</button>
           <button class="aabtn" onclick="togNew(${p.id})"
-            style="font-size:12px;padding:0;width:64px;height:38px;display:flex;align-items:center;
+            style="font-size:13.6px;padding:0;width:64px;height:38px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;letter-spacing:.1em;
                    border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};
                    background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};
                    color:${p.isNew ? '#2196a8' : '#C0B4AB'};">${p.isNew ? 'NOVO ✓' : 'NOVO'}</button>
           <button type="button" class="fi csel-trigger" title="Categoria"
-            style="font-size:12px;padding:0 8px 0 10px;width:118px;height:38px;flex-shrink:0;border:1px solid var(--line);background-color:var(--white);color:var(--text);"
+            style="font-size:13.6px;padding:0 8px 0 10px;width:118px;height:38px;flex-shrink:0;border:1px solid var(--line);background-color:var(--white);color:var(--text);"
             onclick="event.preventDefault(); const _btn=this; openCatPopup(this, '${p.cat}', function(k){ changeItemCat(${p.id}, k); _btn.querySelector('span').textContent = catLabel(k); });">
             <span>${catLabel(p.cat)}</span>
             <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -3990,7 +4008,7 @@ function renderAdminList() {
 
 function showToast(msg) {
   const t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#2A1F18;color:#fff;padding:10px 20px;border-radius:8px;font-size:12px;font-family:"Jost",sans-serif;z-index:9999;opacity:0;transition:opacity .3s;white-space:nowrap;';
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#2A1F18;color:#fff;padding:10px 20px;border-radius:8px;font-size:13.6px;font-family:"Jost",sans-serif;z-index:9999;opacity:0;transition:opacity .3s;white-space:nowrap;';
   t.textContent = msg;
   document.body.appendChild(t);
   requestAnimationFrame(() => { t.style.opacity = '1'; });
@@ -4006,32 +4024,32 @@ function openBulkPromoModal(chk) {
   wrap.innerHTML = `
     <div style="background:var(--bg);border-radius:12px;padding:28px 28px;max-width:340px;width:90%;font-family:'Jost',sans-serif;">
       <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Promoções em Massa</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:20px;">Escolha uma ação para aplicar a todos os itens.</p>
+      <p style="font-size:13.6px;color:#A08070;margin-bottom:20px;">Escolha uma ação para aplicar a todos os itens.</p>
 
       <div style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:14px;">
-        <p style="font-size:12px;font-weight:600;color:#8B4A3C;letter-spacing:.08em;margin-bottom:10px;">APLICAR DESCONTO EM TODOS</p>
-        <label style="font-size:12px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PERCENTUAL DE DESCONTO</label>
+        <p style="font-size:13.6px;font-weight:600;color:#8B4A3C;letter-spacing:.08em;margin-bottom:10px;">APLICAR DESCONTO EM TODOS</p>
+        <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PERCENTUAL DE DESCONTO</label>
         <div style="display:flex;align-items:stretch;margin-bottom:10px;">
           <input id="bulkPct" class="fi" placeholder="ex: 20" inputmode="decimal" style="border-radius:4px 0 0 4px;border-right:none;">
           <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
         </div>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px;">
           <input type="checkbox" id="bulkShowPct" checked style="accent-color:#8B4A3C;">
-          <span style="font-size:12px;color:#A08070;">Mostrar percentual de desconto na bolsa</span>
+          <span style="font-size:13.6px;color:#A08070;">Mostrar percentual de desconto na bolsa</span>
         </label>
-        <button onclick="applyBulkPromoPct()" style="width:100%;padding:10px;border:none;border-radius:6px;background:var(--rose-dark);color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Aplicar a Todos</button>
+        <button onclick="applyBulkPromoPct()" style="width:100%;padding:10px;border:none;border-radius:6px;background:var(--rose-dark);color:#fff;cursor:pointer;font-size:13.6px;font-weight:700;">Aplicar a Todos</button>
       </div>
 
       <div style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:18px;">
-        <p style="font-size:12px;font-weight:600;color:#b83232;letter-spacing:.08em;margin-bottom:10px;">REMOVER TODAS AS PROMOÇÕES</p>
-        <p style="font-size:12px;color:#A08070;margin-bottom:12px;">${hasPromo ? `${products.filter(p=>p.promo).length} item(s) com promoção ativa.` : 'Nenhum item tem promoção ativa.'}</p>
-        <button onclick="removeAllPromos()" ${hasPromo ? '' : 'disabled'} style="width:100%;padding:10px;border:none;border-radius:6px;background:${hasPromo?'#b83232':'#D9CFC6'};color:#fff;cursor:${hasPromo?'pointer':'not-allowed'};font-size:12px;font-weight:700;">Remover Todas</button>
+        <p style="font-size:13.6px;font-weight:600;color:#b83232;letter-spacing:.08em;margin-bottom:10px;">REMOVER TODAS AS PROMOÇÕES</p>
+        <p style="font-size:13.6px;color:#A08070;margin-bottom:12px;">${hasPromo ? `${products.filter(p=>p.promo).length} item(s) com promoção ativa.` : 'Nenhum item tem promoção ativa.'}</p>
+        <button onclick="removeAllPromos()" ${hasPromo ? '' : 'disabled'} style="width:100%;padding:10px;border:none;border-radius:6px;background:${hasPromo?'#b83232':'#D9CFC6'};color:#fff;cursor:${hasPromo?'pointer':'not-allowed'};font-size:13.6px;font-weight:700;">Remover Todas</button>
       </div>
 
-      <p id="bulkPromoErr" style="font-size:12px;color:#b83232;margin-bottom:10px;display:none;"></p>
+      <p id="bulkPromoErr" style="font-size:13.6px;color:#b83232;margin-bottom:10px;display:none;"></p>
 
       <div style="display:flex;justify-content:flex-end;">
-        <button onclick="document.getElementById('bulkPromoModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;">Fechar</button>
+        <button onclick="document.getElementById('bulkPromoModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:13.6px;color:#A08070;">Fechar</button>
       </div>
     </div>`;
   document.body.appendChild(wrap);
@@ -4105,12 +4123,12 @@ function showConfirmDouble(title, msg1, msg2, onConfirm) {
   w1.innerHTML = `
     <div style="background:var(--bg);border-radius:12px;padding:28px 28px;max-width:320px;width:90%;font-family:'Jost',sans-serif;text-align:center;">
       <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:8px;">${title}</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:24px;">${msg1}</p>
+      <p style="font-size:13.6px;color:#A08070;margin-bottom:24px;">${msg1}</p>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button onclick="this.closest('[style*=z-index]').remove()"
-          style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;border-radius:6px;">Cancelar</button>
+          style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:13.6px;color:#A08070;border-radius:6px;">Cancelar</button>
         <button id="c1yes"
-          style="padding:10px 22px;border:none;background:#b83232;color:#fff;cursor:pointer;font-size:12px;font-weight:700;border-radius:6px;">Sim, continuar</button>
+          style="padding:10px 22px;border:none;background:#b83232;color:#fff;cursor:pointer;font-size:13.6px;font-weight:700;border-radius:6px;">Sim, continuar</button>
       </div>
     </div>`;
   document.body.appendChild(w1);
@@ -4122,12 +4140,12 @@ function showConfirmDouble(title, msg1, msg2, onConfirm) {
     w2.innerHTML = `
       <div style="background:var(--bg);border-radius:12px;padding:28px 28px;max-width:320px;width:90%;font-family:'Jost',sans-serif;text-align:center;">
         <p style="font-size:14px;font-weight:700;color:#b83232;margin-bottom:8px;">⚠️ Confirmação final</p>
-        <p style="font-size:12px;color:#A08070;margin-bottom:24px;">${msg2}</p>
+        <p style="font-size:13.6px;color:#A08070;margin-bottom:24px;">${msg2}</p>
         <div style="display:flex;gap:10px;justify-content:center;">
           <button onclick="this.closest('[style*=z-index]').remove()"
-            style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;border-radius:6px;">Não, voltar</button>
+            style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:13.6px;color:#A08070;border-radius:6px;">Não, voltar</button>
           <button id="c2yes"
-            style="padding:10px 22px;border:none;background:#b83232;color:#fff;cursor:pointer;font-size:12px;font-weight:700;border-radius:6px;">Confirmar</button>
+            style="padding:10px 22px;border:none;background:#b83232;color:#fff;cursor:pointer;font-size:13.6px;font-weight:700;border-radius:6px;">Confirmar</button>
         </div>
       </div>`;
     document.body.appendChild(w2);
@@ -4204,7 +4222,7 @@ function bulkToggle(field, value) {
       const btn = document.querySelector(`button[onclick="togNew(${p.id})"]`);
       if (btn) {
         btn.textContent = p.isNew ? 'NOVO ✓' : 'NOVO';
-        btn.style.cssText = `font-size:12px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
+        btn.style.cssText = `font-size:13.6px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
       }
     }
   });
@@ -4356,9 +4374,9 @@ function openPriceModal(id) {
   wrap.innerHTML = `
     <div style="background:var(--bg);border-radius:12px;padding:28px 32px;max-width:360px;width:92%;font-family:'Jost',sans-serif;">
       <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Editar Preço</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:20px;">${p.name}</p>
+      <p style="font-size:13.6px;color:#A08070;margin-bottom:20px;">${p.name}</p>
 
-      <label style="font-size:12px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:6px;">PREÇO ATUAL</label>
+      <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:6px;">PREÇO ATUAL</label>
       <div style="display:flex;align-items:stretch;margin-bottom:18px;">
         <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
         <input id="pmPrice" class="fi" value="${priceNum(p.price)}" placeholder="0" inputmode="decimal" style="border-radius:0 4px 4px 0;border-left:none;">
@@ -4368,25 +4386,25 @@ function openPriceModal(id) {
         <div style="display:flex;align-items:center;margin-bottom:10px;">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
             <input type="checkbox" id="pmPromoOn" ${p.promo ? 'checked' : ''} onchange="togglePromoFields()" style="accent-color:#8B4A3C;">
-            <span style="font-size:12px;font-weight:600;color:#8B4A3C;letter-spacing:.1em;">ATIVAR PROMOÇÃO</span>
+            <span style="font-size:13.6px;font-weight:600;color:#8B4A3C;letter-spacing:.1em;">ATIVAR PROMOÇÃO</span>
           </label>
         </div>
         <div id="pmPromoFields" style="display:${p.promo ? 'block' : 'none'};">
-          <label style="font-size:12px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO ORIGINAL (riscado)</label>
+          <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO ORIGINAL (riscado)</label>
           <div style="display:flex;align-items:stretch;margin-bottom:10px;">
             <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:#A08070;font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
             <input id="pmOldPrice" class="fi" value="${priceNum(p.promo ? p.promo.old : p.price)}" placeholder="0" readonly style="border-radius:0 4px 4px 0;border-left:none;background:#F2ECE6;color:#A08070;cursor:not-allowed;">
           </div>
           <div style="display:flex;gap:10px;margin-bottom:10px;">
             <div style="flex:1;">
-              <label style="font-size:12px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO PROMOCIONAL</label>
+              <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO PROMOCIONAL</label>
               <div style="display:flex;align-items:stretch;">
                 <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
                 <input id="pmNewPrice" class="fi" value="${p.promo ? priceNum(p.promo.new) : ''}" placeholder="0" inputmode="decimal" oninput="syncFromPrice()" style="border-radius:0 4px 4px 0;border-left:none;">
               </div>
             </div>
             <div style="flex:1;">
-              <label style="font-size:12px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">DESCONTO</label>
+              <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">DESCONTO</label>
               <div style="display:flex;align-items:stretch;">
                 <input id="pmPct" class="fi" value="${p.promo && p.promo.pct ? p.promo.pct : ''}" placeholder="0" inputmode="decimal" oninput="syncFromPct()" style="border-radius:4px 0 0 4px;border-right:none;">
                 <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
@@ -4395,16 +4413,16 @@ function openPriceModal(id) {
           </div>
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
             <input type="checkbox" id="pmShowPct" ${(!p.promo || p.promo.showPct !== false) ? 'checked' : ''} style="accent-color:#8B4A3C;">
-            <span style="font-size:12px;color:#A08070;">Mostrar percentual de desconto na bolsa</span>
+            <span style="font-size:13.6px;color:#A08070;">Mostrar percentual de desconto na bolsa</span>
           </label>
         </div>
       </div>
 
-      <p id="pmErr" style="font-size:12px;color:#b83232;margin-bottom:10px;display:none;"></p>
+      <p id="pmErr" style="font-size:13.6px;color:#b83232;margin-bottom:10px;display:none;"></p>
 
       <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button onclick="document.getElementById('priceModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:12px;color:#A08070;">Cancelar</button>
-        <button onclick="savePrice(${id})" style="padding:10px 20px;border:none;background:var(--rose-dark);color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Salvar</button>
+        <button onclick="document.getElementById('priceModal').remove()" style="padding:10px 20px;border:1px solid var(--line);background:none;cursor:pointer;font-size:13.6px;color:#A08070;">Cancelar</button>
+        <button onclick="savePrice(${id})" style="padding:10px 20px;border:none;background:var(--rose-dark);color:#fff;cursor:pointer;font-size:13.6px;font-weight:700;">Salvar</button>
       </div>
     </div>`;
   document.body.appendChild(wrap);
@@ -4500,10 +4518,10 @@ function confirmDel(id) {
   wrap.style.cssText = 'position:fixed;inset:0;z-index:9300;background:rgba(42,31,24,.65);display:flex;align-items:center;justify-content:center;';
   wrap.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px 32px;max-width:340px;text-align:center;">
     <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:6px;">Remover bolsa?</p>
-    <p style="font-size:12px;color:#A08070;margin-bottom:22px;">"${p.name}" será removida do catálogo.</p>
+    <p style="font-size:13.6px;color:#A08070;margin-bottom:22px;">"${p.name}" será removida do catálogo.</p>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button id="delNo"  style="padding:10px 22px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Não, cancelar</button>
-      <button id="delYes" style="padding:10px 22px;border:none;border-radius:8px;background:#b83232;color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Sim, remover</button>
+      <button id="delNo"  style="padding:10px 22px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:13.6px;">Não, cancelar</button>
+      <button id="delYes" style="padding:10px 22px;border:none;border-radius:8px;background:#b83232;color:#fff;cursor:pointer;font-size:13.6px;font-weight:700;">Sim, remover</button>
     </div>
   </div>`;
   document.body.appendChild(wrap);
@@ -4569,7 +4587,7 @@ function updateAdminRow(id) {
   const newBtn = document.querySelector(`button[onclick="togNew(${id})"]`);
   if (newBtn) {
     newBtn.textContent = p.isNew ? 'NOVO ✓' : 'NOVO';
-    newBtn.style.cssText = `font-size:12px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
+    newBtn.style.cssText = `font-size:13.6px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
     newBtn.title = p.isNew ? 'Remover badge Novo' : 'Adicionar badge Novo';
   }
 
@@ -4629,7 +4647,7 @@ function showFavSlide(favs) {
         <div style="color:#fff;font-size:15px;font-weight:700;">${p.name}</div>
         <div style="color:#f5c9ad;font-size:13px;font-weight:600;">${p.price}</div>
       </div>
-      <div style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.9);border-radius:20px;padding:4px 12px;font-size:12px;letter-spacing:.1em;font-weight:600;color:#8B4A3C;pointer-events:none;">Toque para ver</div>
+      <div style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.9);border-radius:20px;padding:4px 12px;font-size:13.6px;letter-spacing:.1em;font-weight:600;color:#8B4A3C;pointer-events:none;">Toque para ver</div>
     </div>
     <div style="display:flex;justify-content:center;gap:6px;margin-top:12px;">
       ${favs.map((_,i) => `<span onclick="jumpFav(${i})" style="width:${i===favIdx?'20px':'6px'};height:6px;border-radius:4px;background:${i===favIdx?'var(--rose-deep)':'var(--line)'};cursor:pointer;transition:width .3s,background .3s;display:inline-block;"></span>`).join('')}
@@ -4687,7 +4705,7 @@ function openBagModal(id, source) {
   document.getElementById('modalPrice').innerHTML = (p.status !== 'available')
     ? ''
     : (p.promo)
-      ? `<span style="text-decoration:line-through;color:#B5544A;font-size:15px;margin-right:8px;font-weight:600;">${p.promo.old}</span><span style="color:var(--rose-dark);">${p.promo.new}</span>${(p.promo.showPct && p.promo.pct) ? `<span style="display:inline-block;margin-left:10px;vertical-align:middle;background:#B5544A;color:#fff;font-size:12px;font-weight:700;font-family:'Jost',sans-serif;letter-spacing:.04em;padding:3px 8px;border-radius:3px;">-${p.promo.pct}%</span>` : ''}`
+      ? `<span style="text-decoration:line-through;color:#B5544A;font-size:15px;margin-right:8px;font-weight:600;">${p.promo.old}</span><span style="color:var(--rose-dark);">${p.promo.new}</span>${(p.promo.showPct && p.promo.pct) ? `<span style="display:inline-block;margin-left:10px;vertical-align:middle;background:#B5544A;color:#fff;font-size:13px;font-weight:700;font-family:'Jost',sans-serif;letter-spacing:.04em;padding:3px 8px;border-radius:3px;">-${p.promo.pct}%</span>` : ''}`
       : p.price;
   const descEl = document.getElementById('modalDesc');
   if (descEl) {
@@ -4793,10 +4811,10 @@ closeA = function() {
     wrap.style.cssText = 'position:fixed;inset:0;z-index:9200;background:rgba(42,31,24,.6);display:flex;align-items:center;justify-content:center;';
     wrap.innerHTML = `<div style="background:#fff;border-radius:12px;padding:32px;max-width:340px;text-align:center;">
       <p style="font-size:15px;font-weight:700;color:#2A1F18;margin-bottom:8px;">Alterações não salvas</p>
-      <p style="font-size:12px;color:#A08070;margin-bottom:24px;">Você fez alterações no painel. Deseja salvar antes de sair?</p>
+      <p style="font-size:13.6px;color:#A08070;margin-bottom:24px;">Você fez alterações no painel. Deseja salvar antes de sair?</p>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button id="btnDiscardExit" style="padding:10px 18px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Sair sem salvar</button>
-        <button id="btnSaveExit"    style="padding:10px 18px;border:none;border-radius:8px;background:#8B4A3C;color:#fff;cursor:pointer;font-size:12px;font-weight:700;">Revisar e Salvar</button>
+        <button id="btnDiscardExit" style="padding:10px 18px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:13.6px;">Sair sem salvar</button>
+        <button id="btnSaveExit"    style="padding:10px 18px;border:none;border-radius:8px;background:#8B4A3C;color:#fff;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;letter-spacing:.04em;">Revisar e Salvar</button>
       </div>
     </div>`;
     document.body.appendChild(wrap);
@@ -4825,9 +4843,9 @@ applyMatchButtonVisibility();
     <div style="padding:24px 28px 28px;background:var(--bg);">
       <div id="modalNewBadge" class="new-b new-b-inline" style="display:none;">Novo</div>
       <div id="modalName"  style="font-size:18px;font-weight:700;color:#2A1F18;margin-bottom:6px;"></div>
-      <div id="modalCat"   style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#A08070;margin-bottom:16px;"></div>
+      <div id="modalCat"   style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#A08070;margin-bottom:16px;"></div>
       <div id="modalPrice" style="font-size:22px;font-weight:800;color:#8B4A3C;margin-bottom:20px;"></div>
-      <p id="modalDesc" style="font-size:13px;color:var(--text-body);line-height:1.7;margin-bottom:20px;display:none;"></p>
+      <p id="modalDesc" style="font-size:clamp(1rem,.95rem + .2vw,1.0625rem);color:var(--text-body);line-height:1.7;margin-bottom:20px;display:none;"></p>
       <a id="modalWa" href="#" target="_blank" class="pwa" style="text-decoration:none;width:fit-content;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
         Comprar via WhatsApp
@@ -4937,11 +4955,11 @@ applyMatchButtonVisibility();
 <div id="reviewModal" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(42,31,24,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:14px;max-width:480px;width:92%;max-height:80vh;overflow-y:auto;padding:32px;">
     <h3 style="font-size:15px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Revisão das Configurações</h3>
-    <p style="font-size:12px;color:#A08070;margin-bottom:24px;">Confira antes de salvar</p>
-    <div id="reviewBody" style="font-size:12px;color:#4A3728;line-height:1.8;"></div>
+    <p style="font-size:13.6px;color:#A08070;margin-bottom:24px;">Confira antes de salvar</p>
+    <div id="reviewBody" style="font-size:13.6px;color:#4A3728;line-height:1.8;"></div>
     <div style="display:flex;gap:12px;margin-top:28px;">
-      <button onclick="closeReview()" style="flex:1;padding:12px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:12px;">Voltar e Editar</button>
-      <button onclick="confirmSave()" style="flex:1;padding:12px;border:none;border-radius:8px;background:#8B4A3C;color:#fff;cursor:pointer;font-size:12px;font-weight:700;">✓ Confirmar e Salvar</button>
+      <button onclick="closeReview()" style="flex:1;padding:12px;border:1px solid #D4C5BA;border-radius:8px;background:none;cursor:pointer;font-size:13.6px;">Voltar e Editar</button>
+      <button onclick="confirmSave()" style="flex:1;padding:12px;border:none;border-radius:8px;background:#8B4A3C;color:#fff;cursor:pointer;font-size:13.6px;font-weight:700;">✓ Confirmar e Salvar</button>
     </div>
   </div>
 </div>

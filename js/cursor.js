@@ -8,14 +8,27 @@
   const ringEl = document.getElementById('ring');
   if (!curEl || !ringEl) return;
 
+  // O site aplica `zoom` no <body> em algumas páginas (Bags/Looks, 110%).
+  // Como o cursor/trail são elementos fixed *dentro* desse body "zoomado",
+  // os valores de left/top/transform em px acabam sendo re-escalados pelo
+  // navegador — por isso dividimos as coordenadas reais do mouse (que vêm
+  // sem zoom, via clientX/clientY) pelo fator de zoom do body antes de
+  // aplicá-las, senão o cursor visual "foge" do ponteiro real.
+  function bodyZoom() {
+    const z = parseFloat(getComputedStyle(document.body).zoom);
+    return z && !isNaN(z) ? z : 1;
+  }
+
   document.addEventListener('mousemove', e => {
+    const z = bodyZoom();
+    const x = e.clientX / z, y = e.clientY / z;
     curEl.classList.add('on');
     ringEl.classList.add('on');
-    curEl.style.left = e.clientX + 'px';
-    curEl.style.top  = e.clientY + 'px';
+    curEl.style.left = x + 'px';
+    curEl.style.top  = y + 'px';
     setTimeout(() => {
-      ringEl.style.left = e.clientX + 'px';
-      ringEl.style.top  = e.clientY + 'px';
+      ringEl.style.left = x + 'px';
+      ringEl.style.top  = y + 'px';
     }, 80);
   });
 
@@ -45,7 +58,8 @@
   let mx = 0, my = 0, moved = false, fadeTimer = null;
 
   document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
+    const z = bodyZoom();
+    mx = e.clientX / z; my = e.clientY / z;
     if (!moved) { trail.forEach(t => { t.x = mx; t.y = my; }); moved = true; }
     trail.forEach(t => { t.el.style.opacity = 'var(--op)'; });
     clearTimeout(fadeTimer);
