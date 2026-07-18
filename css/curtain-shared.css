@@ -1,0 +1,80 @@
+/* Subconjunto de css/nav.css usado pelo match.html — essa página não tem
+   header/footer/admin/wa-float normais do site, então carregar o nav.css
+   inteiro (~21KB) só pra usar duas coisas era peso desnecessário. Aqui só
+   entram as regras que o match.html de fato usa: reset de toque e o
+   sistema de cortina de transição entre páginas (compartilhado com
+   index.html e looks.html — ver comentário original em css/nav.css). Se a
+   cortina for ajustada em css/nav.css, replique a mudança aqui também. */
+
+/* Toque: remove o atraso de ~300ms do duplo-toque em qualquer elemento
+   clicável e neutraliza o flash azul/cinza padrão do Android ao tocar. */
+a, button, [onclick] {
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Transição por FADE (sem cortina deslizando): clique → tela funde pra
+   tom pérola → troca de página → ainda pérola → funde a logo do site que
+   chegou → funde tudo (logo + pérola) de volta, revelando o site. Ver a
+   sequência completa (tempos) em js/page-transition.js.
+   IMPORTANTE: o container (.page-curtain) NUNCA anima a própria opacidade
+   — se ele animasse, a opacidade dele se multiplicaria com a da logo (que
+   é filha dele), fazendo os dois sumirem "juntos" mesmo com durações
+   diferentes. Por isso o fundo pérola vive num elemento PRÓPRIO
+   (.page-curtain-bg), irmão da logo, e cada um tem sua transição/duração
+   totalmente independente. */
+.page-curtain {
+  position:fixed; inset:0; z-index:99999;
+  pointer-events:none;
+  overflow:hidden;
+}
+.page-curtain-bg {
+  position:absolute; inset:0;
+  background:#F7F5F2;
+  opacity:0;
+  transition:opacity .8s ease; /* fade-IN do fundo, ao clicar (fechando) */
+}
+.page-curtain.is-closing .page-curtain-bg,
+.page-curtain.is-closed .page-curtain-bg {
+  opacity:1;
+}
+.page-curtain.is-closed .page-curtain-bg { transition:none; }
+.page-curtain.is-opening .page-curtain-bg {
+  opacity:0;
+  transition:opacity 5s ease; /* fade-OUT do fundo, revelando a página — 5000ms */
+}
+.page-curtain.is-open .page-curtain-bg {
+  opacity:0;
+  transition:none;
+}
+html.reduce-motion .page-curtain-bg { transition:none !important; }
+
+/* Logo centralizada — a opacidade dela é controlada diretamente por JS
+   (js/page-transition.js), não por classe, já que ela some/aparece em
+   momentos diferentes da cortina em si (só na entrada, não no fechamento).
+   Por ser irmã (não filha) do fundo animado, sua transição/duração não
+   sofre nenhuma influência da opacidade do fundo. */
+.page-curtain-logo {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:600px; height:auto; max-height:600px; object-fit:contain;
+  z-index:1; opacity:0;
+  transition:opacity .4s ease;
+  pointer-events:none;
+}
+
+/* Mobile: logos do Bags e do Looks na cortina — 360px → 180px (mais 50%
+   menor), centralizadas na horizontal e deslocadas levemente para cima.
+   A logo do Match fica de fora (:not(.is-match-logo)) e mantém o tamanho
+   e a posição normais. */
+@media(max-width:768px){
+  .page-curtain-logo:not(.is-match-logo) {
+    width:180px; max-height:180px;
+    top:44%; left:50%;
+  }
+}
+
+/* Logo do Match na cortina: 20% maior — aplicada via classe extra, já
+   que .page-curtain-logo é compartilhada entre as três páginas. */
+.page-curtain-logo.is-match-logo {
+  width:864px; max-height:864px;
+}

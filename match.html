@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/cursor.css">
-<link rel="stylesheet" href="css/nav.css">
+<link rel="stylesheet" href="css/curtain-shared.css">
 <style>
 :root {
   --rose:        #B55A38;
@@ -45,12 +45,13 @@ body{
   display:flex; align-items:center; justify-content:center;
 }
 
-/* ─── FRAME 9:16 fixo, mesmo em desktop ─────────────────────────────── */
+/* ─── FRAME 9:16 fixo, mesmo em desktop ─────────────────────────────────
+   Os valores finais de largura/altura (svh + safe-area) ficam consolidados
+   numa única declaração mais abaixo, junto do resto do "responsive
+   hardening" — aqui só as propriedades estruturais que não mudam por
+   breakpoint. */
 .frame {
   position:relative;
-  width:100vw; height:100vh;
-  max-width:calc(100vh * 9 / 16);
-  max-height:calc(100vw * 16 / 9);
   margin:0 auto;
   background:#EDE1D3;
   overflow:hidden;
@@ -61,32 +62,36 @@ body{
   .frame{ border-radius:22px; box-shadow:0 20px 80px rgba(74,35,24,.22); border:1px solid rgba(74,35,24,.08); }
 }
 
-/* ─── TOP BAR — faixa mínima sobreposta ao card (full-bleed) ───────────── */
+/* ─── TOP BAR — Cabeçalho claro que sustenta o título ───────────── */
 .m-top {
-  position:absolute; top:0; left:0; right:0; z-index:6;
-  padding:14px 16px 10px; flex-shrink:0;
+  position:relative; z-index:6;
+  padding:14px 16px 14px; flex-shrink:0;
   display:flex; align-items:center; justify-content:space-between; gap:10px;
-  background:linear-gradient(to bottom, rgba(10,6,4,.55) 0%, transparent 100%);
-  pointer-events:none;
+  background:#F8F1E4; /* Preenchimento claro */
+  border-bottom:1px solid rgba(74,35,24,.14);
 }
-.m-top > * { pointer-events:auto; }
+@media(min-width:600px){
+  .m-top { border-radius:22px 22px 0 0; }
+}
 .m-brand {
   display:flex; align-items:center; gap:8px; min-width:0;
 }
 .m-brand-t {
-  font-family:'Cormorant Garamond',serif; font-size:17px; letter-spacing:.05em; color:#fff;
+  font-family:'Cormorant Garamond',serif; font-size:18px; letter-spacing:.05em; color:var(--text);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-weight: 500;
 }
 .m-brand-t em{ color:var(--rose); font-style:italic; }
 .m-top-actions{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
 .m-icon-btn {
   width:34px; height:34px; min-width:34px; min-height:34px; border-radius:50%;
-  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.28);
-  color:#fff; display:flex; align-items:center; justify-content:center;
-  cursor:pointer; text-decoration:none; flex-shrink:0;
+  background:transparent; border:1px solid transparent;
+  color:var(--rose-dark); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; text-decoration:none; flex-shrink:0; transition: transform .2s, background .2s;
 }
+.m-icon-btn:hover { background:rgba(74,35,24,.07); }
 .m-close {
-  color:rgba(255,255,255,.75); text-decoration:none; font-size:13px;
+  color:var(--text-muted); text-decoration:none; font-size:13px;
   letter-spacing:.14em; text-transform:uppercase;
 }
 .m-filters { display:flex; gap:6px; flex-wrap:wrap; }
@@ -126,7 +131,24 @@ body{
   to   { clip-path:inset(100% 0 0 0); }
 }
 .m-config.wiping { animation:mConfigWipe .55s var(--ease) forwards; pointer-events:none; }
-.m-config-close { position:absolute; top:14px; right:16px; z-index:2; }
+/* Cabeçalho que sustenta o título "My Favorite Match" — preenchimento claro
+   e harmônico com a paleta do Match (mesmo creme do fundo, com uma linha
+   fina em --rose por baixo, no lugar do título solto sem apoio visual). */
+.m-config-header {
+  position:relative; z-index:2; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  margin:calc(-1 * clamp(1.5rem,7vw,2.2rem)) calc(-1 * clamp(1.5rem,7vw,2.2rem)) clamp(1.1rem,4.5vw,1.6rem);
+  padding:16px clamp(2.6rem,10vw,3.2rem) 14px;
+  background:#F8F1E4;
+  border-bottom:1px solid rgba(74,35,24,.14);
+}
+@media(min-width:600px){
+  .m-config-header { border-radius:22px 22px 0 0; }
+}
+.m-config-close {
+  position:absolute; top:50%; right:16px; z-index:2; transform:translateY(-50%);
+  color:var(--rose-dark); background:transparent; border-color:transparent;
+}
 .m-config-brand {
   position:relative; z-index:1; flex-shrink:0;
   text-align:center; font-family:'Cormorant Garamond',serif;
@@ -175,11 +197,28 @@ body{
   display:inline-flex; align-items:center; gap:7px;
   padding:9px 18px; border-radius:999px; border:1.5px solid #B8896F;
   color:#24343C; font-family:'Cormorant Garamond',serif;
-  font-size:13px; font-weight:500; letter-spacing:.04em; text-transform:uppercase;
+  font-size:14.3px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
   text-decoration:none; background:#F6F1EC;
-  transition:background .3s, box-shadow .3s;
+  opacity:.8;
+  -webkit-tap-highlight-color:transparent; outline:none;
+  transition:background .3s, box-shadow .3s, opacity .2s;
 }
 .m-config-navbtn:hover { background:#EADFD7; box-shadow:0 4px 14px rgba(36,52,60,.18); }
+.m-config-navbtn:active,
+.m-config-navbtn:focus { opacity:1; transition:opacity 0s; }
+
+/* Versão clara do preenchimento do Bags — mesma paleta (marrom/terracota),
+   só que num tom bem mais claro, em vez do marrom escuro sólido. */
+a.brand-bags-fill-light {
+  background:#EAD3C3;
+  border-color:var(--brand-bags-brown);
+  color:var(--brand-bags-brown);
+  box-shadow:0 10px 24px rgba(101,60,43,.12);
+}
+a.brand-bags-fill-light svg { stroke:var(--brand-bags-brown); }
+a.brand-bags-fill-light:hover {
+  background:#F0DECE;
+}
 /* ─── CARD STACK (full-bleed) ───────────────────────────────────────────── */
 .m-stage {
   position:relative; flex:1; overflow:hidden;
@@ -520,7 +559,8 @@ html, body {
 }
 body { min-height:100svh; }
 img, svg { max-width:100%; height:auto; }
-a, button, [onclick] { touch-action:manipulation; }
+/* touch-action e -webkit-tap-highlight-color já vêm de
+   css/curtain-shared.css (subconjunto de css/nav.css usado aqui). */
 a:focus-visible,
 button:focus-visible {
   outline:2px solid var(--rose);
@@ -666,6 +706,40 @@ button:focus-visible {
 </head>
 <body class="page-match">
 
+<div id="pageCurtain" class="page-curtain"><div class="page-curtain-bg"></div><img class="page-curtain-logo" alt="" style="display:none;"></div>
+<script>
+(function(){
+  try {
+    var raw = sessionStorage.getItem('mfb_curtain_in');
+    var data;
+    if (raw) {
+      sessionStorage.removeItem('mfb_curtain_in');
+      data = JSON.parse(raw);
+    } else {
+      // Acesso direto pelo link (sem vir de outra página do trio por
+      // clique) — toca a mesma animação de entrada, com a logo desta
+      // própria página, reaproveitando os mesmos tempos de sempre.
+      data = { logo: 'webp/logo-my-favorite-match-mini.webp', logoClass: 'is-match-logo' };
+    }
+    var el = document.getElementById('pageCurtain');
+    if (!el) return;
+    // Transição por fade: a cortina (tom pérola, via CSS) já nasce coberta
+    // (is-closed) — a logo do site novo fica pronta, em opacidade 0;
+    // js/page-transition.js (playEntrance) funde ela pra dentro, segura
+    // um instante, e funde tudo de volta revelando a página.
+    var logoEl = el.querySelector('.page-curtain-logo');
+    if (logoEl) {
+      if (data.logo) { logoEl.src = data.logo; logoEl.style.display = 'block'; }
+      else { logoEl.style.display = 'none'; }
+      if (data.logoClass) { logoEl.classList.add(data.logoClass); }
+      logoEl.style.transition = 'none';
+      logoEl.style.opacity = '0';
+    }
+    el.classList.add('is-closed');
+  } catch (e) {}
+})();
+</script>
+
 <!-- Cursor -->
 <div class="cursor" id="cur"></div>
 <div class="cursor-ring" id="ring"></div>
@@ -674,10 +748,12 @@ button:focus-visible {
 
   <!-- ETAPA 0 — Tela de configuração -->
   <div class="m-config" id="mConfig">
-    <a href="index.html" id="mExitConfig" class="m-icon-btn m-config-close" aria-label="Sair">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
-    </a>
-    <div class="m-config-brand">My Favorite <em>Match</em></div>
+    <div class="m-config-header">
+      <a href="index.html" id="mExitConfig" class="m-icon-btn m-config-close" aria-label="Sair">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </a>
+      <div class="m-config-brand">My Favorite <em>Match</em></div>
+    </div>
     <div class="m-config-body">
       <div>
         <div class="m-config-title">O que você quer ver <em>hoje?</em></div>
@@ -704,12 +780,15 @@ button:focus-visible {
     </div>
 
     <div class="m-config-nav">
-      <a href="index.html" id="mConfigBagsBtn" class="m-config-navbtn brand-bags-fill">My Favorite Bags <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+      <a href="index.html" id="mConfigBagsBtn" class="m-config-navbtn brand-bags-fill-light">My Favorite Bags <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
       <a href="looks.html" class="m-config-navbtn">My Favorite Looks <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     </div>
   </div>
 
-  <div class="m-top" id="mTop" style="display:none; justify-content:flex-end;">
+  <div class="m-top" id="mTop" style="display:none;">
+    <div class="m-brand">
+      <span class="m-brand-t">My Favorite <em>Match</em></span>
+    </div>
     <div class="m-top-actions">
       <button class="m-icon-btn" onclick="openConfig()" aria-label="Ajustes" title="Trocar filtros">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1351,7 +1430,10 @@ setOccasion(occasion);
       if (isFullscreenActive()) {
         e.preventDefault();
         const exitFs = document.exitFullscreen || document.webkitExitFullscreen;
-        Promise.resolve(exitFs ? exitFs.call(document) : null).finally(() => { location.href = exitUrl; });
+        Promise.resolve(exitFs ? exitFs.call(document) : null).finally(() => {
+          if (window.mfbNavigateWithCurtain) window.mfbNavigateWithCurtain(exitUrl);
+          else location.href = exitUrl;
+        });
       }
     });
   });

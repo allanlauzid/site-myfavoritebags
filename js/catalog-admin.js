@@ -275,6 +275,10 @@ function stageCatalogProductImage(product, dataUrl, filename) {
     uploadedUrl:null,
   });
   product.img = dataUrl || '';
+  // A imagem mudou (ou foi removida) — o srcset antigo não corresponde mais a
+  // este arquivo. Fica vazio até finalizePendingProductImages() gerar/subir
+  // as novas variantes e preencher de novo.
+  product.imgSrcset = '';
 }
 
 async function finalizePendingProductImages() {
@@ -282,9 +286,15 @@ async function finalizePendingProductImages() {
     const product = _pimProduct(id);
     if (!product || !pending.dataUrl) continue;
     if (!pending.uploadedUrl) {
-      pending.uploadedUrl = await sbUploadImage(pending.dataUrl, pending.filename);
+      // Sobe a imagem original + (melhor esforço) versões redimensionadas
+      // reais pro srcset do card no catálogo público. Se a geração/upload das
+      // variantes falhar por qualquer motivo, cai de volta pra imagem única.
+      const result = await sbUploadImageResponsive(pending.dataUrl, pending.filename);
+      pending.uploadedUrl = result.url;
+      pending.srcset = result.srcset;
     }
     product.img = pending.uploadedUrl;
+    product.imgSrcset = pending.srcset || '';
   }
 }
 
@@ -525,6 +535,7 @@ function deleteProductImage() {
   if (!product || !product.img) return;
   stageCatalogProductImage(product, null);
   product.img = '';
+  product.imgSrcset = '';
   _pimRefreshCatalog();
   _pimRenderImage();
   _pimSetStatus('Imagem removida da prévia. A exclusão será confirmada ao salvar o painel.');

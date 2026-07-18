@@ -44,6 +44,11 @@ function rowToProduct(row) {
     isNew: row.is_new,
     favorite: row.favorite ?? false,
     img: fixImgPath(row.img),
+    // Versões redimensionadas da imagem principal (geradas no upload via canvas),
+    // já formatadas como valor pronto pro atributo srcset ("url 480w, url 800w, ...").
+    // Produtos antigos, salvos antes dessa mudança, não têm essa coluna preenchida —
+    // nesse caso o card usa só `img` normalmente (ver renderProducts/cardHtml).
+    imgSrcset: row.img_srcset || '',
     tags: row.tags || [],
     occasion: row.occasion || null,
     order: row.sort_order,
@@ -62,6 +67,7 @@ function productToRow(p) {
     is_new: !!p.isNew,
     favorite: !!p.favorite,
     img: p.img || null,
+    img_srcset: p.imgSrcset || null,
     tags: p.tags || [],
     occasion: p.occasion || null,
     sort_order: p.order ?? 0,
@@ -186,6 +192,88 @@ async function prepareRemoveBgUpload(file, maxSide = 1000) {
 async function sbUploadImage(base64DataUrl, filename) {
   const data = await sbAdminWrite('bags', 'upload_image', { base64: base64DataUrl, filename });
   return data.url;
+}
+
+// ── Imagens responsivas (srcset) ────────────────────────────────────────────
+// Larguras de exibição real dos cards do catálogo (.pcard-img), conferidas no
+// CSS de index.html/looks.html: grid de 1 coluna em telas bem pequenas (até
+// ~92vw), 2 colunas até ~1100px (até ~46vw) e 3 colunas no desktop (até
+// ~30vw, ~260-450px de largura de coluna). Os breakpoints abaixo cobrem essa
+// faixa sem gerar tamanhos maiores que o necessário.
+const RESPONSIVE_IMAGE_WIDTHS = [480, 800, 1200];
+
+// Gera, via <canvas>, versões redimensionadas reais de uma imagem (data URL),
+// respeitando a proporção original. Nunca "inventa" um tamanho maior que a
+// imagem de origem — larguras >= largura original são simplesmente ignoradas.
+// Se o navegador não suportar canvas/webp ou algo falhar, devolve [] (o
+// chamador cai de volta pro upload de uma imagem única, comportamento atual).
+async function generateResizedImageVariants(dataUrl, widths = RESPONSIVE_IMAGE_WIDTHS, quality = 0.85) {
+  try {
+    if (typeof document === 'undefined' || typeof document.createElement !== 'function') return [];
+    const img = await new Promise((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = () => reject(new Error('Não foi possível carregar a imagem para redimensionar.'));
+      im.src = dataUrl;
+    });
+    const naturalWidth = img.naturalWidth;
+    const naturalHeight = img.naturalHeight;
+    if (!naturalWidth || !naturalHeight) return [];
+
+    const out = [];
+    for (const width of widths) {
+      if (width >= naturalWidth) continue; // não faz sentido "upscalar" a imagem original
+      const height = Math.round(naturalHeight * (width / naturalWidth));
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) continue;
+      ctx.drawImage(img, 0, 0, width, height);
+      let resizedDataUrl;
+      try {
+        resizedDataUrl = canvas.toDataURL('image/webp', quality);
+      } catch (err) {
+        continue; // navegador sem suporte a toDataURL nesse formato — pula essa variante
+      }
+      // Alguns navegadores sem suporte real a webp devolvem silenciosamente um
+      // PNG (ou um data URL vazio) em vez de lançar erro — descarta esse caso.
+      if (!resizedDataUrl || !resizedDataUrl.startsWith('data:image/webp')) continue;
+      out.push({ width, dataUrl: resizedDataUrl });
+    }
+    return out;
+  } catch (err) {
+    return [];
+  }
+}
+
+// Faz upload da imagem original mais (melhor esforço) suas versões
+// redimensionadas geradas no navegador. Cada entrada do srcset corresponde a
+// um arquivo real, efetivamente enviado ao Storage — nada é fabricado.
+// Devolve { url, srcset } onde `srcset` já vem pronta no formato do atributo
+// HTML srcset ("url1 480w, url2 800w, ...") ou '' se nenhuma variante extra
+// pôde ser gerada/enviada (fallback silencioso pro comportamento antigo).
+async function sbUploadImageResponsive(base64DataUrl, filename) {
+  const url = await sbUploadImage(base64DataUrl, filename);
+  let srcset = '';
+  try {
+    const variants = await generateResizedImageVariants(base64DataUrl);
+    if (variants.length) {
+      const baseName = String(filename || 'imagem').replace(/\.[^.]+$/, '');
+      const uploaded = [];
+      for (const variant of variants) {
+        // Sequencial (não Promise.all) pra não sobrecarregar a Edge Function
+        // com uploads simultâneos demais numa única ação do admin.
+        const variantUrl = await sbUploadImage(variant.dataUrl, `${baseName}-${variant.width}w.webp`);
+        uploaded.push(`${variantUrl} ${variant.width}w`);
+      }
+      srcset = uploaded.join(', ');
+    }
+  } catch (err) {
+    // Fallback silencioso: fica só com a imagem original.
+    srcset = '';
+  }
+  return { url, srcset };
 }
 
 // ── Galeria de imagens (Storage) — upload com nome exato, listar, apagar ───

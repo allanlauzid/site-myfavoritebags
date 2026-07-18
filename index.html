@@ -63,8 +63,9 @@
   --radius-md:   8px;
   --radius-lg:   12px;
   --radius-pill: 999px;
-  --wa-bg: #653C2B;
-  --wa-shadow-rgb: 101,60,43;
+  --wa-bg: rgba(247,245,242,.16);
+  --wa-shadow-rgb: 247,245,242;
+  --wa-icon-color: #9C7A34; /* dourado envelhecido — mesmo tom usado no Looks */
 
   /* Cores dos modais do admin (compartilhados via js/catalog-admin.js) */
   --modal-backdrop-rgb: 42,31,24;
@@ -93,6 +94,7 @@ button { font-family:'Jost',sans-serif; }
   position:relative; height:100vh; min-height:600px;
   overflow:hidden;
   background:var(--rose-deep);
+  max-width:1400px; margin-left:auto; margin-right:auto;
 }
 /* Slides */
 .hero-slide {
@@ -101,7 +103,6 @@ button { font-family:'Jost',sans-serif; }
   will-change:opacity;
 }
 .hero-slide.active { opacity:1; }
-
 /* Clean dark warm tones — no heavy gradients */
 .hs1 { background:linear-gradient(160deg, #3E2318 0%, #2A1610 100%); }
 .hs2 { background:linear-gradient(160deg, #2C1A10 0%, #1E1009 100%); }
@@ -133,17 +134,29 @@ button { font-family:'Jost',sans-serif; }
 
 /* Right decorative bag silhouette */
 .hero-deco {
-  position:absolute; left:5%; top:50%; transform:translateY(-50%) scaleX(-1);
+  /* left aqui é só um fallback estático pro instante antes do JS rodar —
+     a posição real (centralizada com .nav-logo, o bloco logo+nome do
+     cabeçalho) é calculada e aplicada por positionHeroDeco(). */
+  position:absolute; left:calc(max(var(--page-gutter), (100vw - 1400px) / 2) - 30px);
+  top:50%; transform:translateY(-50%) scaleX(-1);
   width:280px; height:320px; opacity:.08;
   pointer-events:none;
 }
 
 /* ─── MY FAVORITE MATCH — botão flutuante animado e arrastável ────────── */
+/* Amplitude do flutuar controlada por --float-amp (custom property, default 1),
+   recalculada no scroll via updateMatchFloatAmp() — ver função no fim do arquivo.
+   Perto do hero fica sutil; a medida que desce a página, a curva com duas
+   assíntotas verticais (subida, descida, subida rápida) aumenta bastante a
+   amplitude, então o botão passa a flutuar muito mais. */
+/* Movimento contínuo o ciclo inteiro (sem trechos parados): sobe-e-vai-pra-
+   esquerda, volta ao centro, desce-e-vai-pra-direita, volta ao centro. */
 @keyframes matchFloat {
-  0%, 18%, 42%, 100% { transform:translateY(0) rotate(0) scale(1); }
-  22% { transform:translateY(-3px) rotate(-1.2deg) scale(1.025); }
-  26% { transform:translateY(0) rotate(1deg) scale(1.01); }
-  30% { transform:translateY(-2px) rotate(0) scale(1.018); }
+  0%   { transform:translate(0,0) rotate(0) scale(1); }
+  25%  { transform:translate(calc(-1 * var(--float-amp-x-px,30px)), calc(-1 * var(--float-amp-px,60px))) rotate(calc(-1.2deg * var(--float-amp,1))) scale(calc(1 + 0.025 * var(--float-amp,1))); }
+  50%  { transform:translate(0,0) rotate(0) scale(1); }
+  75%  { transform:translate(var(--float-amp-x-px,30px), calc(-0.667 * var(--float-amp-px,60px))) rotate(calc(1deg * var(--float-amp,1))) scale(calc(1 + 0.018 * var(--float-amp,1))); }
+  100% { transform:translate(0,0) rotate(0) scale(1); }
 }
 @keyframes matchGlow {
   0%, 100% { filter:drop-shadow(0 8px 20px rgba(139,74,60,.28)); }
@@ -164,15 +177,17 @@ button { font-family:'Jost',sans-serif; }
   100% { transform:scale(1.55); opacity:0; }
 }
 @keyframes matchOpacityPulse {
-  0%, 80%, 100% { opacity:1; }
-  90% { opacity:.55; }
+  0%, 86.67%, 100% { opacity:1; }
+  93.33% { opacity:.55; }
 }
 @keyframes matchGoldGlow {
   0%, 76.92%, 100% { box-shadow:0 0 0 0 rgba(212,175,55,0); }
   88.46% { box-shadow:0 0 28px 10px rgba(212,175,55,.65); }
 }
 #matchHeroBtn {
-  position:absolute; z-index:6;
+  /* Fixo em relação à tela (igual ao .wa-float do WhatsApp) — calculado uma
+     única vez na carga da página, sem recalcular no resize e sem arrastar. */
+  position:fixed; z-index:250;
   width:92px; height:92px;
   display:flex; align-items:center; justify-content:center;
   cursor:grab; text-decoration:none;
@@ -200,12 +215,24 @@ button { font-family:'Jost',sans-serif; }
 #matchHeroBtn.dragging::before { animation:none; opacity:0; }
 #matchHeroBtn.dragging .mhb-visual { animation:none; box-shadow:none; }
 #matchHeroBtn:hover { transform:scale(1.06); }
+/* Camada de fundo (brilho dourado + reflexo de vidro) — SEPARADA do ícone
+   (.mhb-icon-scale, irmã dela, ver abaixo), não mais mãe/filha. Assim o
+   overflow:hidden que mantém o brilho/reflexo circulares não prende mais o
+   ícone quando ele flutua pra fora do círculo original. */
 .mhb-visual {
   position:absolute; inset:0;
   border-radius:50%;
   overflow:hidden;
-  display:flex; align-items:center; justify-content:center;
   animation:matchGoldGlow 13s 1.1s ease-in-out infinite;
+}
+/* Camada do ícone — irmã de .mhb-visual, sobreposta a ela (mesma área),
+   sem overflow:hidden, pra poder flutuar livremente pra fora do círculo.
+   A escala (proximidade do mouse) é controlada por JS aqui, sem conflitar
+   com o matchFloat (que anima "transform" no <img> por dentro dela). */
+.mhb-icon-scale {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  transform-origin:center;
 }
 .mhb-visual::after {
   content:'';
@@ -221,7 +248,23 @@ button { font-family:'Jost',sans-serif; }
 #matchHeroBtn img {
   width:100%; height:100%; object-fit:contain; display:block;
   pointer-events:none; -webkit-user-drag:none;
-  animation:matchFloat 10.5s 1.2s ease-in-out infinite, matchGlow 7.8s ease-in-out infinite, matchOpacityPulse 15s 2.2s ease-in-out infinite;
+  /* Recorte circular na própria imagem (não no container): assim ele viaja
+     junto quando o ícone flutua pra fora do círculo original, em vez de
+     ficar preso — e também some o "quadrado cinza" do placeholder de
+     carregamento/ícone quebrado, que sem isso aparecia sem recorte enquanto
+     a imagem ainda não tinha decodificado. */
+  border-radius:50%;
+  overflow:hidden;
+  /* Opacidade e escala são controladas por JS (respiração + proximidade do
+     mouse, só no desktop — ver initMatchBtnOpacity). O brilho (matchGlow)
+     fica ligado em qualquer tela; a flutuação (matchFloat) só no desktop,
+     ver media query logo abaixo. */
+  animation:matchGlow 7.8s ease-in-out infinite;
+}
+@media(min-width:769px) {
+  #matchHeroBtn img {
+    animation:matchFloat 10.5s 1.2s ease-in-out infinite, matchGlow 7.8s ease-in-out infinite;
+  }
 }
 #matchHeroBtn.dragging img { animation-play-state:paused; }
 #matchHeroBtn .mhb-tip {
@@ -240,7 +283,30 @@ button { font-family:'Jost',sans-serif; }
 .hero-content {
   position:absolute; right:7%; top:50%; transform:translateY(-50%);
   max-width:560px; text-align:right;
+  animation:heroFloat 7s ease-in-out infinite, heroGlow 7s ease-in-out infinite, heroMaskSweep 9s ease-in-out infinite;
+  -webkit-mask-image:linear-gradient(100deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,1) 22%, rgba(0,0,0,1) 78%, rgba(0,0,0,.5) 100%);
+  mask-image:linear-gradient(100deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,1) 22%, rgba(0,0,0,1) 78%, rgba(0,0,0,.5) 100%);
+  -webkit-mask-size:260% 100%; mask-size:260% 100%;
+  -webkit-mask-position:0% 0; mask-position:0% 0;
 }
+/* Flutuação discreta + variação sutil de luz no conjunto de textos/logo do
+   hero (eyebrow, logo, título, subtítulo) — igual em desktop e mobile,
+   já que é o mesmo bloco .hero-content nos dois casos. A máscara de
+   gradiente (heroMaskSweep) varia a opacidade só dos pixels reais do
+   texto/logo, sem criar nenhuma camada/contorno retangular por cima. */
+@keyframes heroFloat {
+  0%,100% { transform:translateY(-50%); }
+  50%     { transform:translateY(calc(-50% - 7px)); }
+}
+@keyframes heroGlow {
+  0%,100% { filter:brightness(1); }
+  50%     { filter:brightness(1.09); }
+}
+@keyframes heroMaskSweep {
+  0%,100% { -webkit-mask-position:0% 0; mask-position:0% 0; }
+  50%     { -webkit-mask-position:100% 0; mask-position:100% 0; }
+}
+html.reduce-motion .hero-content { animation:none; -webkit-mask-image:none; mask-image:none; }
 .hero-eyebrow {
   display:flex; align-items:center; justify-content:flex-end; gap:14px;
   font-size:12px; letter-spacing:.16em; text-transform:uppercase;
@@ -258,7 +324,7 @@ button { font-family:'Jost',sans-serif; }
 }
 .hero-title {
   font-family:'Cormorant Garamond',serif;
-  font-size:clamp(52px,6.2vw,86px);
+  font-size:clamp(60px,7.2vw,100px);
   font-weight:300; line-height:.96;
   color:#fff; margin-bottom:24px;
   opacity:0; animation:fadeUp 1s .5s var(--ease) forwards;
@@ -516,7 +582,6 @@ button { font-family:'Jost',sans-serif; }
 .pcard-float.snapping { transition:transform .45s cubic-bezier(.22,.68,0,1.2); }
 .pcard-float:not(.dragging) .pcard-img { transition:transform .55s var(--ease); }
 .pcard-float.dragging .pcard-img { transition:none; }
-
 .pcard-float:not(.dragging) .pcard-img { animation:bagFloat 5.5s ease-in-out infinite; }
 .prow > .pcard:nth-child(2) .pcard-float:not(.dragging) .pcard-img { animation-delay:-2.75s; }
 .pcard-visual > img, .pcard-visual > svg { animation:itemShake 10s ease-in-out infinite; animation-delay:var(--shake-delay, 0s); }
@@ -546,7 +611,6 @@ button { font-family:'Jost',sans-serif; }
   95% { transform:rotate(-1.5deg); }
   96%, 100% { transform:rotate(0deg); }
 }
-
 /* Desktop: cards grandes, bolsa flutuante ao lado da descrição fixa.
    Item da coluna esquerda: descrição fica à ESQUERDA (row-reverse).
    Item da coluna direita: descrição fica à DIREITA (row normal). */
@@ -558,7 +622,6 @@ button { font-family:'Jost',sans-serif; }
   .pcard-img { aspect-ratio:1/1; margin-bottom:0; }
   .pcard-info { flex:1 1 auto; }
 }
-
 /* Mobile/tablet: bolsa flutuante em cima, descrição embaixo (como já era).
    align-items:end alinha as duas colunas da dupla pela base (o botão de
    comprar fica sempre na mesma linha, mesmo com fotos de tamanhos diferentes) */
@@ -725,6 +788,11 @@ footer {
 }
 .admin-trig:hover { color:rgba(255,255,255,.35); }
 
+/* Gesto oculto (toque longo + 2 toques) na logo do rodapé — substitui o
+   botão Admin no mobile, onde ele fica escondido (display:none). */
+.foot-logo-row { -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation; }
+@media(max-width:768px){ .admin-trig { display:none; } }
+
 .admin-ov {
   display:none; position:fixed; inset:0; z-index:1000;
   background:rgba(42,22,12,.92);
@@ -734,16 +802,16 @@ footer {
 .admin-ov.open { display:flex; }
 .admin-ov.visible { opacity:1; }
 .admin-panel {
-  background:var(--bg); width:60vw;
-  max-width:96vw; min-width:900px; height:80vh; max-height:86vh;
+  background:var(--bg);
+  width:min(56.25rem, calc(100vw - 1rem));
+  max-width:calc(100vw - 1rem);
+  height:min(80svh, 44rem);
+  max-height:86svh;
   display:flex; flex-direction:column;
   overflow:hidden;
   transform:translateY(18px) scale(.97);
   transition:transform .35s cubic-bezier(.22,.68,0,1.2), opacity .35s ease;
   opacity:0;
-}
-@media(max-width:1000px){
-  .admin-panel { width:96vw; min-width:0; }
 }
 .admin-ov.visible .admin-panel { transform:translateY(0) scale(1); opacity:1; }
 .admin-hd {
@@ -839,6 +907,9 @@ footer {
   font-size:12.5px; letter-spacing:.06em; text-transform:uppercase;
   padding:3px 8px; border-radius:999px;
 }
+.gal-badge-format { font-weight:700; }
+.gal-badge-png  { background:#5B7A9D; }
+.gal-badge-webp { background:#1a7a3e; }
 .gal-card-name { font-size:12.5px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .gal-card-actions { display:flex; gap:6px; justify-content:center; }
 .gal-card-actions button {
@@ -848,6 +919,38 @@ footer {
 }
 .gal-card-actions button:hover { border-color:var(--rose-dark); background:rgba(139,74,60,.06); }
 .gal-card-actions button img { width:15px; height:15px; object-fit:contain; }
+
+/* "+" no canto da foto — manda direto pro CRUD Bolsas */
+.gal-add-btn {
+  position:absolute; right:6px; bottom:6px; z-index:2;
+  width:26px; height:26px; border-radius:50%; border:none;
+  background:#653C2B; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 8px rgba(0,0,0,.25);
+  transition:background .2s, transform .15s;
+}
+.gal-add-btn:hover { background:#8A5340; transform:scale(1.08); }
+
+/* Fotos já sem fundo flutuam suavemente na galeria, igual às bolsas do
+   catálogo público — reforça visualmente que estão prontas pro catálogo. */
+.gal-img-float { animation:bagFloat 5.5s ease-in-out infinite; }
+html.reduce-motion .gal-img-float { animation:none; }
+
+/* Halo de proximidade (desktop/mouse): os elementos ao redor da foto nascem
+   discretos e ganham opacidade conforme o cursor se aproxima — controlado
+   via JS (ver initGalleryProximity), que ajusta --gal-proximity por card.
+   No toque (mobile), a opacidade é controlada por classe (.gal-card-active)
+   ao tocar na foto, não por proximidade. */
+.gal-card-actions, .gal-card-name, .gal-badge {
+  opacity:var(--gal-proximity, .4);
+  transition:opacity .15s ease;
+}
+@media (hover:none) and (pointer:coarse) {
+  .gal-card-actions, .gal-card-name, .gal-badge { opacity:.4; }
+  .gal-card.gal-card-active .gal-card-actions,
+  .gal-card.gal-card-active .gal-card-name,
+  .gal-card.gal-card-active .gal-badge { opacity:1; transition:opacity .25s ease; }
+}
 .apane { display:none; }
 #favBanner img { transition: opacity 0.5s ease; }
 .fav-slide-fade { animation: favFade 0.5s ease; }
@@ -982,6 +1085,15 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   .h-scroll { display:none; }
   .frow { grid-template-columns:1fr; }
   .admin-bd { padding:24px 20px; }
+
+  /* Rodapé mobile enxuto: mantém marca, um link de contato e copyright;
+     esconde colunas de navegação/contato redundantes com a bottom nav
+     mobile (#mobileBottomNav) já implementada. */
+  footer { padding:40px 6% 28px; }
+  .foot-top { padding-bottom:0; border-bottom:none; margin-bottom:16px; gap:0; }
+  .foot-top > div:nth-child(2),
+  .foot-top > div:nth-child(3) { display:none; }
+  .foot-body { display:none; }
 }
 
 /* ── RESPONSIVE COMPLETE ─────────────────────────────────────── */
@@ -1010,7 +1122,7 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
 /* Tablet portrait */
 @media(max-width:820px){
   .pgrid { grid-template-columns:repeat(2,1fr); gap:24px 16px; }
-  .hero-title { font-size: clamp(42px,10vw,68px); }
+  .hero-title { font-size: clamp(48px,11.5vw,78px); }
   .hero-sub { font-size:12px; max-width:90%; }
   .catalog { padding:64px 5% 72px; }
   .cat-head { flex-direction:column; align-items:flex-start; gap:12px; }
@@ -1034,13 +1146,12 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   .nav-words-main { font-size:13px; letter-spacing:.14em; }
   
   .hero-content { right:5%; max-width:95%; }
-  .hero-title { font-size:clamp(38px,11vw,60px); }
+  .hero-title { font-size:clamp(44px,12.6vw,69px); }
   .hero-sub { display:none; }
   .hero-btn { margin-top:8px; }
 
   .pgrid { grid-template-columns:1fr 1fr; gap:16px 10px; }
   .pname { font-size:16px; }
-  .pprice { font-size:15px; }
   .pcat { font-size:13px; }
   .pwa { font-size:12px; letter-spacing:.12em; padding:10px 8px; }
   .pwa svg { display:none; }
@@ -1055,43 +1166,56 @@ select.fi option:hover { background-color:#653C2B; color:#F3EFE9; }
   .insta-grid .ithumb:nth-child(3),
   .insta-grid .ithumb:nth-child(4),
   .insta-grid .ithumb:nth-child(5) { display:none; }
-  
-  .admin-trig { bottom:20px; left:20px; }
-  
+
   body { cursor:auto; }
   .cursor,.cursor-ring,.trail-dot { display:none; }
   .h-scroll { display:none; }
   
   .frow { grid-template-columns:1fr; }
   .admin-bd { padding:20px 16px; }
-  .admin-panel { height:76vh; max-height:76vh; }
+  .admin-panel { height:76svh; max-height:76svh; }
 }
 
 /* Mobile small */
 @media(max-width:380px){
   .pgrid { grid-template-columns:1fr; }
-  .hero-title { font-size:38px; }
+  .hero-title { font-size:44px; }
   .nav-words-main { font-size:13px; }
   .nav-cta { display:none; }
+  /* Hero mobile enxuto: só a frase "Sua bolsa favorita está aqui.", sem o
+     eyebrow "Coleção Exclusiva" e sem a logo — mantém o mesmo fundo marrom
+     com o gradiente branco (.hero-fade-bottom) já existente. */
+  .hero-eyebrow, .hero-logo-img { display:none !important; }
 }
 
 /* My Favorite Looks link: header pill on desktop, hero pill on mobile */
 .looks-btn-logo { display:block; height:20px; width:auto; object-fit:contain; }
+#navLooksBtn { position:relative; left:5px; }
 @media(min-width:769px){
   #bijusHeroBtn { display:none !important; }
 }
 @media(max-width:768px){
   #navLooksBtn { display:none !important; }
-  #bijusHeroBtn {
-    right:auto !important; bottom:auto !important;
-    padding:0 !important; font-size:13px !important;
-    white-space:nowrap !important;
-    background:transparent !important; border:none !important; box-shadow:none !important;
-    color:#F6F1EC !important;
-    animation: looksBlink 5s ease-in-out infinite, crossBtnEnter .7s ease .2s both !important;
-  }
-  #bijusHeroBtn svg { stroke:#F6F1EC !important; }
-  #bijusHeroBtn .looks-btn-logo { height:16px; filter: brightness(0) invert(1); }
+  /* Substituído pelo gesto de arrastar a logo (seta+"Looks" no cabeçalho,
+     ver .nav-swipe-hint em css/nav.css) + pela bottom nav mobile — o botão
+     flutuante antigo do hero fica escondido em mobile. */
+  #bijusHeroBtn { display:none !important; }
+
+  /* ── MODELO 2 (mobile): reordena as seções e ativa Favoritos ──────────
+     Ordem: Hero > marquee > Favoritos > Catálogo > Instagram > Sobre > Rodapé.
+     Usa CSS Grid + order no body (não afeta nav/bottom-nav, que são fixed
+     e saem do fluxo normal, nem a versão desktop, restrita a este media query). */
+  body { display:grid; }
+  #hero { order:1; }
+  .marquee-strip { order:2; }
+  #favoritos { order:3; display:block !important; }
+  #catalogo { order:4; }
+  #instagram { order:5; }
+  #sobre { order:6; }
+  footer { order:7; }
+
+  /* Filtro do catálogo grudado ao rolar, para ficar acessível junto com a grid */
+  .cat-head { position:sticky; top:0; z-index:5; background:var(--bg); }
 }
 @keyframes looksBlink {
   0%, 40%, 100% { opacity:.1; }
@@ -1122,7 +1246,6 @@ nav.s .nav-logo-img { filter: none; }
   .foot-logo-img { width:150px; }
 }
 
-
 .pcard:not(.out):hover .bag-photo { transform: scale(1.04); }
 .pcard-visual { overflow:hidden; }
 .pcard-float .pcard-visual { overflow:visible !important; }
@@ -1139,7 +1262,8 @@ html, body { width:100%; max-width:100%; }
 body { overflow-x:clip; }
 img, svg, video, canvas { max-width:100%; height:auto; }
 main, section, footer, nav, .hero, .catalog, .about, .insta, .stats { max-width:100%; }
-a, button, input, select, textarea, [onclick] { touch-action:manipulation; }
+/* a, button, [onclick] já cobertos pela regra compartilhada em css/nav.css */
+input, select, textarea { touch-action:manipulation; }
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -1154,7 +1278,7 @@ textarea:focus-visible {
   min-height:min(42rem, 100svh);
 }
 .hero-content {
-  right:var(--page-gutter);
+  right:max(var(--page-gutter), (100vw - 1400px) / 2);
   width:min(100% - (var(--page-gutter) * 2), 35rem);
 }
 .hero-deco {
@@ -1169,7 +1293,7 @@ textarea:focus-visible {
   flex-wrap:wrap;
 }
 .hero-title {
-  font-size:clamp(2.7rem, 1.7rem + 4.7vw, 5.35rem);
+  font-size:clamp(3.1rem, 1.95rem + 5.4vw, 6.15rem);
   line-height:1;
   text-wrap:balance;
 }
@@ -1202,6 +1326,25 @@ textarea:focus-visible {
 .catalog, .insta { padding:var(--section-y) var(--page-gutter); }
 .catalog { padding-top:0; }
 .about { padding:var(--section-y) var(--page-gutter); gap:clamp(3rem, 6vw, 6rem); }
+/* Teto de largura discreto pro conteúdo em telas grandes (a partir de
+   notebooks maiores, ~1366px+) — evita o catálogo/seções esticarem até a
+   borda em monitores largos. O fundo de CADA seção continua esticando de
+   borda a borda (na cor própria dela — .about é branca, footer é marrom
+   escuro, diferentes da cor geral do body), via um "breakout" com ::before
+   atrás do conteúdo; só o conteúdo interno (grid/texto/produtos) fica
+   dentro do teto de largura centralizado. */
+.catalog, .insta, .about, footer, #favoritos {
+  max-width:1400px; margin-left:auto; margin-right:auto;
+  position:relative;
+}
+.catalog::before, .insta::before, .about::before, footer::before, #favoritos::before {
+  content:''; position:absolute; top:0; bottom:0; left:50%; right:50%;
+  margin-left:-50vw; margin-right:-50vw; width:100vw; z-index:-1;
+}
+.catalog::before, .insta::before { background:var(--bg); }
+.about::before { background:var(--white); }
+footer::before { background:var(--rose-deep); }
+#favoritos::before { background:var(--bg); }
 .cat-head {
   gap:clamp(1rem, 3vw, 2rem);
   padding-bottom:clamp(1.5rem, 3vw, 2.25rem);
@@ -1250,7 +1393,8 @@ textarea:focus-visible {
 }
 .pprice {
   flex:0 0 auto;
-  font-size:clamp(1rem, .94rem + .45cqi, 1.18rem);
+  font-size:clamp(1.06rem, 1rem + .45cqi, 1.18rem);
+  font-weight:600;
   text-align:right;
 }
 .pwa,
@@ -1306,11 +1450,6 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   min-height:44px;
   display:inline-flex;
   align-items:center;
-}
-.admin-panel {
-  width:min(56.25rem, calc(100vw - 1rem));
-  max-width:calc(100vw - 1rem);
-  height:min(80vh, 44rem);
 }
 .admin-hd { padding:clamp(.6rem, 1.6vw, .9rem) clamp(1rem, 4vw, 2.4rem); gap:1rem; }
 .admin-hd-t {
@@ -1379,7 +1518,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 
 @media(max-width:820px){
   .hero-content { width:min(90vw, 34rem); }
-  .hero-title { font-size:clamp(2.45rem, 10vw, 4.25rem); }
+  .hero-title { font-size:clamp(2.8rem, 11.5vw, 4.9rem); }
   .hero-sub { max-width:38ch; }
   .cat-head { align-items:flex-start; }
   .cat-desc { text-align:left; max-width:42rem; }
@@ -1389,7 +1528,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   :root { --page-gutter: clamp(1rem, 5vw, 1.35rem); }
   nav { align-items:center; }
   .hero-content { top:48%; max-width:none; }
-  .hero-title { font-size:clamp(2.35rem, 11vw, 3.75rem); margin-bottom:1rem; }
+  .hero-title { font-size:clamp(2.7rem, 12.6vw, 4.3rem); margin-bottom:1rem; }
   .hero-sub { display:block; font-size:1rem; line-height:1.6; margin-bottom:1.35rem; max-width:31ch; }
   .hero-logo-img { width:clamp(4.8rem, 24vw, 5.5rem); }
   .catalog, .about, .insta { padding-block:var(--section-y-sm); }
@@ -1421,7 +1560,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   .nav-words-sub { font-size:.8125rem; }
   .nav-cta { padding-inline:.75rem; letter-spacing:.12em; }
   .hero-eyebrow::after { width:1.1rem; }
-  .hero-title { font-size:clamp(2.15rem, 11vw, 3.15rem); }
+  .hero-title { font-size:clamp(2.5rem, 12.6vw, 3.6rem); }
   .hero-sub { max-width:28ch; }
   #bijusHeroBtn {
     max-width:none;
@@ -1441,7 +1580,6 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   .pgrid { grid-template-columns:1fr; }
   .fpill { flex-basis:100%; }
 }
-
 </style>
 <link rel="stylesheet" href="css/admin-image-manager.css">
 <link rel="stylesheet" href="css/interface-polish.css">
@@ -1574,18 +1712,56 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 </head>
 <body class="page-bags">
 
+<div id="pageCurtain" class="page-curtain"><div class="page-curtain-bg"></div><img class="page-curtain-logo" alt="" style="display:none;"></div>
+<script>
+(function(){
+  try {
+    var raw = sessionStorage.getItem('mfb_curtain_in');
+    var data;
+    if (raw) {
+      sessionStorage.removeItem('mfb_curtain_in');
+      data = JSON.parse(raw);
+    } else {
+      // Acesso direto pelo link (sem vir de outra página do trio por
+      // clique) — toca a mesma animação de entrada, com a logo desta
+      // própria página, reaproveitando os mesmos tempos de sempre.
+      data = { logo: 'webp/LogoMFB_B.webp' };
+    }
+    var el = document.getElementById('pageCurtain');
+    if (!el) return;
+    // Transição por fade: a cortina (tom pérola, via CSS) já nasce coberta
+    // (is-closed) — a logo do site novo fica pronta, em opacidade 0;
+    // js/page-transition.js (playEntrance) funde ela pra dentro, segura
+    // um instante, e funde tudo de volta revelando a página.
+    var logoEl = el.querySelector('.page-curtain-logo');
+    if (logoEl) {
+      if (data.logo) { logoEl.src = data.logo; logoEl.style.display = 'block'; }
+      else { logoEl.style.display = 'none'; }
+      if (data.logoClass) { logoEl.classList.add(data.logoClass); }
+      logoEl.style.transition = 'none';
+      logoEl.style.opacity = '0';
+    }
+    el.classList.add('is-closed');
+  } catch (e) {}
+})();
+</script>
+
 <!-- Cursor -->
 <div class="cursor" id="cur"></div>
 <div class="cursor-ring" id="ring"></div>
 
 <!-- ═══ NAV ═══════════════════════════════════════════════════════════════════ -->
 <nav id="nav">
-  <a href="#" class="nav-logo">
-    <img src="webp/LogoMFB_B.webp" alt="My Favorite Bags" class="nav-logo-img">
+  <a href="#" class="nav-logo" id="navLogoSwipe" data-swipe-target="looks.html">
+    <img src="webp/LogoMFB_B.webp" alt="My Favorite Bags" class="nav-logo-img" width="44" height="44">
     <div class="nav-words">
       <span class="nav-words-main">My Favorite Bags</span>
       <span class="nav-words-sub">Recife</span>
     </div>
+    <span class="nav-swipe-hint" aria-hidden="true">
+      <svg class="nsh-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      <span class="nsh-label nav-words-sub">Looks</span>
+    </span>
   </a>
 
   <div class="nav-right">
@@ -1596,6 +1772,29 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
   </ul>
   <a href="looks.html" id="navLooksBtn" class="nav-cross-btn" style="display:none;">My Favorite Looks <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
   <a href="https://wa.me/5581995966968" target="_blank" class="nav-cta">Fale Conosco</a>
+  </div>
+</nav>
+
+<!-- ═══ BOTTOM NAV MOBILE ══════════════════════════════════════════════════ -->
+<nav id="mobileBottomNav" aria-label="Navegação mobile">
+  <div class="mbn-side">
+    <button type="button" class="mbn-item" id="mbnHome" aria-label="Início">
+      <span class="mbn-icon" style="-webkit-mask-image:url('webp/icons/mobile/Home.svg');mask-image:url('webp/icons/mobile/Home.svg');"></span>
+    </button>
+    <button type="button" class="mbn-item" id="mbnCatalogo" aria-label="Catálogo">
+      <span class="mbn-icon" style="-webkit-mask-image:url('webp/icons/mobile/Catálogo.svg');mask-image:url('webp/icons/mobile/Catálogo.svg');"></span>
+    </button>
+  </div>
+  <button type="button" class="mbn-item" id="mbnMatch" aria-label="My Favorite Match">
+    <img src="webp/logo-my-favorite-match-mini.webp" alt="" class="mbn-match-logo" width="34" height="34">
+  </button>
+  <div class="mbn-side">
+    <a class="mbn-item" id="mbnInstagram" href="https://www.instagram.com/myfavorite.bagsrecife?igsh=MTRlOXU3cTE3cnVvaQ==" target="_blank" aria-label="Instagram">
+      <span class="mbn-icon" style="-webkit-mask-image:url('webp/icons/mobile/Instagram.svg');mask-image:url('webp/icons/mobile/Instagram.svg');"></span>
+    </a>
+    <a class="mbn-item" id="mbnWhatsapp" href="https://wa.me/5581995966968" target="_blank" aria-label="WhatsApp">
+      <span class="mbn-icon" style="-webkit-mask-image:url('webp/icons/mobile/WhatsApp.svg');mask-image:url('webp/icons/mobile/WhatsApp.svg');"></span>
+    </a>
   </div>
 </nav>
 
@@ -1631,8 +1830,6 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 
   <div class="hero-content">
     <p class="hero-eyebrow">Coleção Exclusiva · Recife</p>
-
-    <!-- Hero logo mark --><img src="webp/LogoMFB_B.webp" alt="My Favorite Bags" class="hero-logo-img">
 
     <h1 class="hero-title">
       Sua bolsa<br>
@@ -1750,7 +1947,7 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 <!-- ═══ ABOUT ══════════════════════════════════════════════════════════════════ -->
 <section class="about" id="sobre">
   <div class="about-visual reveal">
-    <!-- Large logo in about section --><img src="webp/LogoMFB_A.webp" alt="My Favorite Bags Recife" class="about-logo-img">
+    <!-- Large logo in about section --><img src="webp/LogoMFB_A.webp" alt="My Favorite Bags Recife" class="about-logo-img" width="320" height="320" loading="lazy">
   </div>
   <div class="reveal reveal-d2">
     <p class="about-eyebrow">Nossa História</p>
@@ -1766,10 +1963,10 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 <footer>
   <div class="foot-top">
       <div>
-        <div class="foot-logo-row">
-        <img src="webp/LogoMFB_A.webp" alt="My Favorite Bags Recife" class="foot-logo-img">
+        <div class="foot-logo-row" id="footLogoAdmin">
+        <img src="webp/LogoMFB_A.webp" alt="My Favorite Bags Recife" class="foot-logo-img" width="170" height="170" loading="lazy">
       </div>
-      <p class="foot-body">Bolsas premium selecionadas com curadoria para a mulher que sabe o que quer e expressa isso com elegância.</p>
+      <p class="foot-body">Bolsas premium selecionadas com curadoria para a mulher que sabe o que quer<br>e expressa isso com elegância.</p>
     </div>
     <div>
       <div class="foot-col-h">Navegação</div>
@@ -1795,9 +1992,19 @@ footer { padding:clamp(3.5rem, 6vw, 4.5rem) var(--page-gutter) clamp(2rem, 4vw, 
 <!-- WA FLOAT -->
 <a href="https://wa.me/5581995966968" target="_blank" class="wa-float" aria-label="WhatsApp">
   <div class="wa-tip">Falar no WhatsApp</div>
-  <svg width="25" height="25" viewBox="0 0 24 24" fill="white">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+  <span class="wa-float-inner">
+  <svg width="80" height="80" viewBox="0 0 1254 1254">
+    <defs>
+      <linearGradient id="waGoldMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"  stop-color="#FDE9B0"/>
+        <stop offset="45%" stop-color="#C9A227"/>
+        <stop offset="100%" stop-color="#7A5C1E"/>
+      </linearGradient>
+    </defs>
+    <path d=" M 622.55 195.72 C 684.56 193.32 746.83 206.32 803.34 231.76 C 824.83 241.79 845.40 253.73 864.94 267.16 C 886.41 282.28 906.22 299.69 924.31 318.72 C 989.72 387.53 1028.53 481.00 1030.92 575.92 C 1031.29 588.90 1030.88 601.90 1030.46 614.88 C 1028.83 636.80 1026.08 658.71 1020.68 680.05 C 1015.57 701.64 1008.90 722.88 1000.19 743.29 C 989.71 769.56 975.28 794.04 959.72 817.58 C 955.05 823.96 950.40 830.34 945.76 836.73 C 897.60 897.67 831.76 945.53 757.09 968.03 C 694.40 987.97 626.51 990.52 562.26 976.75 C 549.59 974.33 537.29 970.35 524.91 966.76 C 510.16 961.67 495.39 956.50 481.26 949.84 C 470.18 945.69 460.25 937.47 447.94 937.38 C 437.98 936.74 428.80 941.19 419.59 944.27 C 366.93 963.98 314.19 983.50 261.61 1003.44 C 253.18 1006.13 245.09 1010.77 235.98 1010.42 C 228.85 1010.63 221.98 1005.77 219.82 998.98 C 217.53 992.41 219.41 985.31 221.83 979.07 C 235.44 945.06 250.73 911.76 264.96 878.01 C 270.48 865.76 275.74 853.40 281.10 841.08 C 286.27 830.95 290.09 820.20 294.99 809.95 C 298.45 802.59 297.41 793.67 293.22 786.83 C 282.98 769.94 274.29 752.14 267.11 733.74 C 255.70 703.54 247.02 672.13 243.67 639.95 C 240.40 616.45 240.92 592.64 241.71 568.99 C 244.20 526.54 253.26 484.42 268.87 444.85 C 297.13 372.88 347.37 309.88 410.84 265.80 C 442.77 243.75 477.99 226.53 515.03 214.97 C 549.75 203.60 586.08 197.37 622.55 195.72 M 471.10 251.42 C 462.68 255.93 453.98 259.95 445.74 264.82 C 439.69 268.81 433.42 272.47 427.30 276.35 C 373.31 311.99 329.19 362.05 299.53 419.46 C 275.12 467.55 261.55 521.02 259.33 574.87 C 258.37 585.55 258.65 596.32 259.32 607.00 C 259.21 621.22 261.25 635.32 262.88 649.41 C 265.20 667.35 269.99 684.84 274.81 702.24 C 283.09 728.56 294.14 754.03 308.05 777.87 C 314.10 788.89 315.69 802.43 311.50 814.38 C 309.46 819.94 307.14 825.41 304.71 830.82 C 292.13 859.57 279.87 888.47 267.19 917.18 C 256.18 942.45 245.01 967.66 234.91 993.30 C 236.94 993.50 238.97 993.28 240.87 992.51 C 273.31 980.62 305.38 967.76 337.86 956.02 C 365.12 946.03 392.29 935.84 419.50 925.74 C 430.83 921.69 443.00 918.30 455.10 920.44 C 468.81 922.81 480.40 931.04 493.21 935.92 C 506.23 941.69 519.64 946.57 533.23 950.81 C 543.95 953.70 554.45 957.45 565.40 959.40 C 606.20 968.48 648.55 969.94 690.01 965.11 C 731.45 959.73 772.02 947.32 809.17 928.14 C 842.15 911.09 872.38 888.81 898.71 862.66 C 911.65 849.53 924.30 836.06 935.09 821.08 C 941.72 813.16 946.93 804.23 952.82 795.78 C 974.52 761.44 991.02 723.81 1001.34 684.52 C 1007.24 663.79 1009.98 642.36 1012.25 620.99 C 1017.75 552.48 1005.00 482.30 974.12 420.78 C 969.03 411.54 964.44 402.02 958.80 393.11 C 925.73 339.33 878.81 294.26 824.08 262.87 C 816.74 258.83 809.25 255.07 801.84 251.16 C 779.21 240.46 755.56 231.98 731.35 225.66 C 697.37 216.66 662.11 213.15 627.01 213.84 C 573.19 215.32 519.67 228.16 471.10 251.42 Z" />
+    <path d=" M 486.43 393.67 C 493.09 392.41 499.90 393.03 506.61 393.56 C 518.97 395.78 530.63 402.77 537.79 413.19 C 542.74 419.96 546.58 427.46 549.77 435.20 C 557.72 451.82 565.59 468.49 572.66 485.50 C 576.58 494.75 576.47 505.36 573.75 514.91 C 571.12 524.39 563.72 531.25 557.58 538.52 C 553.19 543.40 548.67 548.49 546.78 554.93 C 544.30 562.41 546.23 570.52 549.39 577.49 C 556.79 593.77 568.70 607.36 579.89 621.11 C 595.67 638.70 612.86 655.22 632.30 668.77 C 640.26 674.53 648.88 679.35 657.87 683.30 C 664.17 685.84 671.35 687.61 677.93 685.01 C 683.84 683.61 687.55 678.57 691.57 674.47 C 699.56 665.84 706.30 655.70 716.45 649.38 C 727.72 642.61 742.17 642.81 754.01 648.02 C 772.14 656.23 789.02 666.84 806.40 676.48 C 816.64 682.43 827.51 688.98 833.20 699.82 C 840.40 712.95 839.83 728.89 835.63 742.88 C 828.31 763.25 814.48 781.49 796.04 793.01 C 785.17 800.20 772.80 805.02 760.05 807.62 C 751.56 809.79 742.80 810.71 734.05 810.68 C 705.18 811.58 676.99 802.91 650.86 791.29 C 623.62 778.88 598.11 762.84 574.49 744.49 C 545.84 722.81 519.84 697.79 495.95 671.00 C 477.94 649.97 461.41 627.65 446.93 604.05 C 443.00 596.60 438.50 589.48 434.90 581.86 C 426.60 563.70 419.19 544.92 415.92 525.13 C 408.26 489.77 416.60 450.86 439.76 422.81 C 444.16 417.88 448.63 412.95 453.72 408.72 C 463.23 401.25 474.34 395.43 486.43 393.67 M 487.25 411.35 C 474.54 413.85 463.75 421.79 455.24 431.25 C 443.22 445.25 434.81 462.52 432.37 480.89 C 429.11 502.34 432.30 524.32 439.23 544.74 C 442.63 556.27 447.73 567.20 453.04 577.95 C 458.02 588.58 464.73 598.25 470.63 608.36 C 478.28 619.58 486.14 630.67 494.79 641.14 C 499.88 648.32 506.13 654.55 511.70 661.35 C 524.83 676.14 538.80 690.18 553.08 703.84 C 565.74 714.19 577.77 725.31 591.13 734.75 C 610.99 749.56 632.12 762.74 654.54 773.34 C 668.34 779.62 682.36 785.73 697.29 788.83 C 727.00 796.43 760.63 795.13 787.00 778.14 C 796.64 771.24 805.43 762.84 811.66 752.67 C 817.90 742.33 822.89 730.37 821.15 718.06 C 819.65 710.29 815.39 702.66 808.44 698.57 C 799.67 692.41 790.14 687.52 781.06 681.87 C 770.32 676.39 760.18 669.76 749.10 664.97 C 740.87 660.47 729.94 660.36 722.47 666.41 C 716.96 671.27 712.58 677.21 707.54 682.52 C 702.65 688.24 698.05 694.55 691.35 698.28 C 686.03 701.23 680.17 703.59 674.01 703.68 C 660.65 704.60 647.85 699.16 636.56 692.54 C 608.95 676.15 585.00 654.12 564.31 629.68 C 556.86 621.63 550.34 612.76 544.29 603.63 C 538.15 594.90 532.93 585.36 530.05 575.04 C 526.55 563.06 528.31 549.55 535.10 539.04 C 540.64 530.17 548.58 523.17 554.88 514.88 C 558.25 510.02 559.07 503.81 558.37 498.04 C 557.32 491.01 553.44 484.88 550.69 478.45 C 544.03 462.95 536.72 447.74 529.42 432.54 C 526.92 426.81 523.27 421.54 518.42 417.55 C 510.13 409.93 497.76 409.57 487.25 411.35 Z" />
   </svg>
+  </span>
 </a>
 
 <!-- ADMIN OVERLAY -->
@@ -1968,12 +2175,12 @@ function renderProducts(filter = 'all') {
     <div class="pcard ${isAvail ? '' : 'out'}" data-id="${p.id}">
       <div class="pcard-float" data-drag-id="${p.id}">
         <div class="pcard-img">
-          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}" alt="${p.name}" width="480" height="640" loading="lazy" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;" onerror="this.onerror=null;this.style.display='none';this.closest('.pcard-visual').classList.add('img-fallback');">` : bagSVG(p.cat, ic)}</div>
+          <div class="pcard-visual" style="padding:0;--shake-delay:${shakeDelay};">${p.img ? `<img src="${p.img}"${p.imgSrcset ? ` srcset="${p.imgSrcset}" sizes="(max-width:380px) 92vw, (max-width:600px) 46vw, (max-width:820px) 46vw, (max-width:1100px) 46vw, 30vw"` : ''} alt="${p.name}" width="480" height="640" loading="lazy" style="width:100%;height:100%;transition:transform .75s var(--ease);" class="bag-photo" draggable="false" ondragstart="return false;" onerror="this.onerror=null;this.style.display='none';this.closest('.pcard-visual').classList.add('img-fallback');">` : bagSVG(p.cat, ic)}</div>
           ${!isAvail ? `<div class="sold-ov"><div class="sold-badge">${ovText}</div></div>` : ''}
 
           ${isAvail && p.promo && p.promo.showPct && p.promo.pct ? `<div class="promo-b">-${p.promo.pct}%</div>` : ''}
           <div class="pcard-action">
-            <button onclick="openBagModal(${p.id})" class="slide-btn" style="border:none;cursor:pointer;">Ver Detalhes</button>
+            <button onclick="openBagModal(${p.id}, undefined, this.closest('.pcard-img'))" class="slide-btn" style="border:none;cursor:pointer;">Ver Detalhes</button>
           </div>
           <span class="drag-handle" aria-hidden="true"></span>
         </div>
@@ -2157,7 +2364,7 @@ function initFloatingDrag(scope) {
 
     el.addEventListener('click', e => {
       if (wasMoved) { e.preventDefault(); e.stopPropagation(); wasMoved = false; return; }
-      openBagModal(Number(el.dataset.dragId));
+      openBagModal(Number(el.dataset.dragId), undefined, el.querySelector('.pcard-img'));
     });
   });
 }
@@ -2209,6 +2416,42 @@ if (HERO_SLIDES.length > 1) setInterval(() => gS((cur + 1) % HERO_SLIDES.length)
 window.addEventListener('scroll', () =>
   document.getElementById('nav').classList.toggle('s', scrollY > 60));
 
+// ─── WA DIM NO HERO ───────────────────────────────────────────────────────────
+// Enquanto o hero ainda está (quase) todo visível, o botão flutuante do
+// WhatsApp fica quase invisível (mas "respirando" opacidade, via .wa-dim +
+// @keyframes waDim em css/nav.css) pra não brigar visualmente com o hero.
+// Ao rolar além do hero, a classe sai e ele volta ao normal.
+(function () {
+  const heroEl = document.getElementById('hero');
+  const waEl = document.querySelector('.wa-float');
+  if (!heroEl || !waEl) return;
+  const toggleWaDim = () => {
+    waEl.classList.toggle('wa-dim', scrollY < heroEl.offsetHeight - 80);
+  };
+  window.addEventListener('scroll', toggleWaDim, { passive:true });
+  toggleWaDim();
+})();
+
+// ─── WA HOVER FADE ────────────────────────────────────────────────────────────
+// Faz a opacidade do botão do WhatsApp transicionar suavemente (1s) até .8
+// no hover, mesmo quando a animação de respiração (.wa-dim) está tocando —
+// ver explicação completa no comentário acima de .wa-float:hover em
+// css/nav.css.
+(function () {
+  const waEl = document.querySelector('.wa-float');
+  if (!waEl) return;
+  waEl.addEventListener('mouseenter', () => {
+    waEl.style.transition = 'opacity 2.5s ease, transform 2.5s ease';
+    waEl.style.opacity = '1';
+    waEl.style.transform = 'scale(1.1)';
+  });
+  waEl.addEventListener('mouseleave', () => {
+    waEl.style.transition = 'opacity .3s ease, transform .3s ease';
+    waEl.style.opacity = '';
+    waEl.style.transform = '';
+  });
+})();
+
 // ─── REVEAL ON SCROLL ─────────────────────────────────────────────────────────
 const ro = new IntersectionObserver(es =>
   es.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); }),
@@ -2244,6 +2487,53 @@ function closeA() {
   ov.classList.remove('visible');
   setTimeout(() => ov.classList.remove('open'), 350);
 }
+
+// ─── GESTO OCULTO ADMIN (mobile) — toque longo (650ms) na logo do rodapé,
+// seguido de 2 toques rápidos (cada um em até 300ms), abre o painel. ───────
+(function(){
+  const trig = document.getElementById('footLogoAdmin');
+  if (!trig) return;
+  const LONG_PRESS_MS = 650;
+  const TAP_MAX_MS    = 300;
+  const ARMED_MS      = 3000;
+  let pressTimer = null;
+  let armed = false;
+  let armedTimeout = null;
+  let taps = 0;
+  let tapStart = 0;
+
+  function reset() {
+    armed = false; taps = 0;
+    clearTimeout(armedTimeout);
+    clearTimeout(pressTimer);
+  }
+
+  trig.addEventListener('touchstart', () => {
+    tapStart = Date.now();
+    if (!armed) {
+      pressTimer = setTimeout(() => {
+        armed = true; taps = 0;
+        if (navigator.vibrate) navigator.vibrate(30);
+        armedTimeout = setTimeout(reset, ARMED_MS);
+      }, LONG_PRESS_MS);
+    }
+  }, { passive:true });
+
+  trig.addEventListener('touchend', () => {
+    clearTimeout(pressTimer);
+    if (!armed) return;
+    const dur = Date.now() - tapStart;
+    if (dur <= TAP_MAX_MS) {
+      taps++;
+      if (taps >= 2) {
+        reset();
+        openA();
+      }
+    }
+  }, { passive:true });
+
+  trig.addEventListener('touchmove', () => { if (!armed) clearTimeout(pressTimer); }, { passive:true });
+})();
 function adminLogout() {
   sessionStorage.removeItem('mfb_auth_ts');
   sessionStorage.removeItem('mfbAdminPassword');
@@ -2282,6 +2572,11 @@ function renderLoginView() {
         <a href="#" onclick="event.preventDefault(); setLoginView('altmenu')">Tentar acessar de outra forma</a>
       </div>
     </div>`;
+    // Foca a senha automaticamente ao abrir o login — sem atraso, pra
+    // continuar dentro do mesmo gesto de toque no botão Admin e o
+    // navegador (inclusive iOS) abrir o teclado automaticamente.
+    const pwEl = document.getElementById('pw');
+    if (pwEl) pwEl.focus();
   } else if (_loginView === 'forgot') {
     body.innerHTML = `
     <div class="login-wrap">
@@ -2380,9 +2675,9 @@ function openContactKupimModal() {
       <div style="background:var(--bg);width:min(440px,92vw);border-radius:var(--radius-lg);padding:32px;">
         <h3 style="font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:6px;color:var(--text);">Falar com Kupim Digital</h3>
         <p style="font-size:13.6px;color:var(--text-muted);margin-bottom:20px;">Escreva sua mensagem — vamos abrir seu app de e-mail com tudo preenchido, você só confirma o envio.</p>
-        <label class="flabel">Assunto</label>
+        <label class="flabel" for="kupimSubject">Assunto</label>
         <input class="fi" id="kupimSubject" placeholder="Ex: Esqueci a senha do painel" style="margin-bottom:14px;">
-        <label class="flabel">Mensagem</label>
+        <label class="flabel" for="kupimBody">Mensagem</label>
         <textarea class="fi" id="kupimBody" rows="5" placeholder="Conte o que aconteceu…" style="margin-bottom:20px;resize:vertical;width:100%;"></textarea>
         <div style="display:flex;gap:10px;">
           <button class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="closeContactKupimModal()">Cancelar</button>
@@ -2419,9 +2714,9 @@ function renderPanel() {
   document.getElementById('adminBd').innerHTML = `
   <div class="apane on" id="tab-upload">
     <div id="uploadDropzone" class="upload-dropzone" onclick="document.getElementById('uploadFileInput').click()">
-      <input type="file" id="uploadFileInput" accept="image/png" multiple style="display:none;" onchange="handleGalleryUploadFiles(this.files)">
+      <input type="file" id="uploadFileInput" accept="image/png,image/webp" multiple style="display:none;" onchange="handleGalleryUploadFiles(this.files)">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.55;margin-bottom:14px;"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-      <p class="upload-dropzone-title">Guarde suas bolsas aqui (em PNG).</p>
+      <p class="upload-dropzone-title">Guarde suas bolsas aqui (em PNG ou WEBP).</p>
       <p class="upload-dropzone-sub">Arraste e solte a imagem aqui, ou clique para escolher no computador</p>
     </div>
     <p id="uploadStatus" style="text-align:center;font-size:12.5px;color:var(--rose-dark);margin-top:14px;min-height:18px;"></p>
@@ -2436,11 +2731,11 @@ function renderPanel() {
 
   <div class="apane" id="tab-add">
     <div class="frow">
-      <div class="fg"><label class="flabel">Nome da Bolsa</label><input class="fi" id="nn" placeholder="Ex: Tote Milano"/></div>
-      <div class="fg"><label class="flabel">Preço</label><input class="fi" id="np" placeholder="R$ 299"/></div>
+      <div class="fg"><label class="flabel" for="nn">Nome da Bolsa</label><input class="fi" id="nn" placeholder="Ex: Tote Milano"/></div>
+      <div class="fg"><label class="flabel" for="np">Preço</label><input class="fi" id="np" placeholder="R$ 299"/></div>
     </div>
     <div class="frow">
-      <div class="fg"><label class="flabel">Disponibilidade</label>
+      <div class="fg"><label class="flabel" for="na">Disponibilidade</label>
         <select class="fi" id="na" style="display:none;">
           <option value="available">Disponível</option>
           <option value="sold_out">Esgotado</option>
@@ -2452,7 +2747,7 @@ function renderPanel() {
           <svg class="csel-arrow" width="10" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
-      <div class="fg"><label class="flabel">Badge "Novo"</label>
+      <div class="fg"><label class="flabel" for="nin">Badge "Novo"</label>
         <select class="fi" id="nin" style="display:none;">
           <option value="true">Sim</option>
           <option value="false">Não</option>
@@ -2465,7 +2760,7 @@ function renderPanel() {
       </div>
     </div>
     <div class="frow">
-      <div class="fg full"><label class="flabel">Categoria</label>
+      <div class="fg full"><label class="flabel" for="nc">Categoria</label>
         <select class="fi" id="nc" style="display:none;"></select>
         <button type="button" class="fi csel-trigger" id="ncBtn"
           onclick="event.preventDefault(); openCatPopup(this, document.getElementById('nc').value, function(k){ document.getElementById('nc').value = k; renderCatSelect(); });">
@@ -2480,7 +2775,7 @@ function renderPanel() {
     </div>
 
     <div class="fg full" style="margin-bottom:18px;">
-      <label class="flabel">Foto da Bolsa</label>
+      <label class="flabel" for="npFile">Foto da Bolsa</label>
       <input type="file" id="npFile" accept="image/*" style="display:none;" onchange="onNewProdFileChosen(this)">
       <div id="npPhotoBox" style="border:1.5px dashed var(--line);border-radius:8px;padding:18px;text-align:center;">
         <div id="npPhotoEmpty">
@@ -2492,11 +2787,11 @@ function renderPanel() {
           <div style="display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
             <div>
               <p style="font-size:12.5px;letter-spacing:.1em;color:var(--modal-muted,#A08070);margin-bottom:6px;">ORIGINAL</p>
-              <img id="npPhotoOriginal" style="width:120px;height:120px;object-fit:contain;background:#eee;border-radius:6px;">
+              <img id="npPhotoOriginal" alt="Foto original enviada" style="width:120px;height:120px;object-fit:contain;background:#eee;border-radius:6px;">
             </div>
             <div>
               <p style="font-size:12.5px;letter-spacing:.1em;color:var(--modal-muted,#A08070);margin-bottom:6px;">FUNDO REMOVIDO</p>
-              <img id="npPhotoResult" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;">
+              <img id="npPhotoResult" alt="Foto com fundo removido" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;">
             </div>
           </div>
           <div style="display:flex;gap:10px;justify-content:center;">
@@ -2509,7 +2804,7 @@ function renderPanel() {
           <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="useOriginalPhotoNoRemoveBg()">Usar foto original (sem remover fundo)</button>
         </div>
         <div id="npPhotoConfirmed" style="display:none;">
-          <img id="npPhotoFinal" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;margin-bottom:8px;">
+          <img id="npPhotoFinal" alt="Foto final aprovada" style="width:120px;height:120px;object-fit:contain;background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 14px 14px;border-radius:6px;margin-bottom:8px;">
           <p style="font-size:13.6px;color:#1a7a3e;font-weight:600;">✓ Foto pronta para salvar</p>
           <button type="button" class="fb" style="margin-top:8px;" onclick="removeNewProdBackground()">Remover fundo</button>
           <button type="button" class="fb" style="margin-top:8px;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="document.getElementById('npFile').click()">Trocar foto</button>
@@ -2524,7 +2819,7 @@ function renderPanel() {
   <div class="apane" id="tab-manage">
     <div class="manage-toolbar">
       <div class="manage-search">
-        <img src="webp/icons/icon-search.png" alt="" aria-hidden="true">
+        <img src="webp/icons/icon-search.png" alt="" aria-hidden="true" loading="lazy">
         <input type="text" id="manageSearch" placeholder="Buscar bolsa pelo nome…" oninput="renderAdminList()">
       </div>
       <div class="gal-filter-group" id="manageStatusFilter">
@@ -2580,6 +2875,7 @@ function renderPanel() {
   <div style="border-top:1px solid var(--line);margin-top:28px;padding-top:20px;text-align:right;">
     <button onclick="openReview()" style="background:var(--rose-deep);color:#fff;border:none;border-radius:8px;padding:12px 26px;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;cursor:pointer;letter-spacing:.08em;display:inline-flex;align-items:center;">Revisar e Salvar</button>
   </div>`;
+  initUploadTab();
   renderOverviewTab();
   renderAdminList();
   renderCatSelect();
@@ -2786,9 +3082,9 @@ function renderOverviewTab() {
       </div>
       <div id="analyticsPeriodPicker" style="display:none;margin-bottom:10px;display:none;">
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <input type="date" id="apFrom" style="font-size:13.6px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
+          <input type="date" id="apFrom" style="font-size:16px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
           <span style="font-size:13.6px;color:#A08070;">até</span>
-          <input type="date" id="apTo" style="font-size:13.6px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
+          <input type="date" id="apTo" style="font-size:16px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:4px;">
           <button onclick="applyCustomPeriod()" style="font-size:13.6px;padding:4px 10px;border:1px solid #8B4A3C;color:#8B4A3C;background:transparent;cursor:pointer;border-radius:4px;">OK</button>
         </div>
       </div>
@@ -2813,7 +3109,7 @@ const SITE_LABEL      = { looks: 'My Favorite Looks', match: 'My Favorite Match'
 function getSiteState(site) {
   // Padrão: My Favorite Looks e My Favorite Match ficam visíveis por padrão
   // (só mudam se o admin alterar manualmente no painel central).
-  return localStorage.getItem(SITE_STATE_KEY[site]) || (site === 'looks' ? 'locked' : 'visible');
+  return localStorage.getItem(SITE_STATE_KEY[site]) || 'visible';
 }
 function setSiteState(site, state) {
   localStorage.setItem(SITE_STATE_KEY[site], state);
@@ -2889,8 +3185,8 @@ function applyLooksButtonVisibility() {
       btn = document.createElement('a');
       btn.id = 'bijusHeroBtn';
       btn.href = 'looks.html';
-      btn.style.cssText = 'position:absolute;right:7%;top:50%;transform:translateY(-50%);z-index:5;display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:999px;border:1.5px solid #B8896F;color:#24343C;font-family:"Cormorant Garamond",serif;font-size:15px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;background:#F6F1EC;box-shadow:0 6px 22px rgba(36,52,60,.18);transition:box-shadow .3s, transform .3s, background .3s;';
-      btn.innerHTML = '<img src="webp/logo-my-favorite-looks-mini.webp" alt="" class="looks-btn-logo">My Favorite Looks <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+      btn.style.cssText = 'position:absolute;right:7%;top:50%;transform:translateY(-50%);z-index:5;display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:999px;border:1.5px solid #B8896F;color:#24343C;font-family:"Cormorant Garamond",serif;font-size:15px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;background:#F6F1EC;box-shadow:0 6px 22px rgba(36,52,60,.18);transition:box-shadow .3s, transform .3s, background .3s;';
+      btn.innerHTML = '<img src="webp/logo-my-favorite-looks-mini.webp" alt="" class="looks-btn-logo" width="30" height="20">My Favorite Looks <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B8896F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
       btn.onmouseover = () => { btn.style.background = '#EADFD7'; btn.style.boxShadow = '0 8px 26px rgba(36,52,60,.26)'; btn.style.transform = 'translateY(-50%) translateY(-2px)'; };
       btn.onmouseout  = () => { btn.style.background = '#F6F1EC'; btn.style.boxShadow = '0 6px 22px rgba(36,52,60,.18)'; btn.style.transform = 'translateY(-50%)'; };
       const hero = document.getElementById('hero');
@@ -2955,38 +3251,70 @@ function applyMatchButtonVisibility() {
       btn.id = 'matchHeroBtn';
       btn.href = 'match.html?from=bags';
       btn.setAttribute('aria-label', 'Abrir My Favorite Match');
-      btn.innerHTML = `<span class="mhb-visual"><img src="webp/logo-my-favorite-match-mini.webp" alt="My Favorite Match" width="92" height="92"></span>
+      btn.innerHTML = `<span class="mhb-visual"></span><span class="mhb-icon-scale"><img src="webp/logo-my-favorite-match-mini.webp" alt="My Favorite Match" width="92" height="92"></span>
         <span class="mhb-tip">My Favorite Match</span>`;
       hero.appendChild(btn);
-      positionMatchBtn(btn, hero);
-      makeMatchBtnDraggable(btn, hero);
-      // Marca como "já entrou" assim que a animação de entrada termina, pra
-      // soltar o botão depois de arrastar não disparar o fade-in de novo.
+      // Posição calculada uma única vez (fixa dali em diante, sem
+      // recalcular em resize e sem poder ser arrastada — igual ao ícone do
+      // WhatsApp, que também é position:fixed com coordenadas estáticas).
+      positionMatchBtn(btn);
+      initMatchBtnOpacity(btn, hero);
+      // Marca como "já entrou" assim que a animação de entrada termina.
       btn.addEventListener('animationend', e => {
         if (e.animationName === 'matchEnter') btn.classList.add('entered');
       });
       setTimeout(() => btn.classList.add('entered'), 1300);
-      window.addEventListener('resize', () => positionMatchBtn(btn, hero));
-      window.addEventListener('load', () => positionMatchBtn(btn, hero));
     }
   } else {
     if (btn) btn.remove();
   }
 }
 
-function positionMatchBtn(btn, hero) {
-  // Posição sempre fixa (não salva mais no localStorage): o botão pode ser
-  // arrastado, mas sempre volta pro mesmo lugar ao soltar.
+function positionHeroDeco() {
+  // Ícone decorativo da bolsa: centralizado com o bloco logo+nome do
+  // cabeçalho (.nav-logo), assim como o botão do Match. Substitui o
+  // cálculo fixo em CSS (calc + nudge manual) por uma posição real,
+  // medida a partir da logo em tempo de execução.
+  const hero = document.getElementById('hero');
+  const deco = document.querySelector('.hero-deco');
+  const logoEl = document.querySelector('.nav-logo');
+  if (!hero || !deco || !logoEl) return;
   const heroRect = hero.getBoundingClientRect();
-  // Y alinhado com o topo da logo do hero, X centralizado com o título do nav
-  const heroLogo = document.querySelector('.hero-logo-img');
-  const navTitle = document.querySelector('.nav-logo');
+  const logoRect = logoEl.getBoundingClientRect();
+  const decoWidth = deco.getBoundingClientRect().width || 280;
+  const shiftLeft = 0; // ajuste fino horizontal em relação ao centro da logo, se precisar
+  const leftPx = (logoRect.left + logoRect.width / 2) - heroRect.left - (decoWidth / 2) - shiftLeft;
+  deco.style.left = leftPx + 'px';
+}
+window.addEventListener('resize', positionHeroDeco);
+window.addEventListener('load', positionHeroDeco);
+positionHeroDeco();
+
+function positionMatchBtn(btn) {
+  // Calculada UMA VEZ, na carga da página — o botão agora é position:fixed
+  // (igual ao .wa-float do WhatsApp), então top/left são relativos à tela,
+  // não ao hero. Sem recalcular em resize, sem arrastar: posição realmente
+  // fixa. Usa a MESMA referência que o ícone de bolsa decorativo
+  // (.hero-deco) usa em positionHeroDeco() — o centro do .nav-logo — em vez
+  // de copiar a posição já renderizada do .hero-deco (que continua sendo
+  // recalculada em resize, enquanto o Match não é mais; ler direto da
+  // mesma fonte evita os dois desalinharem entre si).
+  const logoEl = document.querySelector('.nav-logo');
+  const navEl = document.getElementById('nav') || document.querySelector('nav');
   const btnSize = btn.getBoundingClientRect().width || 92;
+  const gapBelowNav = 16; // respiro entre o botão e o cabeçalho
+  const shiftLeft   = 17;  // ajuste fino horizontal em relação ao centro da logo, se precisar
+  const shiftDown   = 25;  // ajuste fino vertical (desce o botão), se precisar
   let topPx, leftPx;
-  topPx = heroLogo ? (heroLogo.getBoundingClientRect().top - heroRect.top) : 24;
-  if (navTitle) {
-    const navRect = navTitle.getBoundingClientRect();
-    leftPx = (navRect.left + navRect.width / 2) - heroRect.left - (btnSize / 2);
+  if (navEl) {
+    const navRect = navEl.getBoundingClientRect();
+    topPx = navRect.bottom + gapBelowNav + shiftDown;
+  } else {
+    topPx = 24 + shiftDown;
+  }
+  if (logoEl) {
+    const logoRect = logoEl.getBoundingClientRect();
+    leftPx = (logoRect.left + logoRect.width / 2) - (btnSize / 2) - shiftLeft;
   } else {
     leftPx = 40;
   }
@@ -2994,6 +3322,46 @@ function positionMatchBtn(btn, hero) {
   btn.style.left = leftPx + 'px';
   btn.style.right = 'auto';
 }
+
+// ─── FLUTUAÇÃO CRESCENTE DO ÍCONE MATCH (conforme rola a página) ───────────
+// Mesma curva "ease-out" usada na aproximação do mouse (ver scaleProximity em
+// initMatchBtnOpacity, mais abaixo): rápida no início e mais devagar perto do
+// fim — só que aqui em função do progresso do scroll, não da distância do
+// mouse. Usada pra calcular a amplitude REAL (em px) do translateY no
+// @keyframes matchFloat — mínimo 5px (topo da página), máximo 20px (fim da
+// página) — e um multiplicador (--float-amp) só pro rotate/scale, na mesma
+// proporção.
+(function () {
+  const AMP_MIN_PX = 20, AMP_MAX_PX = 100; // amplitude vertical (translateY), em pixels
+  const AMP_MID_PX = (AMP_MIN_PX + AMP_MAX_PX) / 2; // usado só como referência pro multiplicador do rotate/scale
+  const AMP_MIN_PX_X = 10, AMP_MAX_PX_X = 50; // amplitude lateral (translateX), em pixels
+
+  function floatCurve(t) {
+    t = Math.min(Math.max(t, 0), 1);
+    return 1 - Math.pow(1 - t, 2); // curva ease-out (igual à de scaleProximity)
+  }
+
+  let ticking = false;
+  function updateMatchFloatAmp() {
+    ticking = false;
+    const btn = document.getElementById('matchHeroBtn');
+    if (!btn) return;
+    const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+    const t = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
+    const norm = floatCurve(t);
+    const ampPx = AMP_MIN_PX + norm * (AMP_MAX_PX - AMP_MIN_PX);
+    const ampPxX = AMP_MIN_PX_X + norm * (AMP_MAX_PX_X - AMP_MIN_PX_X);
+    btn.style.setProperty('--float-amp-px', ampPx.toFixed(2) + 'px');
+    btn.style.setProperty('--float-amp-x-px', ampPxX.toFixed(2) + 'px');
+    btn.style.setProperty('--float-amp', (ampPx / AMP_MID_PX).toFixed(3));
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(updateMatchFloatAmp); }
+  }, { passive: true });
+  window.addEventListener('load', updateMatchFloatAmp);
+  window.addEventListener('resize', updateMatchFloatAmp);
+  updateMatchFloatAmp();
+})();
 
 function makeMatchBtnDraggable(btn, hero) {
   let dragging = false, moved = false, startX = 0, startY = 0, startLeft = 0, startTop = 0;
@@ -3041,7 +3409,10 @@ function makeMatchBtnDraggable(btn, hero) {
     // disparado direto no gesto do clique, senão o navegador bloqueia.
     e.preventDefault();
     const url = btn.href;
-    const go = () => { location.href = url; };
+    const go = () => {
+      if (window.mfbNavigateWithCurtain) window.mfbNavigateWithCurtain(url);
+      else location.href = url;
+    };
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen().then(go).catch(go);
     } else {
@@ -3056,6 +3427,89 @@ function makeMatchBtnDraggable(btn, hero) {
   btn.addEventListener('touchmove', e => { const t = e.touches[0]; onMove(t.clientX, t.clientY); }, {passive:true});
   btn.addEventListener('touchend', onUp);
   btn.addEventListener('click', onClick);
+}
+
+// ── OPACIDADE DO ÍCONE DO BOTÃO MATCH: "respiração" sutil + reação à
+// distância do mouse — mas só do ÍCONE (a img dentro de .mhb-visual). O
+// botão em si (borda ::before com o "ping" de radar, e o brilho/shine do
+// .mhb-visual) fica sempre em opacidade 1, sempre visível — só o ícone
+// entra e sai, pra esses efeitos chamarem atenção antes do ícone aparecer.
+function initMatchBtnOpacity(btn, hero) {
+  const iconEl = btn.querySelector('img');
+  // A escala é controlada no wrapper (.mhb-icon-scale), não na <img>
+  // diretamente — a <img> já tem a animação CSS matchFloat mexendo em
+  // "transform" pra flutuação, e uma animação CSS sempre vence qualquer
+  // transform aplicado via JS na MESMA propriedade do MESMO elemento.
+  const scaleEl = btn.querySelector('.mhb-icon-scale') || iconEl;
+  if (!iconEl) return;
+
+  const DESKTOP_MIN_WIDTH = 769; // mesmo breakpoint usado no resto do site
+
+  const REST_MIN = 0.10;   // opacidade mínima da respiração (bem transparente)
+  const REST_MAX = 0.26;   // opacidade máxima da respiração (ainda transparente)
+  const BREATHE_PERIOD_MS = 4200;
+  const OPACITY_PROXIMITY_RADIUS = 260; // px — raio de reação da opacidade
+
+  const MIN_ICON_PX = 5; // tamanho do ícone (em px reais) quando o mouse está longe
+  const SCALE_MAX = 1;   // tamanho normal do ícone
+  const SCALE_RADIUS = 420; // px — distância a partir da qual o ícone começa a crescer
+
+  let mouseX = null, mouseY = null;
+  let currentOpacity = REST_MIN; // suaviza a transição entre frames (lerp)
+  let currentScale = 0.05;
+
+  hero.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+  hero.addEventListener('mouseleave', () => { mouseX = null; mouseY = null; });
+
+  function tick(t) {
+    requestAnimationFrame(tick);
+
+    // Fora do desktop, o ícone fica normal (sem respiração/proximidade) —
+    // limpa qualquer estilo inline aplicado antes de encolher a tela.
+    if (window.innerWidth < DESKTOP_MIN_WIDTH) {
+      iconEl.style.opacity = '';
+      scaleEl.style.transform = '';
+      return;
+    }
+
+    // Enquanto arrasta, deixa o ícone em opacidade/tamanho cheios (fica
+    // mais fácil de ver o que está sendo arrastado).
+    if (btn.classList.contains('dragging')) {
+      iconEl.style.opacity = '1';
+      scaleEl.style.transform = 'scale(1)';
+      return;
+    }
+
+    const breathe = REST_MIN + (REST_MAX - REST_MIN) * (0.5 + 0.5 * Math.sin(t / BREATHE_PERIOD_MS * Math.PI * 2));
+
+    let opacityProximity = 0;
+    let scaleProximity = 0;
+    if (mouseX !== null) {
+      const r = btn.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const dist = Math.hypot(mouseX - cx, mouseY - cy);
+      opacityProximity = Math.max(0, 1 - dist / OPACITY_PROXIMITY_RADIUS);
+      // Além do raio, o ícone fica "infinitesimal"; a partir daí, cresce
+      // conforme o mouse se aproxima do botão — em curva "ease-out": rápido
+      // no começo (longe → médio) e mais devagar perto do fim (médio →
+      // tamanho cheio).
+      const scaleProximityLinear = Math.max(0, 1 - dist / SCALE_RADIUS);
+      scaleProximity = 1 - Math.pow(1 - scaleProximityLinear, 2);
+    }
+
+    const targetOpacity = breathe + opacityProximity * (1 - breathe);
+    currentOpacity += (targetOpacity - currentOpacity) * 0.12; // lerp
+    iconEl.style.opacity = currentOpacity.toFixed(3);
+
+    // scaleMin é recalculado a cada frame a partir do tamanho real do
+    // botão, garantindo que o ícone comece exatamente em MIN_ICON_PX (5px).
+    const btnPx = btn.getBoundingClientRect().width || 92;
+    const scaleMin = MIN_ICON_PX / btnPx;
+    const targetScale = scaleMin + (SCALE_MAX - scaleMin) * scaleProximity;
+    currentScale += (targetScale - currentScale) * 0.12; // lerp
+    scaleEl.style.transform = `scale(${currentScale.toFixed(4)})`;
+  }
+  requestAnimationFrame(tick);
 }
 
 function swTab(name, btn) {
@@ -3073,12 +3527,16 @@ function swTab(name, btn) {
 // ═══ ABA UPLOAD + GALERIA DE IMAGENS ════════════════════════════════════════
 // Fluxo: solta/escolhe PNG -> nome automático "Bolsa AAAA-MM-DD HH-MM-SS N"
 // (N reinicia por dia) -> sobe pro Storage -> abre a galeria.
-let _uploadDropzoneBound = false;
-
 function initUploadTab() {
   const zone = document.getElementById('uploadDropzone');
-  if (!zone || _uploadDropzoneBound) return;
-  _uploadDropzoneBound = true;
+  // Usa um marcador no próprio elemento (em vez de uma flag do módulo) —
+  // assim, toda vez que o painel é reaberto (renderPanel recria o HTML da
+  // aba do zero), o novo elemento é religado normalmente. Com a flag antiga
+  // do módulo, depois de fechar e reabrir o painel uma vez o arrastar-e-
+  // soltar parava de funcionar pra sempre (a flag continuava "true" mas o
+  // elemento novo nunca tinha os listeners).
+  if (!zone || zone.dataset.dndBound) return;
+  zone.dataset.dndBound = '1';
   ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => {
     e.preventDefault(); zone.classList.add('drag-over');
   }));
@@ -3094,7 +3552,7 @@ function pad2(n) { return String(n).padStart(2, '0'); }
 
 // Consulta a galeria pra saber quantas bolsas já foram enviadas HOJE (o
 // contador reinicia sozinho todo dia, porque é sempre recontado na hora).
-async function nextBagUploadNames(count) {
+async function nextBagUploadNames(count, exts) {
   const now = new Date();
   const dateStr = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
   let startN = 1;
@@ -3110,9 +3568,17 @@ async function nextBagUploadNames(count) {
   for (let i = 0; i < count; i++) {
     const t = new Date(now.getTime() + i * 1000); // evita colidir no mesmo segundo
     const timeStr = `${pad2(t.getHours())}-${pad2(t.getMinutes())}-${pad2(t.getSeconds())}`;
-    names.push(`Bolsa ${dateStr} ${timeStr} ${startN + i}.png`);
+    const ext = (exts && exts[i]) || 'png';
+    names.push(`Bolsa ${dateStr} ${timeStr} ${startN + i}.${ext}`);
   }
   return names;
+}
+
+// Extensão de arquivo a partir do MIME type — usada pra manter PNG como
+// .png e WEBP como .webp ao guardar na galeria (em vez de sempre ".png").
+function extFromMime(type) {
+  if (type === 'image/webp') return 'webp';
+  return 'png';
 }
 
 function fileToDataUrl(file) {
@@ -3125,15 +3591,15 @@ function fileToDataUrl(file) {
 }
 
 async function handleGalleryUploadFiles(fileList) {
-  const files = Array.from(fileList || []).filter(f => f.type === 'image/png');
+  const files = Array.from(fileList || []).filter(f => f.type === 'image/png' || f.type === 'image/webp');
   const status = document.getElementById('uploadStatus');
   if (!files.length) {
-    if (status) status.textContent = 'Só é permitido enviar imagens no formato PNG.';
+    if (status) status.textContent = 'Só é permitido enviar imagens no formato PNG ou WEBP.';
     return;
   }
   if (status) status.textContent = `Enviando ${files.length} imagem${files.length > 1 ? 's' : ''}…`;
   try {
-    const names = await nextBagUploadNames(files.length);
+    const names = await nextBagUploadNames(files.length, files.map(f => extFromMime(f.type)));
     for (let i = 0; i < files.length; i++) {
       const dataUrl = await fileToDataUrl(files[i]);
       await sbUploadGalleryImage(dataUrl, names[i]);
@@ -3150,14 +3616,28 @@ async function handleGalleryUploadFiles(fileList) {
 let _galleryImages = [];
 let _gallerySort = 'desc';        // 'desc' | 'asc' — por data de envio
 let _galleryFilter = 'all';       // 'all' | 'original' | 'nobg'
+let _galleryFormatFilter = 'all'; // 'all' | 'png' | 'webp'
 let _galleryPickerCallback = null; // quando definida, a galeria abre em "modo escolher"
 let _galleryPickMode = null;      // quando != null, clicar numa foto associa ao produto (Fase 2)
+let _galleryHideUpload = false;   // quando true, esconde as opções de "enviar nova foto" (só navegar as já existentes)
 
 function isGalleryNoBg(name) { return / \(sem fundo\)\.png$/i.test(name); }
 function isGalleryCopy(name) { return / - Cópia \d+/i.test(name); }
+function isGalleryWebp(name) { return /\.webp$/i.test(name); }
+function isGalleryPng(name)  { return /\.png$/i.test(name); }
 
-async function openGalleryModal(onPick) {
+// Formata bytes como texto legível (KB/MB) — usado no total de espaço
+// ocupado pela galeria.
+function formatBytes(bytes) {
+  if (bytes == null || isNaN(bytes)) return '—';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+async function openGalleryModal(onPick, opts) {
   _galleryPickerCallback = typeof onPick === 'function' ? onPick : null;
+  _galleryHideUpload = !!(opts && opts.hideUpload);
   let ov = document.getElementById('galleryModal');
   if (!ov) {
     ov = document.createElement('div');
@@ -3182,16 +3662,25 @@ async function openGalleryModal(onPick) {
             <button class="gal-chip" data-f="original" onclick="setGalleryFilter('original')">Originais</button>
             <button class="gal-chip" data-f="nobg" onclick="setGalleryFilter('nobg')">Sem fundo</button>
           </div>
+          <div class="gal-filter-group" id="galFilterFormat">
+            <button class="gal-chip on" data-ff="all" onclick="setGalleryFormatFilter('all')">Todos os formatos</button>
+            <button class="gal-chip" data-ff="png" onclick="setGalleryFormatFilter('png')">PNG</button>
+            <button class="gal-chip" data-ff="webp" onclick="setGalleryFormatFilter('webp')">WEBP</button>
+          </div>
           <div style="flex:1;"></div>
+          <span id="galSizeLabel" style="font-size:12.5px;color:var(--text-muted);letter-spacing:.04em;white-space:nowrap;"></span>
           <button class="gal-chip" onclick="toggleGallerySort()" id="galSortBtn">Mais recentes primeiro</button>
-          <button type="button" class="fb" style="margin-top:0;" onclick="document.getElementById('uploadFileInput').click()">+ Enviar foto</button>
+          <button type="button" class="fb" id="galUploadFooterBtn" style="margin-top:0;" onclick="document.getElementById('uploadFileInput').click()">+ Enviar foto</button>
         </div>
         <div id="galleryGrid" style="flex:1;overflow-y:auto;padding:20px 26px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;"></div>
       </div>`;
     document.body.appendChild(ov);
+    initGalleryProximity();
   }
   document.getElementById('galleryModalTitle').textContent = _galleryPickerCallback ? 'Escolher imagem' : 'Galeria de Imagens';
-  document.getElementById('galleryPickerBanner').style.display = _galleryPickerCallback ? 'block' : 'none';
+  document.getElementById('galleryPickerBanner').style.display = (_galleryPickerCallback && !_galleryHideUpload) ? 'block' : 'none';
+  const uploadFooterBtn = document.getElementById('galUploadFooterBtn');
+  if (uploadFooterBtn) uploadFooterBtn.style.display = _galleryHideUpload ? 'none' : 'inline-flex';
   ov.style.display = 'flex';
   await refreshGalleryGrid();
 }
@@ -3243,6 +3732,11 @@ function setGalleryFilter(f) {
   document.querySelectorAll('#galFilterOriginal .gal-chip').forEach(b => b.classList.toggle('on', b.dataset.f === f));
   renderGalleryGrid();
 }
+function setGalleryFormatFilter(f) {
+  _galleryFormatFilter = f;
+  document.querySelectorAll('#galFilterFormat .gal-chip').forEach(b => b.classList.toggle('on', b.dataset.ff === f));
+  renderGalleryGrid();
+}
 function toggleGallerySort() {
   _gallerySort = _gallerySort === 'desc' ? 'asc' : 'desc';
   document.getElementById('galSortBtn').textContent = _gallerySort === 'desc' ? 'Mais recentes primeiro' : 'Mais antigas primeiro';
@@ -3255,32 +3749,95 @@ function renderGalleryGrid() {
   let list = _galleryImages.slice();
   if (_galleryFilter === 'original') list = list.filter(i => !isGalleryNoBg(i.name));
   if (_galleryFilter === 'nobg') list = list.filter(i => isGalleryNoBg(i.name));
+  if (_galleryFormatFilter === 'png')  list = list.filter(i => isGalleryPng(i.name));
+  if (_galleryFormatFilter === 'webp') list = list.filter(i => isGalleryWebp(i.name));
   list.sort((a, b) => {
+    // No modo "escolher imagem" (CRUD), fotos sem fundo vêm sempre primeiro —
+    // é o que pode entrar no catálogo, então é o que a lojista mais precisa achar rápido.
+    if (_galleryPickerCallback) {
+      const nbA = isGalleryNoBg(a.name) ? 0 : 1;
+      const nbB = isGalleryNoBg(b.name) ? 0 : 1;
+      if (nbA !== nbB) return nbA - nbB;
+    }
     const da = new Date(a.created_at).getTime(), db = new Date(b.created_at).getTime();
     return _gallerySort === 'desc' ? db - da : da - db;
   });
+
+  const sizeLabel = document.getElementById('galSizeLabel');
+  if (sizeLabel) {
+    const totalBytes = list.reduce((sum, i) => sum + (i.size || 0), 0);
+    const formatName = _galleryFormatFilter === 'png' ? 'PNG' : _galleryFormatFilter === 'webp' ? 'WEBP' : 'no total';
+    sizeLabel.textContent = `${list.length} imagem${list.length === 1 ? '' : 'ns'} · ${formatName === 'no total' ? '' : formatName + ' · '}${formatBytes(totalBytes)} ocupados`;
+  }
+
   if (!list.length) {
     grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);font-size:13px;">Nenhuma imagem por aqui ainda.</p>';
     return;
   }
-  grid.innerHTML = list.map(img => `
-    <div class="gal-card">
+  grid.innerHTML = list.map(img => {
+    // No modo "escolher imagem", fotos SEM o fundo removido ficam com opacidade
+    // reduzida — ainda clicáveis, mas visualmente sinalizando que não estão
+    // prontas pro catálogo (que exige fundo removido).
+    const dimNotReady = _galleryPickerCallback && !isGalleryNoBg(img.name);
+    return `
+    <div class="gal-card"${dimNotReady ? ' style="opacity:.4;transition:opacity .2s;" onmouseenter="this.style.opacity=1" onmouseleave="this.style.opacity=.4"' : ''}>
       <div class="gal-card-img" role="button" tabindex="0" aria-label="Ampliar ${_pimEscape(img.name)}" onclick="openImageZoom('${_pimEscape(img.url)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openImageZoom('${_pimEscape(img.url)}');}">
-        <img src="${_pimEscape(img.url)}" alt="${_pimEscape(img.name)}" loading="lazy">
-        ${isGalleryNoBg(img.name) ? '<span class="gal-badge">Sem fundo</span>' : ''}
+        <img src="${_pimEscape(img.url)}" alt="${_pimEscape(img.name)}" loading="lazy"${isGalleryNoBg(img.name) ? ' class="gal-img-float"' : ''}>
+        <span class="gal-badge gal-badge-format ${isGalleryWebp(img.name) ? 'gal-badge-webp' : 'gal-badge-png'}">${isGalleryWebp(img.name) ? 'WEBP' : 'PNG'}</span>
+        ${isGalleryNoBg(img.name) ? '<span class="gal-badge" style="left:auto;right:6px;">Sem fundo</span>' : ''}
+        ${!_galleryPickerCallback ? `<button type="button" class="gal-add-btn" title="Adicionar ao catálogo" aria-label="Adicionar ${_pimEscape(img.name)} ao catálogo" onclick="event.stopPropagation();addGalleryImageToCatalog('${_pimEscape(img.name)}','${_pimEscape(img.url)}')">${PLUS_SVG}</button>` : ''}
       </div>
-      <p class="gal-card-name" title="${_pimEscape(img.name)}">${_pimEscape(img.name)}</p>
+      <p class="gal-card-name" title="${_pimEscape(img.name)}">${_pimEscape(img.name)}${img.size != null ? ` · ${formatBytes(img.size)}` : ''}</p>
       ${_galleryPickerCallback ? `
       <button type="button" class="fb" style="margin:6px 0 0;width:100%;font-size:13.1px;padding:8px;" onclick="pickGalleryImage('${_pimEscape(img.url)}','${_pimEscape(img.name)}')">Usar esta imagem</button>
       ` : `
       <div class="gal-card-actions">
         <button title="Editar (crop / remover fundo)" aria-label="Editar ${_pimEscape(img.name)}" onclick="editGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')"><img src="webp/icons/icon-edit.png" alt=""></button>
         <button title="Remover fundo" aria-label="Remover fundo de ${_pimEscape(img.name)}" onclick="removeBgGalleryImage('${_pimEscape(img.name)}','${_pimEscape(img.url)}')">${GALLERY_SCISSORS_SVG}</button>
+        ${!isGalleryWebp(img.name) ? `<button title="Converter para WEBP" aria-label="Converter ${_pimEscape(img.name)} para WEBP" onclick="convertGalleryImageToWebp('${_pimEscape(img.name)}','${_pimEscape(img.url)}')">${GALLERY_WEBP_SVG}</button>` : ''}
         <button title="Baixar" aria-label="Baixar ${_pimEscape(img.name)}" onclick="downloadGalleryImage('${_pimEscape(img.url)}','${_pimEscape(img.name)}')"><img src="webp/icons/icon-download.png" alt=""></button>
         <button title="Excluir" aria-label="Excluir ${_pimEscape(img.name)}" onclick="deleteGalleryImage('${_pimEscape(img.name)}')"><img src="webp/icons/icon-delete.png" alt=""></button>
       </div>`}
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
+// Botões/nome/tag/badge de cada card da galeria nascem discretos (opacidade
+// .4) e ganham destaque conforme o mouse se aproxima da foto (não é um
+// hover binário — o raio de influência é maior que a área desses elementos,
+// então a opacidade sobe aos poucos). Em telas de toque, sem hover, o
+// destaque é ativado tocando a foto e some 3s depois de tocar em outra.
+function initGalleryProximity() {
+  const grid = document.getElementById('galleryGrid');
+  if (!grid || grid._proximityInit) return;
+  grid._proximityInit = true;
+  const RADIUS = 130; // px de influência além da borda do card
+  grid.addEventListener('mousemove', (e) => {
+    grid.querySelectorAll('.gal-card').forEach(card => {
+      const r = card.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+      const maxDist = Math.max(r.width, r.height) / 2 + RADIUS;
+      const t = Math.max(0, Math.min(1, 1 - dist / maxDist));
+      card.style.setProperty('--gal-proximity', (.4 + t * .6).toFixed(2));
+    });
+  });
+  grid.addEventListener('mouseleave', () => {
+    grid.querySelectorAll('.gal-card').forEach(card => card.style.setProperty('--gal-proximity', .4));
+  });
+  grid.addEventListener('click', (e) => {
+    const cardImg = e.target.closest('.gal-card-img');
+    const card = cardImg && cardImg.closest('.gal-card');
+    if (!card) return;
+    grid.querySelectorAll('.gal-card.gal-card-active').forEach(c => {
+      if (c === card) return;
+      clearTimeout(c._galDeactivateTimer);
+      c._galDeactivateTimer = setTimeout(() => c.classList.remove('gal-card-active'), 3000);
+    });
+    clearTimeout(card._galDeactivateTimer);
+    card.classList.add('gal-card-active');
+  });
+}
+
 function pickGalleryImage(url, name) {
   const cb = _galleryPickerCallback;
   if (!cb) return;
@@ -3288,7 +3845,85 @@ function pickGalleryImage(url, name) {
   closeGalleryModal();
 }
 
+// ── "+" na galeria: manda a foto direto pro CRUD Bolsas ────────────────────
+// Se a foto ainda não tiver o fundo removido, avisa que o catálogo exige
+// fundo removido e oferece remover ali mesmo (ou seguir sem remover).
+function addGalleryImageToCatalog(name, url) {
+  const isNoBg = isGalleryNoBg(name);
+  const w = document.createElement('div');
+  w.style.cssText = 'position:fixed;inset:0;z-index:9600;background:rgba(42,31,24,.7);display:flex;align-items:center;justify-content:center;padding:20px;';
+  w.innerHTML = `
+    <div style="background:var(--bg);border-radius:12px;padding:28px;max-width:340px;width:100%;font-family:'Jost',sans-serif;text-align:center;">
+      <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:8px;">Adicionar ao catálogo?</p>
+      <p style="font-size:13.6px;color:#A08070;margin-bottom:${isNoBg ? '24px' : '14px'};">“${_pimEscape(name)}” vai abrir na aba CRUD Bolsas, pronta pra você preencher o resto.</p>
+      ${isNoBg ? '' : `
+      <div style="text-align:left;background:rgba(139,74,60,.08);border-radius:8px;padding:12px 14px;margin-bottom:20px;">
+        <p style="font-size:13px;color:#8B4A3C;margin-bottom:10px;">Pra entrar no catálogo, a bolsa precisa estar com o fundo removido. Quer remover agora?</p>
+        <div style="display:flex;gap:8px;">
+          <button id="galAddRemoveBgBtn" style="flex:1;padding:8px;border:none;background:#653C2B;color:#fff;border-radius:6px;cursor:pointer;font-size:12.5px;">Remover fundo</button>
+          <button id="galAddSkipBgBtn" style="flex:1;padding:8px;border:1px solid var(--line);background:none;color:#A08070;border-radius:6px;cursor:pointer;font-size:12.5px;">Ir sem remover</button>
+        </div>
+      </div>`}
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button onclick="this.closest('[style*=z-index]').remove()" style="padding:10px 22px;border:1px solid var(--line);background:none;cursor:pointer;font-size:13.6px;color:#A08070;border-radius:6px;">Cancelar</button>
+        ${isNoBg ? `<button id="galAddYesBtn" style="padding:10px 22px;border:none;background:#653C2B;color:#fff;cursor:pointer;font-size:13.6px;font-weight:700;border-radius:6px;">Adicionar</button>` : ''}
+      </div>
+    </div>`;
+  document.body.appendChild(w);
+
+  function goToCrud(finalUrl) {
+    w.remove();
+    closeGalleryModal();
+    const crudBtn = document.querySelector('#adminTabs .atab[onclick*="\'crud\'"]');
+    if (crudBtn) swTab('crud', crudBtn);
+    startCrudNewFromGallery(finalUrl);
+    showToast('Foto pronta — preencha os dados da bolsa.');
+  }
+
+  if (isNoBg) {
+    w.querySelector('#galAddYesBtn').onclick = () => goToCrud(url);
+  } else {
+    w.querySelector('#galAddSkipBgBtn').onclick = () => goToCrud(url);
+    w.querySelector('#galAddRemoveBgBtn').onclick = async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true; btn.textContent = 'Removendo…';
+      try {
+        const resp = await fetch(url);
+        const blob = await resp.blob();
+        const noBgDataUrl = await sbRemoveBackground(blob);
+        const noBgName = nextCopyName(name, '(sem fundo)');
+        const uploaded = await sbUploadGalleryImage(noBgDataUrl, noBgName);
+        _galleryImages = await sbListGalleryImages();
+        goToCrud(uploaded.url);
+      } catch (err) {
+        alert('Não foi possível remover o fundo: ' + err.message);
+        btn.disabled = false; btn.textContent = 'Remover fundo';
+      }
+    };
+  }
+}
+
+// Preenche o formulário "Cadastrar nova bolsa" do CRUD com uma imagem que já
+// veio pronta da galeria (não é um File — já é uma URL hospedada).
+function startCrudNewFromGallery(url) {
+  crudNewFile = null;
+  crudNewImageSource = url;
+  const preview = document.getElementById('crudNewPreview');
+  const text = document.getElementById('crudUploadText');
+  if (preview) { preview.src = url; preview.style.display = 'block'; }
+  if (text) text.textContent = 'Trocar imagem';
+  const removeButton = document.getElementById('crudRemoveBg');
+  if (removeButton) { removeButton.disabled = true; removeButton.textContent = 'Fundo já removido'; }
+  const message = document.getElementById('crudMessage');
+  if (message) message.textContent = 'Imagem escolhida na galeria. Preencha os dados e adicione a bolsa.';
+  if (typeof _crudNewDescOnImageChanged === 'function') _crudNewDescOnImageChanged();
+  document.getElementById('crudNewName')?.focus();
+}
+
+const PLUS_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`;
+
 const GALLERY_SCISSORS_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8B4A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M8.5 7.5 20 20M8.5 16.5 20 4"/></svg>`;
+const GALLERY_WEBP_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#1a7a3e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
 
 // ── Ícones SVG reutilizáveis (substituem caracteres Unicode usados como
 // ícone: ✕, ★/☆, $, →) — consistência visual entre navegadores/fontes.
@@ -3318,6 +3953,7 @@ async function removeBgGalleryImage(name, url) {
     const newName = nextCopyName(name, '(sem fundo)');
     await sbUploadGalleryImage(resultDataUrl, newName);
     await refreshGalleryGrid();
+    showToast('Fundo removido com sucesso.');
   } catch (e) {
     alert('Não foi possível remover o fundo: ' + e.message);
   }
@@ -3337,15 +3973,15 @@ function openCropTool(name, url, onCropped) {
     ov.id = 'cropModal';
     ov.style.cssText = 'display:none;position:fixed;inset:0;z-index:9650;background:rgba(20,12,7,.85);align-items:center;justify-content:center;padding:24px;';
     ov.innerHTML = `
-      <div style="background:var(--bg);width:min(640px,94vw);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;max-height:92vh;">
+      <div style="background:var(--bg);width:min(640px,94vw);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;max-height:92svh;">
         <div style="padding:16px 22px;display:flex;align-items:center;justify-content:space-between;background:var(--rose-deep);flex-shrink:0;">
           <span style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#fff;">Recortar imagem</span>
           <button onclick="closeCropTool()" aria-label="Fechar recorte" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;">${CLOSE_X_SVG}</button>
         </div>
         <div style="padding:20px 22px;overflow:auto;">
           <p style="font-size:13.6px;color:var(--text-muted);margin-bottom:12px;">Arraste as bordas da seleção pra ajustar o recorte. O original nunca é alterado — o resultado vira uma cópia nova.</p>
-          <div id="cropStage" style="position:relative;width:100%;max-height:56vh;overflow:hidden;background:#1c130d;display:flex;align-items:center;justify-content:center;">
-            <img id="cropImg" crossorigin="anonymous" style="max-width:100%;max-height:56vh;display:block;user-select:none;-webkit-user-drag:none;">
+          <div id="cropStage" style="position:relative;width:100%;max-height:56svh;overflow:hidden;background:#1c130d;display:flex;align-items:center;justify-content:center;">
+            <img id="cropImg" alt="Imagem para recorte" crossorigin="anonymous" style="max-width:100%;max-height:56svh;display:block;user-select:none;-webkit-user-drag:none;">
             <div id="cropBox" style="position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5);cursor:move;">
               <div class="crop-handle" data-h="nw" role="button" tabindex="0" aria-label="Redimensionar recorte pelo canto superior esquerdo" style="position:absolute;top:-6px;left:-6px;width:14px;height:14px;background:#fff;border-radius:50%;cursor:nwse-resize;"></div>
               <div class="crop-handle" data-h="ne" role="button" tabindex="0" aria-label="Redimensionar recorte pelo canto superior direito" style="position:absolute;top:-6px;right:-6px;width:14px;height:14px;background:#fff;border-radius:50%;cursor:nesw-resize;"></div>
@@ -3480,6 +4116,66 @@ async function deleteGalleryImage(name) {
   }
 }
 
+// ── Converter PNG -> WEBP — gera uma cópia nova (nunca sobrescreve o
+// original) e, ao final, pergunta se quer apagar o PNG original.
+async function convertGalleryImageToWebp(name, url) {
+  try {
+    showToast('Convertendo para WEBP…');
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    // 1 = melhor qualidade que o encoder WEBP do navegador permite. O
+    // Canvas/toDataURL do navegador só expõe o WEBP com perdas (lossy);
+    // não existe, por padrão do navegador, um jeito de pedir o modo
+    // "lossless" de verdade do formato WEBP — qualidade 1 é o mais
+    // próximo disso, sem diferença visível do original.
+    const webpDataUrl = await convertToWebp(dataUrl, 1);
+    const newName = name.replace(/\.(png|jpe?g)$/i, '') + '.webp';
+    await sbUploadGalleryImage(webpDataUrl, newName);
+    await refreshGalleryGrid();
+    showToast('Convertido para WEBP.');
+    openDeleteOriginalPngModal(name, newName);
+  } catch (e) {
+    alert('Não foi possível converter: ' + e.message);
+  }
+}
+
+function openDeleteOriginalPngModal(originalName, newName) {
+  const old = document.getElementById('convertConfirmModal');
+  if (old) old.remove();
+  const wrap = document.createElement('div');
+  wrap.id = 'convertConfirmModal';
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:9800;background:rgba(20,12,7,.78);display:flex;align-items:center;justify-content:center;padding:24px;';
+  wrap.innerHTML = `
+    <div style="background:var(--bg);border-radius:var(--radius-lg,12px);padding:28px;max-width:380px;width:100%;text-align:center;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-bottom:10px;">Convertido para WEBP!</p>
+      <p style="font-size:13.6px;color:var(--text-muted);margin-bottom:22px;line-height:1.6;">"${_pimEscape(newName)}" foi salvo na galeria. Quer apagar a versão PNG original ("${_pimEscape(originalName)}")?</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button type="button" class="fb" style="margin-top:0;background:transparent;color:var(--rose-dark);border:1px solid var(--rose-dark);" onclick="document.getElementById('convertConfirmModal').remove()">Manter os dois</button>
+        <button type="button" class="fb" style="margin-top:0;" onclick="confirmDeleteOriginalPng('${_pimEscape(originalName)}')">Apagar o PNG</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+}
+
+async function confirmDeleteOriginalPng(originalName) {
+  const wrap = document.getElementById('convertConfirmModal');
+  try {
+    await sbDeleteGalleryImage(originalName);
+    await refreshGalleryGrid();
+    showToast('PNG original apagado.');
+  } catch (e) {
+    alert('Não foi possível apagar o PNG original: ' + e.message);
+  } finally {
+    if (wrap) wrap.remove();
+  }
+}
+
 // ── Zoom/pan simples pra qualquer imagem da galeria (mesmo gesto do modal
 // de produto: arrastar, roda do mouse e pinça no touch) ────────────────────
 function openImageZoom(url) {
@@ -3490,8 +4186,8 @@ function openImageZoom(url) {
     ov.style.cssText = 'display:none;position:fixed;inset:0;z-index:9700;background:rgba(0,0,0,.9);align-items:center;justify-content:center;';
     ov.innerHTML = `
       <button onclick="closeImageZoom()" aria-label="Fechar visualização" style="position:absolute;top:20px;right:26px;background:none;border:none;color:#fff;cursor:pointer;z-index:2;"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
-      <div id="imgZoomWrap" style="width:90vw;height:90vh;overflow:hidden;position:relative;cursor:zoom-in;touch-action:none;">
-        <img id="imgZoomPhoto" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;will-change:transform;">
+      <div id="imgZoomWrap" style="width:90vw;height:90svh;overflow:hidden;position:relative;cursor:zoom-in;touch-action:none;">
+        <img id="imgZoomPhoto" alt="Imagem ampliada" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90svh;will-change:transform;">
       </div>`;
     document.body.appendChild(ov);
     initImageZoomGestures();
@@ -3645,7 +4341,7 @@ function renderCrudBags() {
         </div>
       </label>
       <div class="crud-actions">
-        <button type="button" class="crud-btn" onclick="openProductImageManager(${p.id})">Escolher imagem</button>
+        <button type="button" class="crud-btn" onclick="openProductGalleryPicker(${p.id})">Escolher imagem</button>
         <button type="button" class="crud-btn" onclick="insertProductIntoBanner(${p.id})">Inserir no banner</button>
         <button type="button" class="crud-btn primary" onclick="saveCrudBag(${p.id})">Salvar</button>
         <button type="button" class="crud-btn danger" onclick="confirmDel(${p.id})">Excluir</button>
@@ -3775,7 +4471,7 @@ function openProductImageManager(id) {
       <div style="background:var(--bg);width:min(420px,92vw);border-radius:var(--radius-lg);padding:28px;">
         <h3 id="pimTitle" style="font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:16px;color:var(--text);"></h3>
         <div id="pimPreviewWrap" style="width:100%;aspect-ratio:4/5;background:#F2ECE6;border-radius:8px;overflow:hidden;margin-bottom:18px;display:flex;align-items:center;justify-content:center;cursor:zoom-in;">
-          <img id="pimPreview" style="max-width:100%;max-height:100%;object-fit:contain;" onclick="if(this.src) openImageZoom(this.src)">
+          <img id="pimPreview" alt="Prévia da imagem selecionada" style="max-width:100%;max-height:100%;object-fit:contain;" onclick="if(this.src) openImageZoom(this.src)">
         </div>
         <div style="display:flex;flex-direction:column;gap:10px;">
           <button type="button" class="fb" style="margin-top:0;" onclick="pimChooseFromGallery()">Escolher da galeria</button>
@@ -3813,6 +4509,14 @@ function pimApplyNewImage(url) {
 }
 function pimChooseFromGallery() {
   openGalleryModal((url) => pimApplyNewImage(url));
+}
+// Usado pelo botão "Escolher imagem" na aba CRUD Bolsas — vai direto pra
+// galeria com as fotos já enviadas, sem passar pelo modal intermediário
+// (que também oferece "enviar nova foto"). Enviar foto nova continua
+// disponível dentro da própria galeria, se precisar.
+function openProductGalleryPicker(id) {
+  _pimCurrentId = id;
+  openGalleryModal((url) => pimApplyNewImage(url), { hideUpload: true });
 }
 async function pimAutoUploadNew(input) {
   const file = input.files && input.files[0];
@@ -3956,7 +4660,7 @@ function renderAdminList() {
                    background:${p.favorite ? 'rgba(245,197,24,.12)' : 'transparent'};
                    color:${p.favorite ? '#f5c518' : '#C0B4AB'};">${starSVG(p.favorite)}</button>
           <button class="aabtn" onclick="togNew(${p.id})"
-            style="font-size:13.6px;padding:0;width:64px;height:38px;display:flex;align-items:center;
+            style="font-size:13.6px;padding:0;width:64px;height:44px;display:flex;align-items:center;
                    justify-content:center;flex-shrink:0;letter-spacing:.1em;
                    border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};
                    background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};
@@ -4028,7 +4732,7 @@ function openBulkPromoModal(chk) {
 
       <div style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:14px;">
         <p style="font-size:13.6px;font-weight:600;color:#8B4A3C;letter-spacing:.08em;margin-bottom:10px;">APLICAR DESCONTO EM TODOS</p>
-        <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PERCENTUAL DE DESCONTO</label>
+        <label for="bulkPct" style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PERCENTUAL DE DESCONTO</label>
         <div style="display:flex;align-items:stretch;margin-bottom:10px;">
           <input id="bulkPct" class="fi" placeholder="ex: 20" inputmode="decimal" style="border-radius:4px 0 0 4px;border-right:none;">
           <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
@@ -4222,7 +4926,7 @@ function bulkToggle(field, value) {
       const btn = document.querySelector(`button[onclick="togNew(${p.id})"]`);
       if (btn) {
         btn.textContent = p.isNew ? 'NOVO ✓' : 'NOVO';
-        btn.style.cssText = `font-size:13.6px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
+        btn.style.cssText = `font-size:13.6px;padding:0;width:64px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
       }
     }
   });
@@ -4376,7 +5080,7 @@ function openPriceModal(id) {
       <p style="font-size:14px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Editar Preço</p>
       <p style="font-size:13.6px;color:#A08070;margin-bottom:20px;">${p.name}</p>
 
-      <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:6px;">PREÇO ATUAL</label>
+      <label for="pmPrice" style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:6px;">PREÇO ATUAL</label>
       <div style="display:flex;align-items:stretch;margin-bottom:18px;">
         <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
         <input id="pmPrice" class="fi" value="${priceNum(p.price)}" placeholder="0" inputmode="decimal" style="border-radius:0 4px 4px 0;border-left:none;">
@@ -4390,21 +5094,21 @@ function openPriceModal(id) {
           </label>
         </div>
         <div id="pmPromoFields" style="display:${p.promo ? 'block' : 'none'};">
-          <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO ORIGINAL (riscado)</label>
+          <label for="pmOldPrice" style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO ORIGINAL (riscado)</label>
           <div style="display:flex;align-items:stretch;margin-bottom:10px;">
             <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:#A08070;font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
             <input id="pmOldPrice" class="fi" value="${priceNum(p.promo ? p.promo.old : p.price)}" placeholder="0" readonly style="border-radius:0 4px 4px 0;border-left:none;background:#F2ECE6;color:#A08070;cursor:not-allowed;">
           </div>
           <div style="display:flex;gap:10px;margin-bottom:10px;">
             <div style="flex:1;">
-              <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO PROMOCIONAL</label>
+              <label for="pmNewPrice" style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">PREÇO PROMOCIONAL</label>
               <div style="display:flex;align-items:stretch;">
                 <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:4px 0 0 4px;">R$</span>
                 <input id="pmNewPrice" class="fi" value="${p.promo ? priceNum(p.promo.new) : ''}" placeholder="0" inputmode="decimal" oninput="syncFromPrice()" style="border-radius:0 4px 4px 0;border-left:none;">
               </div>
             </div>
             <div style="flex:1;">
-              <label style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">DESCONTO</label>
+              <label for="pmPct" style="font-size:13.6px;letter-spacing:.14em;color:#A08070;display:block;margin-bottom:4px;">DESCONTO</label>
               <div style="display:flex;align-items:stretch;">
                 <input id="pmPct" class="fi" value="${p.promo && p.promo.pct ? p.promo.pct : ''}" placeholder="0" inputmode="decimal" oninput="syncFromPct()" style="border-radius:4px 0 0 4px;border-right:none;">
                 <span style="display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);background:#F2ECE6;color:var(--rose-dark);font-size:13px;font-weight:600;border-radius:0 4px 4px 0;">%</span>
@@ -4587,7 +5291,7 @@ function updateAdminRow(id) {
   const newBtn = document.querySelector(`button[onclick="togNew(${id})"]`);
   if (newBtn) {
     newBtn.textContent = p.isNew ? 'NOVO ✓' : 'NOVO';
-    newBtn.style.cssText = `font-size:13.6px;padding:0;width:64px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
+    newBtn.style.cssText = `font-size:13.6px;padding:0;width:64px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.1em;border:1px solid ${p.isNew ? '#2196a8' : 'var(--line)'};background:${p.isNew ? 'rgba(33,150,168,.1)' : 'transparent'};color:${p.isNew ? '#2196a8' : '#C0B4AB'};cursor:pointer;`;
     newBtn.title = p.isNew ? 'Remover badge Novo' : 'Adicionar badge Novo';
   }
 
@@ -4596,8 +5300,26 @@ function updateAdminRow(id) {
 }
 
 // ─── FAVORITES BANNER CAROUSEL ────────────────────────────────────────────────
+// Alterna slides de produto favorito com espaços reservados de anúncio
+// (Google AdSense). Enquanto a conta AdSense não estiver configurada, o
+// espaço aparece como um placeholder identificado — quando o código do
+// AdSense (script + <ins class="adsbygoogle">) estiver disponível, basta
+// colocá-lo dentro de #favAdSlotTemplate (ver comentário abaixo) que ele
+// passa a ser reutilizado automaticamente em cada posição de anúncio.
 let favIdx = 0;
 let favTimer = null;
+let favSlides = []; // [{type:'product',p} | {type:'ad'}]
+
+function buildFavSlides(favs) {
+  // 1 produto : 1 anúncio, sempre abrindo e fechando em produto (não
+  // termina o carrossel num slide de anúncio se só houver 1 favorito).
+  const slides = [];
+  favs.forEach((p, i) => {
+    slides.push({ type: 'product', p });
+    if (favs.length > 1 && i < favs.length - 1) slides.push({ type: 'ad' });
+  });
+  return slides;
+}
 
 function renderFavCarousel() {
   const favs = products.filter(p => p.favorite && p.status === 'available');
@@ -4621,23 +5343,46 @@ function renderFavCarousel() {
   if (empty) empty.style.display = 'none';
   if (insta) insta.classList.remove('insta-tight');
 
+  favSlides = buildFavSlides(favs);
   favIdx = 0;
-  showFavSlide(favs);
+  showFavSlide();
 
   clearInterval(favTimer);
   favTimer = setInterval(() => {
-    favIdx = (favIdx + 1) % favs.length;
-    showFavSlide(favs);
+    favIdx = (favIdx + 1) % favSlides.length;
+    showFavSlide();
   }, 3000);
 }
 
-function showFavSlide(favs) {
-  const banner = document.getElementById('favBanner');
-  if (!banner) return;
-  const p = favs[favIdx];
+// Placeholder do espaço de anúncio — troque o conteúdo deste template pelo
+// snippet real do Google AdSense (<ins class="adsbygoogle" ...></ins> +
+// chamada adsbygoogle.push) assim que a conta estiver aprovada. Mantém o
+// mesmo aspect-ratio 16/9 e as mesmas bordas dos slides de produto, pra não
+// haver salto de layout na troca.
+function favAdSlotHtml() {
+  return `
+    <div class="fav-slide-fade fav-ad-slot" style="width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;border-radius:12px;background:var(--bg2);border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;">
+      <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);">Publicidade</span>
+      <span style="font-size:12px;color:var(--text-muted);">Espaço reservado — Google AdSense</span>
+    </div>`;
+}
 
+function showFavSlide() {
+  const banner = document.getElementById('favBanner');
+  if (!banner || !favSlides.length) return;
+  const slide = favSlides[favIdx];
+
+  if (slide.type === 'ad') {
+    banner.innerHTML = favAdSlotHtml() + `
+    <div style="display:flex;justify-content:center;gap:6px;margin-top:12px;">
+      ${favSlides.map((_,i) => `<span onclick="jumpFav(${i})" style="width:${i===favIdx?'20px':'6px'};height:6px;border-radius:4px;background:${i===favIdx?'var(--rose-deep)':'var(--line)'};cursor:pointer;transition:width .3s,background .3s;display:inline-block;"></span>`).join('')}
+    </div>`;
+    return;
+  }
+
+  const p = slide.p;
   banner.innerHTML = `
-    <div onclick="openBagModal(${p.id},'fav')" class="fav-slide-fade" style="width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;cursor:pointer;border-radius:12px;">
+    <div onclick="openBagModal(${p.id},'fav', this)" class="fav-slide-fade" style="width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;cursor:pointer;border-radius:12px;">
       ${p.img
         ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;transition:opacity .4s ease;">`
         : `<div style="width:100%;height:100%;background:var(--bg2);display:flex;align-items:center;justify-content:center;">
@@ -4650,31 +5395,29 @@ function showFavSlide(favs) {
       <div style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.9);border-radius:20px;padding:4px 12px;font-size:13.6px;letter-spacing:.1em;font-weight:600;color:#8B4A3C;pointer-events:none;">Toque para ver</div>
     </div>
     <div style="display:flex;justify-content:center;gap:6px;margin-top:12px;">
-      ${favs.map((_,i) => `<span onclick="jumpFav(${i})" style="width:${i===favIdx?'20px':'6px'};height:6px;border-radius:4px;background:${i===favIdx?'var(--rose-deep)':'var(--line)'};cursor:pointer;transition:width .3s,background .3s;display:inline-block;"></span>`).join('')}
+      ${favSlides.map((_,i) => `<span onclick="jumpFav(${i})" style="width:${i===favIdx?'20px':'6px'};height:6px;border-radius:4px;background:${i===favIdx?'var(--rose-deep)':'var(--line)'};cursor:pointer;transition:width .3s,background .3s;display:inline-block;"></span>`).join('')}
     </div>`;
 }
 
 function favSlide(dir) {
-  const favs = products.filter(p => p.favorite && p.status === 'available');
-  if (!favs.length) return;
-  favIdx = (favIdx + dir + favs.length) % favs.length;
-  showFavSlide(favs);
+  if (!favSlides.length) return;
+  favIdx = (favIdx + dir + favSlides.length) % favSlides.length;
+  showFavSlide();
   clearInterval(favTimer);
   favTimer = setInterval(() => {
-    favIdx = (favIdx + 1) % favs.length;
-    showFavSlide(favs);
+    favIdx = (favIdx + 1) % favSlides.length;
+    showFavSlide();
   }, 3000);
 }
 
 function jumpFav(i) {
-  const favs = products.filter(p => p.favorite && p.status === 'available');
-  if (!favs.length) return;
+  if (!favSlides.length) return;
   favIdx = i;
-  showFavSlide(favs);
+  showFavSlide();
   clearInterval(favTimer);
   favTimer = setInterval(() => {
-    favIdx = (favIdx + 1) % favs.length;
-    showFavSlide(favs);
+    favIdx = (favIdx + 1) % favSlides.length;
+    showFavSlide();
   }, 3000);
 }
 
@@ -4692,7 +5435,18 @@ function trackWa(id) {
 }
 
 // ─── BAG DETAIL MODAL ─────────────────────────────────────────────────────────
-function openBagModal(id, source) {
+// Abre o painel de detalhe com uma transição "FLIP" (shared element): o card
+// clicado (originEl) cresce visualmente do seu retângulo original até o
+// painel centralizado, sem afetar o resto da grade (que continua intacta no
+// DOM, só coberta visualmente pelo overlay + painel por cima). Se não houver
+// originEl (ou se `html.reduce-motion` estiver ativo), cai num fade simples.
+let _bagModalFlip = null;
+let _bmGen = 0;
+let _bmCloseTimer = null;
+function _bmReduceMotion() { return document.documentElement.classList.contains('reduce-motion'); }
+function _bmGetPanel() { return document.querySelector('#bagModal > div'); }
+
+function openBagModal(id, source, originEl) {
   source = source || 'catalog';
   trackView(id, source);
   const p = products.find(x => x.id === id);
@@ -4714,15 +5468,113 @@ function openBagModal(id, source) {
   }
   document.getElementById('modalWa').href = waMsg(p.name, p.status);
   document.getElementById('modalWa').onclick = () => trackWa(id);
-  const m = document.getElementById('bagModal');
-  m.style.display = 'flex';
+
+  _bmGen++;
+  if (_bmCloseTimer) { clearTimeout(_bmCloseTimer); _bmCloseTimer = null; }
+  _bagModalFlip = (originEl && originEl.isConnected) ? { id, source, originEl } : null;
+
+  const backdrop = document.getElementById('bagModal');
+  const panel = _bmGetPanel();
+  const reduce = _bmReduceMotion();
   document.body.style.overflow = 'hidden';
+
+  if (!_bagModalFlip || reduce) {
+    backdrop.style.transition = 'none';
+    backdrop.style.opacity = '0';
+    backdrop.style.display = 'flex';
+    panel.style.transition = 'none';
+    panel.style.transform = 'scale(.96)';
+    panel.style.opacity = '0';
+    void backdrop.offsetWidth;
+    backdrop.style.transition = 'opacity .22s ease';
+    panel.style.transition = 'opacity .22s ease, transform .22s ease';
+    requestAnimationFrame(() => {
+      backdrop.style.opacity = '1';
+      panel.style.transform = 'scale(1)';
+      panel.style.opacity = '1';
+    });
+    return;
+  }
+
+  // FLIP: First (rect do card na grade) → Last (rect final do painel,
+  // calculado pelo centralização flex do backdrop) → Invert (aplica o delta
+  // como transform) → Play (anima de volta pro estado natural).
+  const startRect = originEl.getBoundingClientRect();
+  backdrop.style.transition = 'none';
+  backdrop.style.opacity = '0';
+  backdrop.style.display = 'flex';
+  panel.style.transition = 'none';
+  panel.style.opacity = '1';
+  panel.style.transform = 'none';
+  const endRect = panel.getBoundingClientRect();
+
+  const scaleX = startRect.width / endRect.width;
+  const scaleY = startRect.height / endRect.height;
+  const tx = (startRect.left + startRect.width / 2) - (endRect.left + endRect.width / 2);
+  const ty = (startRect.top + startRect.height / 2) - (endRect.top + endRect.height / 2);
+
+  panel.style.transformOrigin = 'center center';
+  panel.style.transform = `translate(${tx}px,${ty}px) scale(${scaleX},${scaleY})`;
+  void panel.offsetWidth;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      backdrop.style.transition = 'opacity .32s ease';
+      panel.style.transition = 'transform .38s cubic-bezier(.2,.7,.2,1)';
+      backdrop.style.opacity = '1';
+      panel.style.transform = 'translate(0,0) scale(1,1)';
+    });
+  });
 }
+
 function closeBagModal() {
-  document.getElementById('bagModal').style.display = 'none';
-  document.body.style.overflow = '';
-  const ph = document.getElementById('modalPhoto');
-  if (ph) { ph.style.transform='scale(1)'; ph.dataset.zoom='0'; ph.parentElement.style.cursor='zoom-in'; }
+  const backdrop = document.getElementById('bagModal');
+  const panel = _bmGetPanel();
+  const reduce = _bmReduceMotion();
+  const flip = _bagModalFlip;
+  _bagModalFlip = null;
+  _bmGen++;
+  const myGen = _bmGen;
+
+  const finish = () => {
+    backdrop.style.display = 'none';
+    backdrop.style.opacity = '';
+    backdrop.style.transition = '';
+    panel.style.transform = '';
+    panel.style.transition = '';
+    panel.style.transformOrigin = '';
+    panel.style.opacity = '';
+    document.body.style.overflow = '';
+    const ph = document.getElementById('modalPhoto');
+    if (ph) { ph.style.transform='scale(1)'; ph.dataset.zoom='0'; ph.parentElement.style.cursor='zoom-in'; }
+  };
+
+  if (_bmCloseTimer) { clearTimeout(_bmCloseTimer); _bmCloseTimer = null; }
+
+  if (!flip || !flip.originEl.isConnected || reduce) {
+    backdrop.style.transition = 'opacity .18s ease';
+    panel.style.transition = 'opacity .18s ease, transform .18s ease';
+    backdrop.style.opacity = '0';
+    panel.style.opacity = '0';
+    panel.style.transform = 'scale(.96)';
+    _bmCloseTimer = setTimeout(() => { if (_bmGen === myGen) finish(); }, 190);
+    return;
+  }
+
+  const endRect = flip.originEl.getBoundingClientRect();
+  const panelRect = panel.getBoundingClientRect();
+  const scaleX = endRect.width / panelRect.width;
+  const scaleY = endRect.height / panelRect.height;
+  const tx = (endRect.left + endRect.width / 2) - (panelRect.left + panelRect.width / 2);
+  const ty = (endRect.top + endRect.height / 2) - (panelRect.top + panelRect.height / 2);
+
+  panel.style.transformOrigin = 'center center';
+  backdrop.style.transition = 'opacity .3s ease';
+  panel.style.transition = 'transform .3s cubic-bezier(.4,0,.2,1)';
+  backdrop.style.opacity = '0';
+  panel.style.transform = `translate(${tx}px,${ty}px) scale(${scaleX},${scaleY})`;
+
+  _bmCloseTimer = setTimeout(() => { if (_bmGen === myGen) finish(); }, 310);
 }
 // close modal on backdrop click — uses event delegation so bagModal doesn't need to exist yet
 document.addEventListener('click', function(e) {
@@ -4831,11 +5683,33 @@ renderCatFilters();
 renderFavCarousel();
 applyLooksButtonVisibility();
 applyMatchButtonVisibility();
+
+// ─── MOBILE INSTAGRAM REORDER ──────────────────────────────────────────────
+// No desktop a ordem no DOM é hero → favoritos → instagram → catalogo. No
+// mobile (<=768px) a seção Instagram deve aparecer DEPOIS do catálogo, sem
+// alterar a ordem no desktop. Move o node via JS conforme o breakpoint.
+(function () {
+  const favSection  = document.getElementById('favoritos');
+  const instaSection = document.getElementById('instagram');
+  const catalogSection = document.getElementById('catalogo');
+  if (!instaSection || !catalogSection || !favSection) return;
+
+  const mq = window.matchMedia('(max-width:768px)');
+  function placeInsta(isMobile) {
+    if (isMobile) {
+      catalogSection.insertAdjacentElement('afterend', instaSection);
+    } else {
+      favSection.insertAdjacentElement('afterend', instaSection);
+    }
+  }
+  placeInsta(mq.matches);
+  mq.addEventListener('change', (e) => placeInsta(e.matches));
+})();
 </script>
 
 <!-- ═══ BAG DETAIL MODAL ════════════════════════════════════════════════════ -->
 <div id="bagModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(42,31,24,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
-  <div style="background:var(--bg);border-radius:16px;max-width:520px;width:92%;overflow:hidden;position:relative;animation:modalIn .28s ease;">
+  <div id="bagModalPanel" style="background:var(--bg);border-radius:16px;max-width:520px;width:92%;max-height:88svh;overflow-y:auto;position:relative;will-change:transform;">
     <button onclick="closeBagModal()" aria-label="Fechar" style="position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;color:var(--text-muted);z-index:2;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
     <div id="modalImgWrap" style="width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--bg2);cursor:zoom-in;position:relative;touch-action:none;">
       <img id="modalPhoto" src="" alt="" style="width:100%;height:100%;object-fit:cover;transform-origin:center center;will-change:transform;">
@@ -4953,7 +5827,7 @@ applyMatchButtonVisibility();
 
 <!-- ═══ ADMIN REVIEW MODAL ══════════════════════════════════════════════════ -->
 <div id="reviewModal" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(42,31,24,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:14px;max-width:480px;width:92%;max-height:80vh;overflow-y:auto;padding:32px;">
+  <div style="background:#fff;border-radius:14px;max-width:480px;width:92%;max-height:80svh;overflow-y:auto;padding:32px;">
     <h3 style="font-size:15px;font-weight:700;color:#2A1F18;margin-bottom:4px;">Revisão das Configurações</h3>
     <p style="font-size:13.6px;color:#A08070;margin-bottom:24px;">Confira antes de salvar</p>
     <div id="reviewBody" style="font-size:13.6px;color:#4A3728;line-height:1.8;"></div>
